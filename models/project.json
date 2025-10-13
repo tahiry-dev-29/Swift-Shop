@@ -1,0 +1,20 @@
+{
+  "name": "models",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "models/src",
+  "prefix": "lib",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "reportsDirectory": "../coverage/models"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
