@@ -1,0 +1,29 @@
+{
+  "monorepo": true,
+  "root": "apps/dima-new-source",
+  "sourceRoot": "apps/dima-new-source/src",
+  "compilerOptions": {
+    "webpack": true,
+    "tsConfigPath": "apps/dima-new-source/tsconfig.app.json"
+  },
+  "projects": {
+    "api": {
+      "type": "application",
+      "root": "apps/api",
+      "entryFile": "main",
+      "sourceRoot": "apps/api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/api/tsconfig.app.json"
+      }
+    },
+    "dima-new-source": {
+      "type": "application",
+      "root": "apps/dima-new-source",
+      "entryFile": "main",
+      "sourceRoot": "apps/dima-new-source/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/dima-new-source/tsconfig.app.json"
+      }
+    }
+  }
+}
