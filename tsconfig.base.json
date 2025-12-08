@@ -17,7 +17,8 @@
     "paths": {
       "@dima-new/models": ["models/src/index.ts"],
       "@dima-new/ui": ["shared/ui/src/index.ts"],
-      "@dima-new/data-access-prisma": ["libs/data-access-prisma/src/index.ts"]
+      "@prisma/client": ["prisma/generated/prisma"],
+      "@dima-new/data-access-prisma": ["libs/data-access-prisma/src/index.ts"],
     }
   },
   "exclude": ["node_modules", "tmp"]

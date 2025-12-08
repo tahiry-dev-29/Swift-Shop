@@ -82,7 +82,7 @@
       "executor": "@nx/web:file-server",
       "options": {
         "buildTarget": "admin:build",
-        "staticFilePath": "dist/apps/admin/browser",
+        "staticFilePath": "dist/apps/admin",
         "spa": true
       }
     }
