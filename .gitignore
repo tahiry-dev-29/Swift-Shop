@@ -189,3 +189,5 @@ Thumbs.db
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
 >>>>>>> c6f170c (Initial commit)
+
+/libs/data-access-prisma/src/lib/generated/prisma

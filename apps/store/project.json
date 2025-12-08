@@ -82,7 +82,7 @@
       "executor": "@nx/web:file-server",
       "options": {
         "buildTarget": "store:build",
-        "staticFilePath": "dist/apps/store/browser",
+        "staticFilePath": "dist/apps/store",
         "spa": true
       }
     }
