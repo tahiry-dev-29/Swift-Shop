@@ -17,8 +17,11 @@
     "paths": {
       "@dima-new/models": ["models/src/index.ts"],
       "@dima-new/ui": ["shared/ui/src/index.ts"],
-      "@prisma/client": ["prisma/generated/prisma"],
       "@dima-new/data-access-prisma": ["libs/data-access-prisma/src/index.ts"],
+      "@dima-new/backend/auth": ["libs/backend/core/auth/src/index.ts"],
+      "@dima-new/backend/customer": ["libs/backend/features/customer/src/index.ts"],
+      "@dima-new/backend/employee": ["libs/backend/features/employee/src/index.ts"],
+      "@dima-new/backend/customer-group": ["libs/backend/features/customer-group/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
