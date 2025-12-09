@@ -11,3 +11,141 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+// ----------------------------------------------------------------------
+// ROLES ENUM (Employee Permissions)
+// ----------------------------------------------------------------------
+
+// ----------------------------------------------------------------------
+// ROLES (Employee Permissions)
+// ----------------------------------------------------------------------
+
+model Role {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique // SUPER_ADMIN, ADMIN, etc.
+  description String?
+  isSystem    Boolean    @default(false) // If true, cannot be deleted/renamed
+
+  employees   Employee[]
+}
+
+
+// ----------------------------------------------------------------------
+// CUSTOMERS (Front-Office Auth)
+// ----------------------------------------------------------------------
+
+model Customer {
+  id              Int       @id @default(autoincrement())
+  
+  // Auth Info
+  email           String    @unique
+  password        String    // Hashed (Argon2)
+  
+  // Personal Info
+  firstname       String
+  lastname        String
+  birthday        DateTime?
+  company         String?
+  siret           String?
+  ape             String?
+  
+  // Status & Logic
+  active          Boolean   @default(true)
+  isGuest         Boolean   @default(false)
+  optin           Boolean   @default(false)
+  dateAdd         DateTime  @default(now())
+  dateUpd         DateTime  @updatedAt
+  
+  // Relations
+  groupId         Int
+  group           CustomerGroup @relation(fields: [groupId], references: [id])
+  
+  addresses       Address[]
+  orders          Order[]
+  specificPrices  SpecificPrice[]
+}
+
+model CustomerGroup {
+  id            Int        @id @default(autoincrement())
+  name          String
+  reduction     Decimal    @default(0.00)
+  showPrices    Boolean    @default(true)
+  
+  customers     Customer[]
+}
+
+// ----------------------------------------------------------------------
+// EMPLOYEES (Back-Office Auth)
+// ----------------------------------------------------------------------
+
+model Employee {
+  id            Int      @id @default(autoincrement())
+  
+  // Auth Info
+  email         String   @unique
+  password      String   // Hashed (Argon2)
+  
+  // Personal Info
+  firstname     String
+  lastname      String
+  
+  // Permissions & Access
+  roleId        Int
+  role          Role     @relation(fields: [roleId], references: [id])
+  
+  active        Boolean  @default(true)
+  lastConnectionDate DateTime?
+  dateAdd       DateTime @default(now())
+  dateUpd       DateTime @updatedAt
+}
+
+// ----------------------------------------------------------------------
+// ADDRESSES
+// ----------------------------------------------------------------------
+
+model Address {
+  id              Int      @id @default(autoincrement())
+  customerId      Int?
+  alias           String
+  company         String?
+  lastname        String
+  firstname       String
+  address1        String
+  address2        String?
+  postcode        String
+  city            String
+  countryId       Int
+  phone           String?
+  phoneMobile     String?
+  vatNumber       String?
+  
+  active          Boolean  @default(true)
+  deleted         Boolean  @default(false)
+
+  // Relations
+  customer        Customer? @relation(fields: [customerId], references: [id])
+}
+
+// ----------------------------------------------------------------------
+// PLACEHOLDER MODELS (For Relations)
+// ----------------------------------------------------------------------
+
+model Order {
+  id          Int      @id @default(autoincrement())
+  customerId  Int
+  reference   String   @unique
+  totalPaid   Decimal  @default(0.00)
+  dateAdd     DateTime @default(now())
+  
+  customer    Customer @relation(fields: [customerId], references: [id])
+}
+
+model SpecificPrice {
+  id          Int      @id @default(autoincrement())
+  customerId  Int?
+  reduction   Decimal  @default(0.00)
+  dateFrom    DateTime?
+  dateTo      DateTime?
+  
+  customer    Customer? @relation(fields: [customerId], references: [id])
+}
