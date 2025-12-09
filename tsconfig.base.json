@@ -21,7 +21,9 @@
       "@dima-new/backend/auth": ["libs/backend/core/auth/src/index.ts"],
       "@dima-new/backend/customer": ["libs/backend/features/customer/src/index.ts"],
       "@dima-new/backend/employee": ["libs/backend/features/employee/src/index.ts"],
-      "@dima-new/backend/customer-group": ["libs/backend/features/customer-group/src/index.ts"]
+      "@dima-new/backend/customer-group": ["libs/backend/features/customer-group/src/index.ts"],
+      "@dima-new/backend/address": ["libs/backend/features/address/src/index.ts"],
+      "@dima-new/backend/catalog": ["libs/backend/features/catalog/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -127,6 +127,49 @@ model Address {
 }
 
 // ----------------------------------------------------------------------
+// CATALOG - CATEGORIES (Tree Structure)
+// ----------------------------------------------------------------------
+
+model Category {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  active      Boolean    @default(true)
+  position    Int        @default(0)
+  
+  parentId    Int?
+  parent      Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryTree")
+  
+  dateAdd     DateTime   @default(now())
+  dateUpd     DateTime   @updatedAt
+}
+
+// ----------------------------------------------------------------------
+// CATALOG - ATTRIBUTES (Product Variants like Size, Color)
+// ----------------------------------------------------------------------
+
+model AttributeGroup {
+  id          Int              @id @default(autoincrement())
+  name        String           // Internal name (e.g. "Size")
+  publicName  String           // Customer facing name (e.g. "Taille")
+  position    Int              @default(0)
+  type        String           @default("select") // select, radio, color
+  
+  values      AttributeValue[]
+}
+
+model AttributeValue {
+  id              Int            @id @default(autoincrement())
+  attributeGroupId Int
+  name            String         // e.g. "S", "Red"
+  color           String?        // For color type attributes
+  position        Int            @default(0)
+  
+  group           AttributeGroup @relation(fields: [attributeGroupId], references: [id], onDelete: Cascade)
+}
+
+// ----------------------------------------------------------------------
 // PLACEHOLDER MODELS (For Relations)
 // ----------------------------------------------------------------------
 
