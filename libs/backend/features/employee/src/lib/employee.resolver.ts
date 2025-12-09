@@ -1,6 +1,6 @@
 import { Resolver, Query, Mutation, Args, Context, Int } from '@nestjs/graphql';
 import { UseGuards, UnauthorizedException, NotFoundException } from '@nestjs/common';
-import { EmployeeService } from './employee-service';
+import { EmployeeService } from './employee.service';
 import { AuthService, EmployeeGuard, SuperAdminGuard } from '@dima-new/backend/auth';
 import { EmployeeType, EmployeeAuthResponse, CreateEmployeeInput, UpdateEmployeeInput } from './dto';
 

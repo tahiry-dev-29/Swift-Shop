@@ -17,7 +17,10 @@ mutation {
       firstname
       lastname
       email
-      role
+      role {
+        id
+        name
+      }
     }
   }
 }
@@ -40,7 +43,10 @@ query {
     firstname
     lastname
     email
-    role
+    role {
+      id
+      name
+    }
     lastConnectionDate
   }
 }
