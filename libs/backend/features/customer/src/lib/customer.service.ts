@@ -16,6 +16,13 @@ export class CustomerService {
     });
   }
 
+  async findAll() {
+    return this.prisma.customer.findMany({
+      include: { group: true },
+      orderBy: { dateAdd: 'desc' },
+    });
+  }
+
   async findByEmail(email: string) {
     return this.prisma.customer.findUnique({
       where: { email },

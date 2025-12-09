@@ -15,7 +15,7 @@ import {
 export class AttributeResolver {
   constructor(private readonly attributeService: AttributeService) {}
 
-  // --- GROUPS ---
+  
 
   @Query(() => [AttributeGroupType])
   async attributeGroups() {
@@ -60,7 +60,7 @@ export class AttributeResolver {
     return this.attributeService.deleteGroup(id);
   }
 
-  // --- VALUES ---
+  
 
   @Mutation(() => AttributeValueType)
   @UseGuards(SuperAdminGuard)
