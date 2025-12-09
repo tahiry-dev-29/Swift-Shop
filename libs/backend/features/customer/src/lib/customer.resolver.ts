@@ -1,7 +1,7 @@
 import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
 import { UseGuards, UnauthorizedException } from '@nestjs/common';
 import { CustomerService } from './customer.service';
-import { AuthService, CustomerGuard } from '@dima-new/backend/auth';
+import { AuthService, CustomerGuard, EmployeeGuard } from '@dima-new/backend/auth';
 import { CustomerType, CustomerAuthResponse, CustomerRegisterInput } from './dto';
 
 @Resolver()
@@ -45,5 +45,11 @@ export class CustomerResolver {
       throw new UnauthorizedException('Customer not found');
     }
     return customer;
+  }
+
+  @Query(() => [CustomerType])
+  @UseGuards(EmployeeGuard)
+  async customers() {
+    return this.customerService.findAll();
   }
 }

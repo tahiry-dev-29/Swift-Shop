@@ -11,7 +11,7 @@ import {
 export class AttributeService {
   constructor(private readonly prisma: PrismaService) {}
 
-  // --- GROUPS ---
+  
 
   async findAllGroups() {
     return this.prisma.attributeGroup.findMany({
@@ -55,7 +55,7 @@ export class AttributeService {
     });
   }
 
-  // --- VALUES ---
+  
 
   async findValueById(id: number) {
     return this.prisma.attributeValue.findUnique({
