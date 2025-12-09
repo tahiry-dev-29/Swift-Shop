@@ -1,0 +1,51 @@
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '@dima-new/data-access-prisma';
+import { CreateAddressInput, UpdateAddressInput } from './dto';
+
+@Injectable()
+export class AddressService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async findAll() {
+    return this.prisma.address.findMany({
+      where: { deleted: false },
+      orderBy: { id: 'desc' },
+    });
+  }
+
+  async findByCustomer(customerId: number) {
+    return this.prisma.address.findMany({
+      where: { customerId, deleted: false },
+      orderBy: { id: 'desc' },
+    });
+  }
+
+  async findById(id: number) {
+    return this.prisma.address.findUnique({
+      where: { id },
+    });
+  }
+
+  async create(customerId: number, input: CreateAddressInput) {
+    return this.prisma.address.create({
+      data: {
+        ...input,
+        customerId,
+      },
+    });
+  }
+
+  async update(id: number, input: UpdateAddressInput) {
+    return this.prisma.address.update({
+      where: { id },
+      data: input,
+    });
+  }
+
+  async delete(id: number) {
+    return this.prisma.address.update({
+      where: { id },
+      data: { deleted: true },
+    });
+  }
+}
