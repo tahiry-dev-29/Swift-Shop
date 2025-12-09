@@ -1,7 +1,7 @@
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { UseGuards, NotFoundException, ConflictException } from '@nestjs/common';
 import { EmployeeGuard } from '@dima-new/backend/auth';
-import { CustomerGroupService } from './customer-group-service';
+import { CustomerGroupService } from './customer-group.service';
 import {
   CustomerGroupType,
   CreateCustomerGroupInput,

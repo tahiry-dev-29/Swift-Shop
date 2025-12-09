@@ -1,6 +1,6 @@
 import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
 import { UseGuards, UnauthorizedException } from '@nestjs/common';
-import { CustomerService } from './customer-service';
+import { CustomerService } from './customer.service';
 import { AuthService, CustomerGuard } from '@dima-new/backend/auth';
 import { CustomerType, CustomerAuthResponse, CustomerRegisterInput } from './dto';
 

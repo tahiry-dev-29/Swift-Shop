@@ -1,7 +1,7 @@
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { UseGuards, NotFoundException, BadRequestException } from '@nestjs/common';
 import { SuperAdminGuard } from '@dima-new/backend/auth';
-import { RoleService } from './role-service';
+import { RoleService } from './role.service';
 import { RoleType } from './dto/employee-types';
 import { CreateRoleInput, UpdateRoleInput } from './dto/role-inputs';
 
