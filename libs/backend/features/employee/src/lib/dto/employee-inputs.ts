@@ -14,9 +14,6 @@ export class CreateEmployeeInput {
   @Field()
   lastname!: string;
 
-  @Field()
-  lastname!: string;
-
   @Field(() => Int, { nullable: true })
   roleId?: number;
 }
