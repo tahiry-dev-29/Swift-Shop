@@ -61,6 +61,7 @@ model Customer {
   
   addresses       Address[]
   orders          Order[]
+  cart            Cart?
   specificPrices  SpecificPrice[]
 }
 
@@ -216,6 +217,7 @@ model Product {
   combinations     ProductCombination[]
   stock            Stock?     // For products without combinations
   specificPrices   SpecificPrice[]
+  cartItems        CartItem[]
   
   dateAdd          DateTime  @default(now())
   dateUpd          DateTime  @updatedAt
@@ -258,6 +260,7 @@ model ProductCombination {
   attributes      ProductCombinationAttribute[]
   stock           Stock?
   specificPrices  SpecificPrice[]
+  cartItems       CartItem[]
 }
 
 model ProductCombinationAttribute {
@@ -287,17 +290,105 @@ model Stock {
 }
 
 // ----------------------------------------------------------------------
-// PLACEHOLDER MODELS (For Relations)
+// CART (Panier)
 // ----------------------------------------------------------------------
 
-model Order {
-  id          String   @id @default(uuid())
-  customerId  String
-  reference   String   @unique
-  totalPaid   Decimal  @default(0.00)
-  dateAdd     DateTime @default(now())
+model Cart {
+  id          String     @id @default(uuid())
+  customerId  String?    @unique  // Null for guest carts
+  sessionId   String?    @unique  // For guest users
   
-  customer    Customer @relation(fields: [customerId], references: [id])
+  items       CartItem[]
+  
+  dateAdd     DateTime   @default(now())
+  dateUpd     DateTime   @updatedAt
+  
+  customer    Customer?  @relation(fields: [customerId], references: [id])
+}
+
+model CartItem {
+  id            String    @id @default(uuid())
+  cartId        String
+  productId     String
+  combinationId String?
+  quantity      Int       @default(1)
+  
+  cart          Cart      @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product       Product   @relation(fields: [productId], references: [id])
+  combination   ProductCombination? @relation(fields: [combinationId], references: [id])
+  
+  dateAdd       DateTime  @default(now())
+  
+  @@unique([cartId, productId, combinationId])
+}
+
+// ----------------------------------------------------------------------
+// ORDERS (Commandes)
+// ----------------------------------------------------------------------
+
+model OrderState {
+  id        String   @id @default(uuid())
+  name      String   @unique  // PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED
+  color     String   @default("#6b7280")
+  position  Int      @default(0)
+  
+  orders    Order[]
+}
+
+model Order {
+  id           String       @id @default(uuid())
+  reference    String       @unique  // Format: DO-20251210-XXXXX
+  customerId   String
+  stateId      String
+  
+  totalHT      Decimal      @default(0)
+  totalTax     Decimal      @default(0)
+  totalTTC     Decimal      @default(0)
+  
+  items        OrderItem[]
+  addresses    OrderAddress[]
+  
+  dateAdd      DateTime     @default(now())
+  dateUpd      DateTime     @updatedAt
+  
+  customer     Customer     @relation(fields: [customerId], references: [id])
+  state        OrderState   @relation(fields: [stateId], references: [id])
+}
+
+model OrderItem {
+  id            String   @id @default(uuid())
+  orderId       String
+  productId     String
+  combinationId String?
+  
+  // Snapshot data (prix au moment de la commande)
+  productName   String
+  productRef    String
+  quantity      Int
+  unitPriceHT   Decimal
+  taxRate       Decimal
+  totalHT       Decimal
+  totalTTC      Decimal
+  
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model OrderAddress {
+  id          String   @id @default(uuid())
+  orderId     String
+  type        String   // "delivery" ou "billing"
+  
+  firstname   String
+  lastname    String
+  company     String?
+  address1    String
+  address2    String?
+  postcode    String
+  city        String
+  country     String
+  phone       String?
+  
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 
