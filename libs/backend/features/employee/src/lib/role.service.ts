@@ -11,7 +11,7 @@ export class RoleService {
     });
   }
 
-  async findById(id: number) {
+  async findById(id: string) {
     return this.prisma.role.findUnique({
       where: { id },
     });
@@ -30,7 +30,7 @@ export class RoleService {
 
   
   
-  async update(id: number, data: { name?: string; description?: string }) {
+  async update(id: string, data: { name?: string; description?: string }) {
     const role = await this.findById(id);
     if (!role) throw new Error('Role not found');
 
@@ -47,7 +47,7 @@ export class RoleService {
     });
   }
 
-  async delete(id: number) {
+  async delete(id: string) {
     const role = await this.findById(id);
     if (!role) throw new Error('Role not found');
     
@@ -60,3 +60,4 @@ export class RoleService {
     });
   }
 }
+

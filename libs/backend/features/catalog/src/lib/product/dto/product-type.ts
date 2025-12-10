@@ -1,12 +1,12 @@
-import { ObjectType, Field, Int, Float } from '@nestjs/graphql';
+import { ObjectType, Field, Int, Float, ID } from '@nestjs/graphql';
 
 @ObjectType()
 export class ProductImageType {
-  @Field(() => Int)
-  id!: number;
+  @Field(() => ID)
+  id!: string;
 
-  @Field(() => Int)
-  productId!: number;
+  @Field(() => ID)
+  productId!: string;
 
   @Field(() => Int)
   position!: number;
@@ -38,14 +38,14 @@ export class ProductImageType {
 
 @ObjectType()
 export class StockType {
-  @Field(() => Int)
-  id!: number;
+  @Field(() => ID)
+  id!: string;
 
-  @Field(() => Int, { nullable: true })
-  productId?: number;
+  @Field(() => ID, { nullable: true })
+  productId?: string;
 
-  @Field(() => Int, { nullable: true })
-  combinationId?: number;
+  @Field(() => ID, { nullable: true })
+  combinationId?: string;
 
   @Field(() => Int)
   quantity!: number;
@@ -59,23 +59,23 @@ export class StockType {
 
 @ObjectType()
 export class ProductCombinationAttributeType {
-  @Field(() => Int)
-  id!: number;
+  @Field(() => ID)
+  id!: string;
 
-  @Field(() => Int)
-  combinationId!: number;
+  @Field(() => ID)
+  combinationId!: string;
 
-  @Field(() => Int)
-  attributeValueId!: number;
+  @Field(() => ID)
+  attributeValueId!: string;
 }
 
 @ObjectType()
 export class ProductCombinationType {
-  @Field(() => Int)
-  id!: number;
+  @Field(() => ID)
+  id!: string;
 
-  @Field(() => Int)
-  productId!: number;
+  @Field(() => ID)
+  productId!: string;
 
   @Field({ nullable: true })
   reference?: string;
@@ -101,8 +101,8 @@ export class ProductCombinationType {
 
 @ObjectType()
 export class ProductType {
-  @Field(() => Int)
-  id!: number;
+  @Field(() => ID)
+  id!: string;
 
   @Field()
   reference!: string;
@@ -152,8 +152,8 @@ export class ProductType {
   @Field(() => Float, { nullable: true })
   depth?: number;
 
-  @Field(() => Int, { nullable: true })
-  categoryId?: number;
+  @Field(() => ID, { nullable: true })
+  categoryId?: string;
 
   @Field(() => [ProductImageType], { nullable: true })
   images?: ProductImageType[];
@@ -179,3 +179,4 @@ export class ProductListType {
   @Field(() => Int)
   total!: number;
 }
+

@@ -1,12 +1,12 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, Field, Int, ID } from '@nestjs/graphql';
 
 @ObjectType()
 export class AddressType {
-  @Field(() => Int)
-  id!: number;
+  @Field(() => ID)
+  id!: string;
 
-  @Field(() => Int, { nullable: true })
-  customerId?: number;
+  @Field(() => ID, { nullable: true })
+  customerId?: string;
 
   @Field()
   alias!: string;
@@ -32,8 +32,8 @@ export class AddressType {
   @Field()
   city!: string;
 
-  @Field(() => Int)
-  countryId!: number;
+  @Field(() => ID)
+  countryId!: string;
 
   @Field({ nullable: true })
   phone?: string;
@@ -50,3 +50,4 @@ export class AddressType {
   @Field()
   deleted!: boolean;
 }
+

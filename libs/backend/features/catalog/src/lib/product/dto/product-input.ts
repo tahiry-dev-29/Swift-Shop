@@ -1,4 +1,4 @@
-import { InputType, Field, Int, Float } from '@nestjs/graphql';
+import { InputType, Field, Int, Float, ID } from '@nestjs/graphql';
 
 
 @InputType()
@@ -51,8 +51,8 @@ export class CreateProductInput {
   @Field(() => Float, { nullable: true })
   depth?: number;
 
-  @Field(() => Int, { nullable: true })
-  categoryId?: number;
+  @Field(() => ID, { nullable: true })
+  categoryId?: string;
 }
 
 @InputType()
@@ -105,8 +105,8 @@ export class UpdateProductInput {
   @Field(() => Float, { nullable: true })
   depth?: number;
 
-  @Field(() => Int, { nullable: true })
-  categoryId?: number;
+  @Field(() => ID, { nullable: true })
+  categoryId?: string;
 }
 
 
@@ -155,8 +155,8 @@ export class CreateProductCombinationInput {
   @Field({ nullable: true })
   isDefault?: boolean;
 
-  @Field(() => [Int])
-  attributeValueIds!: number[];
+  @Field(() => [ID])
+  attributeValueIds!: string[];
 }
 
 @InputType()
@@ -180,11 +180,11 @@ export class UpdateProductCombinationInput {
 
 @InputType()
 export class UpdateStockInput {
-  @Field(() => Int, { nullable: true })
-  productId?: number;
+  @Field(() => ID, { nullable: true })
+  productId?: string;
 
-  @Field(() => Int, { nullable: true })
-  combinationId?: number;
+  @Field(() => ID, { nullable: true })
+  combinationId?: string;
 
   @Field(() => Int)
   quantity!: number;
@@ -199,8 +199,8 @@ export class UpdateStockInput {
 
 @InputType()
 export class ProductFilterInput {
-  @Field(() => Int, { nullable: true })
-  categoryId?: number;
+  @Field(() => ID, { nullable: true })
+  categoryId?: string;
 
   @Field({ nullable: true })
   active?: boolean;
@@ -214,3 +214,4 @@ export class ProductFilterInput {
   @Field(() => Int, { nullable: true, defaultValue: 20 })
   take?: number;
 }
+

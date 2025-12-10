@@ -11,6 +11,7 @@ import { EmployeeModule } from '@dima-new/backend/employee';
 import { CustomerGroupModule } from '@dima-new/backend/customer-group';
 import { AddressModule } from '@dima-new/backend/address';
 import { CatalogModule } from '@dima-new/backend/catalog';
+import { PricingModule } from '@dima-new/backend/pricing';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { CatalogModule } from '@dima-new/backend/catalog';
     CustomerGroupModule,
     AddressModule,
     CatalogModule,
+    PricingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

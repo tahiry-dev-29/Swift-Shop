@@ -1,4 +1,4 @@
-import { InputType, Field, Int } from '@nestjs/graphql';
+import { InputType, Field, ID } from '@nestjs/graphql';
 
 @InputType()
 export class CreateEmployeeInput {
@@ -14,8 +14,8 @@ export class CreateEmployeeInput {
   @Field()
   lastname!: string;
 
-  @Field(() => Int, { nullable: true })
-  roleId?: number;
+  @Field(() => ID, { nullable: true })
+  roleId?: string;
 }
 
 @InputType()
@@ -26,9 +26,10 @@ export class UpdateEmployeeInput {
   @Field({ nullable: true })
   lastname?: string;
 
-  @Field(() => Int, { nullable: true })
-  roleId?: number;
+  @Field(() => ID, { nullable: true })
+  roleId?: string;
 
   @Field({ nullable: true })
   active?: boolean;
 }
+

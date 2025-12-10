@@ -1,10 +1,10 @@
-import { ObjectType, Field, Int, registerEnumType } from '@nestjs/graphql';
+import { ObjectType, Field, ID } from '@nestjs/graphql';
 
 
 @ObjectType()
 export class RoleType {
-  @Field(() => Int)
-  id!: number;
+  @Field(() => ID)
+  id!: string;
 
   @Field()
   name!: string;
@@ -18,8 +18,8 @@ export class RoleType {
 
 @ObjectType()
 export class EmployeeType {
-  @Field(() => Int)
-  id!: number;
+  @Field(() => ID)
+  id!: string;
 
   @Field()
   email!: string;
@@ -48,3 +48,4 @@ export class EmployeeAuthResponse {
   @Field(() => EmployeeType)
   employee!: EmployeeType;
 }
+

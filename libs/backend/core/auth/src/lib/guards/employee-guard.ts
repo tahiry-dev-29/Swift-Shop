@@ -2,7 +2,7 @@ import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/com
 import { JwtAuthGuard } from './jwt-auth-guard';
 
 interface AuthUser {
-  id: number;
+  id: string;
   email: string;
   type: 'customer' | 'employee';
 }
@@ -23,3 +23,4 @@ export class EmployeeGuard extends JwtAuthGuard {
     return user;
   }
 }
+

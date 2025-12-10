@@ -24,7 +24,7 @@ export class AttributeService {
     });
   }
 
-  async findGroupById(id: number) {
+  async findGroupById(id: string) {
     return this.prisma.attributeGroup.findUnique({
       where: { id },
       include: { 
@@ -41,7 +41,7 @@ export class AttributeService {
     });
   }
 
-  async updateGroup(id: number, input: UpdateAttributeGroupInput) {
+  async updateGroup(id: string, input: UpdateAttributeGroupInput) {
     return this.prisma.attributeGroup.update({
       where: { id },
       data: input,
@@ -49,7 +49,7 @@ export class AttributeService {
     });
   }
 
-  async deleteGroup(id: number) {
+  async deleteGroup(id: string) {
     return this.prisma.attributeGroup.delete({
       where: { id },
     });
@@ -57,13 +57,13 @@ export class AttributeService {
 
   
 
-  async findValueById(id: number) {
+  async findValueById(id: string) {
     return this.prisma.attributeValue.findUnique({
       where: { id },
     });
   }
 
-  async createValue(groupId: number, input: CreateAttributeValueInput) {
+  async createValue(groupId: string, input: CreateAttributeValueInput) {
     return this.prisma.attributeValue.create({
       data: {
         ...input,
@@ -72,16 +72,17 @@ export class AttributeService {
     });
   }
 
-  async updateValue(id: number, input: UpdateAttributeValueInput) {
+  async updateValue(id: string, input: UpdateAttributeValueInput) {
     return this.prisma.attributeValue.update({
       where: { id },
       data: input,
     });
   }
 
-  async deleteValue(id: number) {
+  async deleteValue(id: string) {
     return this.prisma.attributeValue.delete({
       where: { id },
     });
   }
 }
+

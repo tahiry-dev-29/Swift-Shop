@@ -13,20 +13,20 @@ export class AddressService {
     });
   }
 
-  async findByCustomer(customerId: number) {
+  async findByCustomer(customerId: string) {
     return this.prisma.address.findMany({
       where: { customerId, deleted: false },
       orderBy: { id: 'desc' },
     });
   }
 
-  async findById(id: number) {
+  async findById(id: string) {
     return this.prisma.address.findUnique({
       where: { id },
     });
   }
 
-  async create(customerId: number, input: CreateAddressInput) {
+  async create(customerId: string, input: CreateAddressInput) {
     return this.prisma.address.create({
       data: {
         ...input,
@@ -35,17 +35,18 @@ export class AddressService {
     });
   }
 
-  async update(id: number, input: UpdateAddressInput) {
+  async update(id: string, input: UpdateAddressInput) {
     return this.prisma.address.update({
       where: { id },
       data: input,
     });
   }
 
-  async delete(id: number) {
+  async delete(id: string) {
     return this.prisma.address.update({
       where: { id },
       data: { deleted: true },
     });
   }
 }
+

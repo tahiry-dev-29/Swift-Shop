@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
 import { UseGuards, NotFoundException, BadRequestException } from '@nestjs/common';
 import { SuperAdminGuard } from '@dima-new/backend/auth';
 import { RoleService } from './role.service';
@@ -16,7 +16,7 @@ export class RoleResolver {
   }
 
   @Query(() => RoleType)
-  async role(@Args('id', { type: () => Int }) id: number) {
+  async role(@Args('id', { type: () => ID }) id: string) {
     const role = await this.roleService.findById(id);
     if (!role) {
       throw new NotFoundException(`Role #${id} not found`);
@@ -35,7 +35,7 @@ export class RoleResolver {
 
   @Mutation(() => RoleType)
   async updateRole(
-    @Args('id', { type: () => Int }) id: number,
+    @Args('id', { type: () => ID }) id: string,
     @Args('input') input: UpdateRoleInput
   ) {
     try {
@@ -46,7 +46,7 @@ export class RoleResolver {
   }
 
   @Mutation(() => RoleType)
-  async deleteRole(@Args('id', { type: () => Int }) id: number) {
+  async deleteRole(@Args('id', { type: () => ID }) id: string) {
     try {
       return await this.roleService.delete(id);
     } catch (e: any) {
@@ -54,3 +54,4 @@ export class RoleResolver {
     }
   }
 }
+

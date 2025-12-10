@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
 import { UseGuards, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { AddressService } from './address.service';
 import { CustomerGuard, EmployeeGuard, CurrentUser, AuthUser } from '@dima-new/backend/auth';
@@ -17,7 +17,7 @@ export class AddressResolver {
   @Query(() => AddressType)
   @UseGuards(CustomerGuard)
   async address(
-    @Args('id', { type: () => Int }) id: number,
+    @Args('id', { type: () => ID }) id: string,
     @CurrentUser() user: AuthUser
   ) {
     const address = await this.addressService.findById(id);
@@ -48,7 +48,7 @@ export class AddressResolver {
   @Mutation(() => AddressType)
   @UseGuards(CustomerGuard)
   async updateAddress(
-    @Args('id', { type: () => Int }) id: number,
+    @Args('id', { type: () => ID }) id: string,
     @Args('input') input: UpdateAddressInput,
     @CurrentUser() user: AuthUser
   ) {
@@ -65,7 +65,7 @@ export class AddressResolver {
   @Mutation(() => AddressType)
   @UseGuards(CustomerGuard)
   async deleteAddress(
-    @Args('id', { type: () => Int }) id: number,
+    @Args('id', { type: () => ID }) id: string,
     @CurrentUser() user: AuthUser
   ) {
     const address = await this.addressService.findById(id);
@@ -78,3 +78,4 @@ export class AddressResolver {
     return this.addressService.delete(id);
   }
 }
+

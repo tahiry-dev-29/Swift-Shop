@@ -50,4 +50,4 @@ vitest.config.*.timestamp*
 
 /libs/data-access-prisma/src/lib/generated/prisma
 
-# tools
+tools

@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int, ResolveField, Parent } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, ResolveField, Parent, ID } from '@nestjs/graphql';
 import { UseGuards, NotFoundException } from '@nestjs/common';
 import { AttributeService } from './attribute.service';
 import { SuperAdminGuard } from '@dima-new/backend/auth';
@@ -23,7 +23,7 @@ export class AttributeResolver {
   }
 
   @Query(() => AttributeGroupType)
-  async attributeGroup(@Args('id', { type: () => Int }) id: number) {
+  async attributeGroup(@Args('id', { type: () => ID }) id: string) {
     const group = await this.attributeService.findGroupById(id);
     if (!group) {
       throw new NotFoundException(`AttributeGroup #${id} not found`);
@@ -40,7 +40,7 @@ export class AttributeResolver {
   @Mutation(() => AttributeGroupType)
   @UseGuards(SuperAdminGuard)
   async updateAttributeGroup(
-    @Args('id', { type: () => Int }) id: number,
+    @Args('id', { type: () => ID }) id: string,
     @Args('input') input: UpdateAttributeGroupInput
   ) {
     const group = await this.attributeService.findGroupById(id);
@@ -52,7 +52,7 @@ export class AttributeResolver {
 
   @Mutation(() => AttributeGroupType)
   @UseGuards(SuperAdminGuard)
-  async deleteAttributeGroup(@Args('id', { type: () => Int }) id: number) {
+  async deleteAttributeGroup(@Args('id', { type: () => ID }) id: string) {
     const group = await this.attributeService.findGroupById(id);
     if (!group) {
       throw new NotFoundException(`AttributeGroup #${id} not found`);
@@ -65,7 +65,7 @@ export class AttributeResolver {
   @Mutation(() => AttributeValueType)
   @UseGuards(SuperAdminGuard)
   async createAttributeValue(
-    @Args('groupId', { type: () => Int }) groupId: number,
+    @Args('groupId', { type: () => ID }) groupId: string,
     @Args('input') input: CreateAttributeValueInput
   ) {
     const group = await this.attributeService.findGroupById(groupId);
@@ -78,7 +78,7 @@ export class AttributeResolver {
   @Mutation(() => AttributeValueType)
   @UseGuards(SuperAdminGuard)
   async updateAttributeValue(
-    @Args('id', { type: () => Int }) id: number,
+    @Args('id', { type: () => ID }) id: string,
     @Args('input') input: UpdateAttributeValueInput
   ) {
     const value = await this.attributeService.findValueById(id);
@@ -90,7 +90,7 @@ export class AttributeResolver {
 
   @Mutation(() => AttributeValueType)
   @UseGuards(SuperAdminGuard)
-  async deleteAttributeValue(@Args('id', { type: () => Int }) id: number) {
+  async deleteAttributeValue(@Args('id', { type: () => ID }) id: string) {
     const value = await this.attributeService.findValueById(id);
     if (!value) {
       throw new NotFoundException(`AttributeValue #${id} not found`);
@@ -98,3 +98,4 @@ export class AttributeResolver {
     return this.attributeService.deleteValue(id);
   }
 }
+

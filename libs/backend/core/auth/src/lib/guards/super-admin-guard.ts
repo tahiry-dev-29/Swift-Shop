@@ -2,7 +2,7 @@ import { Injectable, ExecutionContext, ForbiddenException } from '@nestjs/common
 import { EmployeeGuard } from './employee-guard';
 
 interface AuthUser {
-  id: number;
+  id: string;
   email: string;
   type: 'customer' | 'employee';
   role?: string;
@@ -23,3 +23,4 @@ export class SuperAdminGuard extends EmployeeGuard {
     return validUser;
   }
 }
+

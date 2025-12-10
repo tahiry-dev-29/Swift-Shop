@@ -39,7 +39,7 @@ export class CustomerResolver {
 
   @Query(() => CustomerType)
   @UseGuards(CustomerGuard)
-  async customerMe(@Context() ctx: { req: { user: { id: number } } }) {
+  async customerMe(@Context() ctx: { req: { user: { id: string } } }) {
     const customer = await this.customerService.findById(ctx.req.user.id);
     if (!customer) {
       throw new UnauthorizedException('Customer not found');
@@ -53,3 +53,4 @@ export class CustomerResolver {
     return this.customerService.findAll();
   }
 }
+

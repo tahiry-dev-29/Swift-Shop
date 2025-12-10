@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Context, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Context, ID } from '@nestjs/graphql';
 import { UseGuards, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
 import { AuthService, EmployeeGuard, SuperAdminGuard } from '@dima-new/backend/auth';
@@ -27,7 +27,7 @@ export class EmployeeResolver {
 
   @Query(() => EmployeeType)
   @UseGuards(EmployeeGuard)
-  async employeeMe(@Context() ctx: { req: { user: { id: number } } }) {
+  async employeeMe(@Context() ctx: { req: { user: { id: string } } }) {
     const employee = await this.employeeService.findById(ctx.req.user.id);
     if (!employee) {
       throw new UnauthorizedException('Employee not found');
@@ -43,7 +43,7 @@ export class EmployeeResolver {
 
   @Query(() => EmployeeType)
   @UseGuards(SuperAdminGuard)
-  async employee(@Args('id', { type: () => Int }) id: number) {
+  async employee(@Args('id', { type: () => ID }) id: string) {
     const employee = await this.employeeService.findById(id);
     if (!employee) {
       throw new NotFoundException(`Employee #${id} not found`);
@@ -64,7 +64,7 @@ export class EmployeeResolver {
   @Mutation(() => EmployeeType)
   @UseGuards(SuperAdminGuard)
   async updateEmployee(
-    @Args('id', { type: () => Int }) id: number,
+    @Args('id', { type: () => ID }) id: string,
     @Args('input') input: UpdateEmployeeInput
   ) {
     const employee = await this.employeeService.findById(id);
@@ -76,7 +76,7 @@ export class EmployeeResolver {
 
   @Mutation(() => EmployeeType)
   @UseGuards(SuperAdminGuard)
-  async deleteEmployee(@Args('id', { type: () => Int }) id: number) {
+  async deleteEmployee(@Args('id', { type: () => ID }) id: string) {
     const employee = await this.employeeService.findById(id);
     if (!employee) {
       throw new NotFoundException(`Employee #${id} not found`);

@@ -11,7 +11,7 @@ export class CustomerGroupService {
     });
   }
 
-  async findById(id: number) {
+  async findById(id: string) {
     return this.prisma.customerGroup.findUnique({
       where: { id },
     });
@@ -33,16 +33,17 @@ export class CustomerGroupService {
     });
   }
 
-  async update(id: number, data: { name?: string; reduction?: number; showPrices?: boolean }) {
+  async update(id: string, data: { name?: string; reduction?: number; showPrices?: boolean }) {
     return this.prisma.customerGroup.update({
       where: { id },
       data,
     });
   }
 
-  async delete(id: number) {
+  async delete(id: string) {
     return this.prisma.customerGroup.delete({
       where: { id },
     });
   }
 }
+

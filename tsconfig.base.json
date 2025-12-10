@@ -23,7 +23,8 @@
       "@dima-new/backend/employee": ["libs/backend/features/employee/src/index.ts"],
       "@dima-new/backend/customer-group": ["libs/backend/features/customer-group/src/index.ts"],
       "@dima-new/backend/address": ["libs/backend/features/address/src/index.ts"],
-      "@dima-new/backend/catalog": ["libs/backend/features/catalog/src/index.ts"]
+      "@dima-new/backend/catalog": ["libs/backend/features/catalog/src/index.ts"],
+      "@dima-new/backend/pricing": ["libs/backend/features/pricing/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
