@@ -31,6 +31,20 @@ These targets are either [inferred automatically](https://nx.dev/concepts/inferr
 
 [More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
 
+## 📚 Documentation
+
+- **[API GraphQL Documentation](./docs/README_API.md)** - Guide complet de l'API backend avec tous les modules et exemples GraphQL
+- **[Products Module Documentation](./docs/README_PRODUCTS.md)** - Documentation détaillée du module produits avec cas d'usage et workflows
+- **[API Tester](./tools/testing/api-tester.html)** - Interface de test GraphQL interactive (ouvrir dans un navigateur)
+- **[Agents Documentation](./docs/AGENTS.md)** - Documentation sur l'utilisation des agents IA
+
+## 🧪 Testing
+
+- **[Automated API Tests](./tools/testing/test-api.js)** - Script Node.js pour tester automatiquement toutes les opérations GraphQL
+  ```bash
+  node tools/testing/test-api.js
+  ```
+
 ## Add new projects
 
 While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.

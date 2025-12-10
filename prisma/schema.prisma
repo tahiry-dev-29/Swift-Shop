@@ -141,6 +141,8 @@ model Category {
   parent      Category?  @relation("CategoryTree", fields: [parentId], references: [id])
   children    Category[] @relation("CategoryTree")
   
+  products    Product[]
+  
   dateAdd     DateTime   @default(now())
   dateUpd     DateTime   @updatedAt
 }
@@ -151,7 +153,7 @@ model Category {
 
 model AttributeGroup {
   id          Int              @id @default(autoincrement())
-  name        String           // Internal name (e.g. "Size")
+  name        String           @unique  // Internal name (e.g. "Size") - UNIQUE pour éviter les doublons
   publicName  String           // Customer facing name (e.g. "Taille")
   position    Int              @default(0)
   type        String           @default("select") // select, radio, color
@@ -167,6 +169,119 @@ model AttributeValue {
   position        Int            @default(0)
   
   group           AttributeGroup @relation(fields: [attributeGroupId], references: [id], onDelete: Cascade)
+  combinationAttributes ProductCombinationAttribute[]
+  
+  // Contrainte d'unicité : pas de valeur dupliquée dans le même groupe
+  @@unique([attributeGroupId, name])
+}
+
+// ----------------------------------------------------------------------
+// PRODUCTS CORE
+// ----------------------------------------------------------------------
+
+model Product {
+  id               Int       @id @default(autoincrement())
+  reference        String    @unique  // SKU (ex: "TSHIRT-001")
+  
+  // Basic Info
+  name             String
+  description      String?
+  descriptionShort String?
+  
+  // Pricing (base price HT)
+  price            Decimal   @default(0.00)
+  wholesalePrice   Decimal   @default(0.00)  // Prix d'achat
+  
+  // Status & Visibility
+  active           Boolean   @default(true)
+  availableForOrder Boolean  @default(true)
+  showPrice        Boolean   @default(true)
+  
+  // SEO
+  metaTitle        String?
+  metaDescription  String?
+  linkRewrite      String?   // URL slug
+  
+  // Physical
+  weight           Decimal   @default(0.00)
+  width            Decimal?
+  height           Decimal?
+  depth            Decimal?
+  
+  // Relations
+  categoryId       Int?
+  category         Category? @relation(fields: [categoryId], references: [id])
+  
+  images           ProductImage[]
+  combinations     ProductCombination[]
+  stock            Stock?     // For products without combinations
+  
+  dateAdd          DateTime  @default(now())
+  dateUpd          DateTime  @updatedAt
+}
+
+model ProductImage {
+  id          Int      @id @default(autoincrement())
+  productId   Int
+  position    Int      @default(0)
+  cover       Boolean  @default(false)  // Image principale
+  
+  // Image stored: uploads/products/{productId}/{originalName}_{date}_{randomId}.{ext}
+  filename    String   // e.g. "tshirt-blue_20251209_abc123.jpg"
+  originalName String  // Original uploaded filename
+  path        String   // Full path: "uploads/products/1/tshirt-blue_20251209_abc123.jpg"
+  mimeType    String   // e.g. "image/jpeg"
+  size        Int      // File size in bytes
+  alt         String?
+  
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  dateAdd     DateTime @default(now())
+}
+
+model ProductCombination {
+  id              Int       @id @default(autoincrement())
+  productId       Int
+  reference       String?   // Ref spécifique combinaison
+  
+  // Price Impact
+  priceImpact     Decimal   @default(0.00)  // +/- sur le prix de base
+  weightImpact    Decimal   @default(0.00)
+  
+  // Status
+  active          Boolean   @default(true)
+  isDefault       Boolean   @default(false)
+  
+  // Relations
+  product         Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  attributes      ProductCombinationAttribute[]
+  stock           Stock?
+}
+
+model ProductCombinationAttribute {
+  id               Int                @id @default(autoincrement())
+  combinationId    Int
+  attributeValueId Int
+  
+  combination      ProductCombination @relation(fields: [combinationId], references: [id], onDelete: Cascade)
+  attributeValue   AttributeValue     @relation(fields: [attributeValueId], references: [id])
+  
+  @@unique([combinationId, attributeValueId])
+}
+
+model Stock {
+  id                  Int       @id @default(autoincrement())
+  
+  // Peut être lié à un produit OU une combinaison
+  productId           Int?      @unique
+  combinationId       Int?      @unique
+  
+  quantity            Int       @default(0)
+  minQuantity         Int       @default(1)   // Alerte stock bas
+  outOfStockBehavior  String    @default("deny") // deny, allow, default
+  
+  product             Product?           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  combination         ProductCombination? @relation(fields: [combinationId], references: [id], onDelete: Cascade)
 }
 
 // ----------------------------------------------------------------------
@@ -192,3 +307,4 @@ model SpecificPrice {
   
   customer    Customer? @relation(fields: [customerId], references: [id])
 }
+
