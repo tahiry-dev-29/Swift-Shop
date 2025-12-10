@@ -1,4 +1,4 @@
-import { InputType, Field, Int } from '@nestjs/graphql';
+import { InputType, Field, Int, ID } from '@nestjs/graphql';
 
 @InputType()
 export class CreateCategoryInput {
@@ -8,14 +8,14 @@ export class CreateCategoryInput {
   @Field({ nullable: true })
   description?: string;
 
-  @Field({ nullable: true })
-  active?: boolean;
+  @Field({ defaultValue: true })
+  active!: boolean;
 
-  @Field(() => Int, { nullable: true })
-  position?: number;
+  @Field(() => Int, { defaultValue: 0 })
+  position!: number;
 
-  @Field(() => Int, { nullable: true })
-  parentId?: number;
+  @Field(() => ID, { nullable: true })
+  parentId?: string;
 }
 
 @InputType()
@@ -32,6 +32,6 @@ export class UpdateCategoryInput {
   @Field(() => Int, { nullable: true })
   position?: number;
 
-  @Field(() => Int, { nullable: true })
-  parentId?: number;
+  @Field(() => ID, { nullable: true })
+  parentId?: string;
 }

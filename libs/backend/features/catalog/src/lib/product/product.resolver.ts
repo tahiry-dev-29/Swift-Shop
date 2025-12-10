@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, ID } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { SuperAdminGuard } from '@dima-new/backend/auth';
@@ -31,7 +31,7 @@ export class ProductResolver {
   }
 
   @Query(() => ProductType)
-  async product(@Args('id', { type: () => Int }) id: number) {
+  async product(@Args('id', { type: () => ID }) id: string) {
     return this.productService.findById(id);
   }
 
@@ -46,7 +46,7 @@ export class ProductResolver {
   @Mutation(() => ProductType)
   @UseGuards(SuperAdminGuard)
   async updateProduct(
-    @Args('id', { type: () => Int }) id: number,
+    @Args('id', { type: () => ID }) id: string,
     @Args('input') input: UpdateProductInput
   ) {
     return this.productService.update(id, input);
@@ -54,7 +54,7 @@ export class ProductResolver {
 
   @Mutation(() => ProductType)
   @UseGuards(SuperAdminGuard)
-  async deleteProduct(@Args('id', { type: () => Int }) id: number) {
+  async deleteProduct(@Args('id', { type: () => ID }) id: string) {
     return this.productService.delete(id);
   }
 
@@ -63,7 +63,7 @@ export class ProductResolver {
   @Mutation(() => ProductImageType)
   @UseGuards(SuperAdminGuard)
   async addProductImage(
-    @Args('productId', { type: () => Int }) productId: number,
+    @Args('productId', { type: () => ID }) productId: string,
     @Args('input') input: CreateProductImageInput
   ) {
     return this.productService.addImage(productId, input);
@@ -71,13 +71,13 @@ export class ProductResolver {
 
   @Mutation(() => ProductImageType)
   @UseGuards(SuperAdminGuard)
-  async removeProductImage(@Args('id', { type: () => Int }) id: number) {
+  async removeProductImage(@Args('id', { type: () => ID }) id: string) {
     return this.productService.removeImage(id);
   }
 
   @Mutation(() => ProductImageType)
   @UseGuards(SuperAdminGuard)
-  async setProductCoverImage(@Args('imageId', { type: () => Int }) imageId: number) {
+  async setProductCoverImage(@Args('imageId', { type: () => ID }) imageId: string) {
     return this.productService.setCoverImage(imageId);
   }
 
@@ -86,7 +86,7 @@ export class ProductResolver {
   @Mutation(() => ProductCombinationType)
   @UseGuards(SuperAdminGuard)
   async addProductCombination(
-    @Args('productId', { type: () => Int }) productId: number,
+    @Args('productId', { type: () => ID }) productId: string,
     @Args('input') input: CreateProductCombinationInput
   ) {
     return this.productService.addCombination(productId, input);
@@ -95,7 +95,7 @@ export class ProductResolver {
   @Mutation(() => ProductCombinationType)
   @UseGuards(SuperAdminGuard)
   async updateProductCombination(
-    @Args('id', { type: () => Int }) id: number,
+    @Args('id', { type: () => ID }) id: string,
     @Args('input') input: UpdateProductCombinationInput
   ) {
     return this.productService.updateCombination(id, input);
@@ -103,7 +103,7 @@ export class ProductResolver {
 
   @Mutation(() => ProductCombinationType)
   @UseGuards(SuperAdminGuard)
-  async deleteProductCombination(@Args('id', { type: () => Int }) id: number) {
+  async deleteProductCombination(@Args('id', { type: () => ID }) id: string) {
     return this.productService.deleteCombination(id);
   }
 
@@ -118,7 +118,7 @@ export class ProductResolver {
   @Mutation(() => StockType)
   @UseGuards(SuperAdminGuard)
   async incrementStock(
-    @Args('stockId', { type: () => Int }) stockId: number,
+    @Args('stockId', { type: () => ID }) stockId: string,
     @Args('quantity', { type: () => Int }) quantity: number
   ) {
     return this.productService.incrementStock(stockId, quantity);
@@ -127,7 +127,7 @@ export class ProductResolver {
   @Mutation(() => StockType)
   @UseGuards(SuperAdminGuard)
   async decrementStock(
-    @Args('stockId', { type: () => Int }) stockId: number,
+    @Args('stockId', { type: () => ID }) stockId: string,
     @Args('quantity', { type: () => Int }) quantity: number
   ) {
     return this.productService.decrementStock(stockId, quantity);
@@ -135,10 +135,11 @@ export class ProductResolver {
 
   @Query(() => Boolean)
   async checkProductAvailability(
-    @Args('productId', { type: () => Int, nullable: true }) productId?: number,
-    @Args('combinationId', { type: () => Int, nullable: true }) combinationId?: number,
+    @Args('productId', { type: () => ID, nullable: true }) productId?: string,
+    @Args('combinationId', { type: () => ID, nullable: true }) combinationId?: string,
     @Args('quantity', { type: () => Int, nullable: true }) quantity?: number
   ) {
     return this.productService.checkAvailability(productId, combinationId, quantity);
   }
 }
+

@@ -1,12 +1,12 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, Field, Int, ID } from '@nestjs/graphql';
 
 @ObjectType()
 export class AttributeValueType {
-  @Field(() => Int)
-  id!: number;
+  @Field(() => ID)
+  id!: string;
 
-  @Field(() => Int)
-  attributeGroupId!: number;
+  @Field(() => ID)
+  attributeGroupId!: string;
 
   @Field()
   name!: string;
@@ -20,8 +20,8 @@ export class AttributeValueType {
 
 @ObjectType()
 export class AttributeGroupType {
-  @Field(() => Int)
-  id!: number;
+  @Field(() => ID)
+  id!: string;
 
   @Field()
   name!: string;
@@ -38,3 +38,4 @@ export class AttributeGroupType {
   @Field(() => [AttributeValueType], { nullable: true })
   values?: AttributeValueType[];
 }
+

@@ -1,9 +1,9 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, Field, Int, ID } from '@nestjs/graphql';
 
 @ObjectType()
 export class CategoryType {
-  @Field(() => Int)
-  id!: number;
+  @Field(() => ID)
+  id!: string;
 
   @Field()
   name!: string;
@@ -17,8 +17,8 @@ export class CategoryType {
   @Field(() => Int)
   position!: number;
 
-  @Field(() => Int, { nullable: true })
-  parentId?: number;
+  @Field(() => ID, { nullable: true })
+  parentId?: string;
 
   @Field(() => [CategoryType], { nullable: true })
   children?: CategoryType[];
@@ -29,3 +29,4 @@ export class CategoryType {
   @Field()
   dateUpd!: Date;
 }
+

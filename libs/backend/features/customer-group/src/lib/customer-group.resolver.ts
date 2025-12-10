@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, ID } from '@nestjs/graphql';
 import { UseGuards, NotFoundException, ConflictException } from '@nestjs/common';
 import { EmployeeGuard } from '@dima-new/backend/auth';
 import { CustomerGroupService } from './customer-group.service';
@@ -19,7 +19,7 @@ export class CustomerGroupResolver {
   }
 
   @Query(() => CustomerGroupType)
-  async customerGroup(@Args('id', { type: () => Int }) id: number) {
+  async customerGroup(@Args('id', { type: () => ID }) id: string) {
     const group = await this.service.findById(id);
     if (!group) {
       throw new NotFoundException(`CustomerGroup #${id} not found`);
@@ -38,14 +38,15 @@ export class CustomerGroupResolver {
 
   @Mutation(() => CustomerGroupType)
   async updateCustomerGroup(
-    @Args('id', { type: () => Int }) id: number,
+    @Args('id', { type: () => ID }) id: string,
     @Args('input') input: UpdateCustomerGroupInput
   ) {
     return this.service.update(id, input);
   }
 
   @Mutation(() => CustomerGroupType)
-  async deleteCustomerGroup(@Args('id', { type: () => Int }) id: number) {
+  async deleteCustomerGroup(@Args('id', { type: () => ID }) id: string) {
     return this.service.delete(id);
   }
 }
+

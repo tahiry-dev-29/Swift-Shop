@@ -1,9 +1,9 @@
-import { ObjectType, InputType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, InputType, Field, ID } from '@nestjs/graphql';
 
 @ObjectType()
 export class CustomerGroupType {
-  @Field(() => Int)
-  id!: number;
+  @Field(() => ID)
+  id!: string;
 
   @Field()
   name!: string;
@@ -38,3 +38,4 @@ export class UpdateCustomerGroupInput {
   @Field({ nullable: true })
   showPrices?: boolean;
 }
+

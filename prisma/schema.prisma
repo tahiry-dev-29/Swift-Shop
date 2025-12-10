@@ -13,15 +13,11 @@ datasource db {
 }
 
 // ----------------------------------------------------------------------
-// ROLES ENUM (Employee Permissions)
-// ----------------------------------------------------------------------
-
-// ----------------------------------------------------------------------
 // ROLES (Employee Permissions)
 // ----------------------------------------------------------------------
 
 model Role {
-  id          Int        @id @default(autoincrement())
+  id          String     @id @default(uuid())
   name        String     @unique // SUPER_ADMIN, ADMIN, etc.
   description String?
   isSystem    Boolean    @default(false) // If true, cannot be deleted/renamed
@@ -35,7 +31,7 @@ model Role {
 // ----------------------------------------------------------------------
 
 model Customer {
-  id              Int       @id @default(autoincrement())
+  id              String    @id @default(uuid())
   
   // Auth Info
   email           String    @unique
@@ -57,8 +53,11 @@ model Customer {
   dateUpd         DateTime  @updatedAt
   
   // Relations
-  groupId         Int
+  groupId         String
   group           CustomerGroup @relation(fields: [groupId], references: [id])
+  
+  countryId       String?      // Pays du client pour le calcul de la TVA
+  country         Country?  @relation(fields: [countryId], references: [id])
   
   addresses       Address[]
   orders          Order[]
@@ -66,12 +65,13 @@ model Customer {
 }
 
 model CustomerGroup {
-  id            Int        @id @default(autoincrement())
+  id            String     @id @default(uuid())
   name          String
   reduction     Decimal    @default(0.00)
   showPrices    Boolean    @default(true)
   
-  customers     Customer[]
+  customers      Customer[]
+  specificPrices SpecificPrice[]
 }
 
 // ----------------------------------------------------------------------
@@ -79,7 +79,7 @@ model CustomerGroup {
 // ----------------------------------------------------------------------
 
 model Employee {
-  id            Int      @id @default(autoincrement())
+  id            String   @id @default(uuid())
   
   // Auth Info
   email         String   @unique
@@ -90,7 +90,7 @@ model Employee {
   lastname      String
   
   // Permissions & Access
-  roleId        Int
+  roleId        String
   role          Role     @relation(fields: [roleId], references: [id])
   
   active        Boolean  @default(true)
@@ -104,8 +104,8 @@ model Employee {
 // ----------------------------------------------------------------------
 
 model Address {
-  id              Int      @id @default(autoincrement())
-  customerId      Int?
+  id              String   @id @default(uuid())
+  customerId      String?
   alias           String
   company         String?
   lastname        String
@@ -114,7 +114,7 @@ model Address {
   address2        String?
   postcode        String
   city            String
-  countryId       Int
+  countryId       String
   phone           String?
   phoneMobile     String?
   vatNumber       String?
@@ -124,6 +124,7 @@ model Address {
 
   // Relations
   customer        Customer? @relation(fields: [customerId], references: [id])
+  country         Country   @relation(fields: [countryId], references: [id])
 }
 
 // ----------------------------------------------------------------------
@@ -131,13 +132,13 @@ model Address {
 // ----------------------------------------------------------------------
 
 model Category {
-  id          Int        @id @default(autoincrement())
+  id          String     @id @default(uuid())
   name        String
   description String?
   active      Boolean    @default(true)
   position    Int        @default(0)
   
-  parentId    Int?
+  parentId    String?
   parent      Category?  @relation("CategoryTree", fields: [parentId], references: [id])
   children    Category[] @relation("CategoryTree")
   
@@ -152,8 +153,8 @@ model Category {
 // ----------------------------------------------------------------------
 
 model AttributeGroup {
-  id          Int              @id @default(autoincrement())
-  name        String           @unique  // Internal name (e.g. "Size") - UNIQUE pour éviter les doublons
+  id          String           @id @default(uuid())
+  name        String           @unique  // Internal name (e.g. "Size")
   publicName  String           // Customer facing name (e.g. "Taille")
   position    Int              @default(0)
   type        String           @default("select") // select, radio, color
@@ -162,8 +163,8 @@ model AttributeGroup {
 }
 
 model AttributeValue {
-  id              Int            @id @default(autoincrement())
-  attributeGroupId Int
+  id              String         @id @default(uuid())
+  attributeGroupId String
   name            String         // e.g. "S", "Red"
   color           String?        // For color type attributes
   position        Int            @default(0)
@@ -171,7 +172,6 @@ model AttributeValue {
   group           AttributeGroup @relation(fields: [attributeGroupId], references: [id], onDelete: Cascade)
   combinationAttributes ProductCombinationAttribute[]
   
-  // Contrainte d'unicité : pas de valeur dupliquée dans le même groupe
   @@unique([attributeGroupId, name])
 }
 
@@ -180,7 +180,7 @@ model AttributeValue {
 // ----------------------------------------------------------------------
 
 model Product {
-  id               Int       @id @default(autoincrement())
+  id               String    @id @default(uuid())
   reference        String    @unique  // SKU (ex: "TSHIRT-001")
   
   // Basic Info
@@ -209,20 +209,21 @@ model Product {
   depth            Decimal?
   
   // Relations
-  categoryId       Int?
+  categoryId       String?
   category         Category? @relation(fields: [categoryId], references: [id])
   
   images           ProductImage[]
   combinations     ProductCombination[]
   stock            Stock?     // For products without combinations
+  specificPrices   SpecificPrice[]
   
   dateAdd          DateTime  @default(now())
   dateUpd          DateTime  @updatedAt
 }
 
 model ProductImage {
-  id          Int      @id @default(autoincrement())
-  productId   Int
+  id          String   @id @default(uuid())
+  productId   String
   position    Int      @default(0)
   cover       Boolean  @default(false)  // Image principale
   
@@ -240,8 +241,8 @@ model ProductImage {
 }
 
 model ProductCombination {
-  id              Int       @id @default(autoincrement())
-  productId       Int
+  id              String    @id @default(uuid())
+  productId       String
   reference       String?   // Ref spécifique combinaison
   
   // Price Impact
@@ -256,12 +257,13 @@ model ProductCombination {
   product         Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
   attributes      ProductCombinationAttribute[]
   stock           Stock?
+  specificPrices  SpecificPrice[]
 }
 
 model ProductCombinationAttribute {
-  id               Int                @id @default(autoincrement())
-  combinationId    Int
-  attributeValueId Int
+  id               String             @id @default(uuid())
+  combinationId    String
+  attributeValueId String
   
   combination      ProductCombination @relation(fields: [combinationId], references: [id], onDelete: Cascade)
   attributeValue   AttributeValue     @relation(fields: [attributeValueId], references: [id])
@@ -270,11 +272,11 @@ model ProductCombinationAttribute {
 }
 
 model Stock {
-  id                  Int       @id @default(autoincrement())
+  id                  String    @id @default(uuid())
   
   // Peut être lié à un produit OU une combinaison
-  productId           Int?      @unique
-  combinationId       Int?      @unique
+  productId           String?      @unique
+  combinationId       String?      @unique
   
   quantity            Int       @default(0)
   minQuantity         Int       @default(1)   // Alerte stock bas
@@ -289,8 +291,8 @@ model Stock {
 // ----------------------------------------------------------------------
 
 model Order {
-  id          Int      @id @default(autoincrement())
-  customerId  Int
+  id          String   @id @default(uuid())
+  customerId  String
   reference   String   @unique
   totalPaid   Decimal  @default(0.00)
   dateAdd     DateTime @default(now())
@@ -298,13 +300,68 @@ model Order {
   customer    Customer @relation(fields: [customerId], references: [id])
 }
 
-model SpecificPrice {
-  id          Int      @id @default(autoincrement())
-  customerId  Int?
-  reduction   Decimal  @default(0.00)
-  dateFrom    DateTime?
-  dateTo      DateTime?
+
+// ----------------------------------------------------------------------
+// PRICING ENGINE
+// ----------------------------------------------------------------------
+
+// Country (pour les taxes et adresses)
+model Country {
+  id          String   @id @default(uuid())
+  isoCode     String   @unique  // FR, US, DE, etc.
+  name        String
+  active      Boolean  @default(true)
   
-  customer    Customer? @relation(fields: [customerId], references: [id])
+  // Tax configuration
+  taxRate     Decimal  @default(20.00)  // TVA par défaut (ex: 20% pour FR)
+  
+  customers   Customer[]
+  addresses   Address[]
+  taxRules    TaxRule[]
+  specificPrices SpecificPrice[]
 }
 
+// Tax Rules (Règles de TVA avancées)
+model TaxRule {
+  id          String   @id @default(uuid())
+  name        String   // Ex: "TVA FR Standard"
+  countryId   String
+  rate        Decimal  // 20.00 pour 20%
+  active      Boolean  @default(true)
+  
+  country     Country  @relation(fields: [countryId], references: [id])
+}
+
+// Specific Prices (Prix spécifiques / Promotions)
+model SpecificPrice {
+  id              String    @id @default(uuid())
+  
+  // Cibles (au moins une doit être définie)
+  productId       String?
+  combinationId   String?
+  customerId      String?
+  customerGroupId String?
+  countryId       String?
+  
+  // Réduction
+  reductionType   String    // "percentage" ou "amount"
+  reduction       Decimal   // 10.00 pour 10% ou 10€
+  
+  // Conditions
+  fromQuantity    Int       @default(1)  // À partir de X unités
+  dateFrom        DateTime?
+  dateTo          DateTime?
+  
+  // Priorité (plus haut = prioritaire)
+  priority        Int       @default(1)
+  
+  active          Boolean   @default(true)
+  dateAdd         DateTime  @default(now())
+  
+  // Relations
+  product         Product?         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  combination     ProductCombination? @relation(fields: [combinationId], references: [id], onDelete: Cascade)
+  customer        Customer?        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerGroup   CustomerGroup?   @relation(fields: [customerGroupId], references: [id])
+  country         Country?         @relation(fields: [countryId], references: [id])
+}

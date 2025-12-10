@@ -1,4 +1,4 @@
-import { InputType, Field, Int } from '@nestjs/graphql';
+import { InputType, Field, Int, ID } from '@nestjs/graphql';
 
 @InputType()
 export class CustomerRegisterInput {
@@ -14,8 +14,8 @@ export class CustomerRegisterInput {
   @Field()
   lastname!: string;
 
-  @Field(() => Int)
-  groupId!: number;
+  @Field(() => ID)
+  groupId!: string;
 
   @Field({ nullable: true })
   birthday?: Date;
@@ -26,3 +26,4 @@ export class CustomerRegisterInput {
   @Field({ nullable: true, defaultValue: false })
   optin?: boolean;
 }
+

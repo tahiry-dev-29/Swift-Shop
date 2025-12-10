@@ -52,7 +52,7 @@ export class ProductService {
     return { items, total };
   }
 
-  async findById(id: number) {
+  async findById(id: string) {
     const product = await this.prisma.product.findUnique({
       where: { id },
       include: {
@@ -82,7 +82,7 @@ export class ProductService {
     });
   }
 
-  async update(id: number, input: UpdateProductInput) {
+  async update(id: string, input: UpdateProductInput) {
     await this.findById(id);
     return this.prisma.product.update({
       where: { id },
@@ -96,7 +96,7 @@ export class ProductService {
     });
   }
 
-  async delete(id: number) {
+  async delete(id: string) {
     await this.findById(id);
     return this.prisma.product.delete({
       where: { id },
@@ -105,7 +105,7 @@ export class ProductService {
 
   
 
-  async addImage(productId: number, input: CreateProductImageInput) {
+  async addImage(productId: string, input: CreateProductImageInput) {
     await this.findById(productId);
 
     
@@ -124,7 +124,7 @@ export class ProductService {
     });
   }
 
-  async removeImage(imageId: number) {
+  async removeImage(imageId: string) {
     const image = await this.prisma.productImage.findUnique({
       where: { id: imageId },
     });
@@ -138,7 +138,7 @@ export class ProductService {
     });
   }
 
-  async setCoverImage(imageId: number) {
+  async setCoverImage(imageId: string) {
     const image = await this.prisma.productImage.findUnique({
       where: { id: imageId },
     });
@@ -162,7 +162,7 @@ export class ProductService {
 
   
 
-  async addCombination(productId: number, input: CreateProductCombinationInput) {
+  async addCombination(productId: string, input: CreateProductCombinationInput) {
     await this.findById(productId);
 
     const { attributeValueIds, ...combinationData } = input;
@@ -192,7 +192,7 @@ export class ProductService {
     });
   }
 
-  async updateCombination(id: number, input: UpdateProductCombinationInput) {
+  async updateCombination(id: string, input: UpdateProductCombinationInput) {
     const combination = await this.prisma.productCombination.findUnique({
       where: { id },
     });
@@ -219,7 +219,7 @@ export class ProductService {
     });
   }
 
-  async deleteCombination(id: number) {
+  async deleteCombination(id: string) {
     const combination = await this.prisma.productCombination.findUnique({
       where: { id },
     });
@@ -264,14 +264,14 @@ export class ProductService {
     });
   }
 
-  async incrementStock(stockId: number, quantity: number) {
+  async incrementStock(stockId: string, quantity: number) {
     return this.prisma.stock.update({
       where: { id: stockId },
       data: { quantity: { increment: quantity } },
     });
   }
 
-  async decrementStock(stockId: number, quantity: number) {
+  async decrementStock(stockId: string, quantity: number) {
     const stock = await this.prisma.stock.findUnique({
       where: { id: stockId },
     });
@@ -287,7 +287,7 @@ export class ProductService {
     });
   }
 
-  async checkAvailability(productId?: number, combinationId?: number, quantity: number = 1) {
+  async checkAvailability(productId?: string, combinationId?: string, quantity: number = 1) {
     const stock = await this.prisma.stock.findFirst({
       where: {
         OR: [
@@ -303,3 +303,4 @@ export class ProductService {
     return stock.quantity >= quantity;
   }
 }
+

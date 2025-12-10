@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, ID } from '@nestjs/graphql';
 import { UseGuards, NotFoundException, BadRequestException } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { SuperAdminGuard } from '@dima-new/backend/auth';
@@ -19,7 +19,7 @@ export class CategoryResolver {
   }
 
   @Query(() => CategoryType)
-  async category(@Args('id', { type: () => Int }) id: number) {
+  async category(@Args('id', { type: () => ID }) id: string) {
     const category = await this.categoryService.findById(id);
     if (!category) {
       throw new NotFoundException(`Category #${id} not found`);
@@ -28,7 +28,7 @@ export class CategoryResolver {
   }
 
   @Query(() => [String])
-  async categoryPath(@Args('id', { type: () => Int }) id: number) {
+  async categoryPath(@Args('id', { type: () => ID }) id: string) {
     return this.categoryService.getPath(id);
   }
 
@@ -41,7 +41,7 @@ export class CategoryResolver {
   @Mutation(() => CategoryType)
   @UseGuards(SuperAdminGuard)
   async updateCategory(
-    @Args('id', { type: () => Int }) id: number,
+    @Args('id', { type: () => ID }) id: string,
     @Args('input') input: UpdateCategoryInput
   ) {
     const category = await this.categoryService.findById(id);
@@ -53,7 +53,7 @@ export class CategoryResolver {
 
   @Mutation(() => CategoryType)
   @UseGuards(SuperAdminGuard)
-  async deleteCategory(@Args('id', { type: () => Int }) id: number) {
+  async deleteCategory(@Args('id', { type: () => ID }) id: string) {
     const category = await this.categoryService.findById(id);
     if (!category) {
       throw new NotFoundException(`Category #${id} not found`);
@@ -66,3 +66,4 @@ export class CategoryResolver {
     }
   }
 }
+

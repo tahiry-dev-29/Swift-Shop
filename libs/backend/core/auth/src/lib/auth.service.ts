@@ -62,7 +62,7 @@ export class AuthService {
   }
 
   generateCustomerToken(customer: {
-    id: number;
+    id: string;
     email: string;
     firstname: string;
     lastname: string;
@@ -85,7 +85,7 @@ export class AuthService {
   }
 
   generateEmployeeToken(employee: {
-    id: number;
+    id: string;
     email: string;
     firstname: string;
     lastname: string;
@@ -112,3 +112,4 @@ export class AuthService {
     }
   }
 }
+

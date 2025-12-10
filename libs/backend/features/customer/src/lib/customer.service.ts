@@ -9,7 +9,7 @@ export class CustomerService {
     private readonly authService: AuthService
   ) {}
 
-  async findById(id: number) {
+  async findById(id: string) {
     return this.prisma.customer.findUnique({
       where: { id },
       include: { group: true, addresses: true },
@@ -35,7 +35,7 @@ export class CustomerService {
     password: string;
     firstname: string;
     lastname: string;
-    groupId: number;
+    groupId: string;
     birthday?: Date;
     company?: string;
     optin?: boolean;
@@ -51,7 +51,7 @@ export class CustomerService {
     });
   }
 
-  async updateProfile(id: number, data: {
+  async updateProfile(id: string, data: {
     firstname?: string;
     lastname?: string;
     company?: string;
@@ -65,3 +65,4 @@ export class CustomerService {
     });
   }
 }
+

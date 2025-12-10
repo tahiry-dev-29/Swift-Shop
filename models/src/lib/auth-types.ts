@@ -1,6 +1,6 @@
 // Auth JWT Payload - decoded token contains user info
 export interface JwtPayload {
-  sub: number;
+  sub: string;
   email: string;
   type: 'customer' | 'employee';
   firstname: string;
@@ -15,20 +15,32 @@ export interface JwtPayload {
   exp?: number;
 }
 
+// Authenticated user from JWT decorator
+export interface AuthUser {
+  id: string;
+  email: string;
+  type: 'customer' | 'employee';
+  firstname: string;
+  lastname: string;
+  role?: string;
+  groupName?: string;
+  groupReduction?: number;
+}
+
 // Customer types
 export interface CustomerInfo {
-  id: number;
+  id: string;
   email: string;
   firstname: string;
   lastname: string;
   company?: string;
   active: boolean;
-  groupId: number;
+  groupId: string;
 }
 
 // Employee types
 export interface EmployeeInfo {
-  id: number;
+  id: string;
   email: string;
   firstname: string;
   lastname: string;

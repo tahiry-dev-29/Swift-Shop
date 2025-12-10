@@ -28,7 +28,7 @@ export class CategoryService {
     return categories;
   }
 
-  async findById(id: number) {
+  async findById(id: string) {
     return this.prisma.category.findUnique({
       where: { id },
       include: {
@@ -38,7 +38,7 @@ export class CategoryService {
     });
   }
 
-  async getPath(id: number): Promise<string[]> {
+  async getPath(id: string): Promise<string[]> {
     const category = await this.findById(id);
     if (!category) return [];
     
@@ -62,7 +62,7 @@ export class CategoryService {
     });
   }
 
-  async update(id: number, input: UpdateCategoryInput) {
+  async update(id: string, input: UpdateCategoryInput) {
     return this.prisma.category.update({
       where: { id },
       data: input,
@@ -70,7 +70,7 @@ export class CategoryService {
     });
   }
 
-  async delete(id: number) {
+  async delete(id: string) {
     const hasChildren = await this.prisma.category.count({
       where: { parentId: id },
     });
@@ -84,3 +84,4 @@ export class CategoryService {
     });
   }
 }
+

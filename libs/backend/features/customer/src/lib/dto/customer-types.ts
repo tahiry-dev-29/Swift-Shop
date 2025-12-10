@@ -1,10 +1,10 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, Field, Int, ID } from '@nestjs/graphql';
 import { CustomerGroupType } from '@dima-new/backend/customer-group';
 
 @ObjectType()
 export class CustomerType {
-  @Field(() => Int)
-  id!: number;
+  @Field(() => ID)
+  id!: string;
 
   @Field()
   email!: string;
@@ -36,3 +36,4 @@ export class CustomerAuthResponse {
   @Field(() => CustomerType)
   customer!: CustomerType;
 }
+

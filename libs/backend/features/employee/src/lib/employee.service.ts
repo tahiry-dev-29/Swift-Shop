@@ -16,7 +16,7 @@ export class EmployeeService {
     });
   }
 
-  async findById(id: number) {
+  async findById(id: string) {
     return this.prisma.employee.findUnique({
       where: { id },
       include: { role: true },
@@ -35,7 +35,7 @@ export class EmployeeService {
     password: string;
     firstname: string;
     lastname: string;
-    roleId?: number;
+    roleId?: string;
   }) {
     const hashedPassword = await this.authService.hashPassword(data.password);
 
@@ -59,10 +59,10 @@ export class EmployeeService {
     });
   }
 
-  async update(id: number, data: {
+  async update(id: string, data: {
     firstname?: string;
     lastname?: string;
-    roleId?: number;
+    roleId?: string;
     active?: boolean;
   }) {
     const updateData: any = {
@@ -80,16 +80,17 @@ export class EmployeeService {
     });
   }
 
-  async updateLastConnection(id: number) {
+  async updateLastConnection(id: string) {
     return this.prisma.employee.update({
       where: { id },
       data: { lastConnectionDate: new Date() },
     });
   }
 
-  async delete(id: number) {
+  async delete(id: string) {
     return this.prisma.employee.delete({
       where: { id },
     });
   }
 }
+
