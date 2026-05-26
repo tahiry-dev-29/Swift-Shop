@@ -65,7 +65,25 @@ async function main() {
   });
   console.log('✅ Employee created:', employee.email);
 
-  // Seed all customers and customer groups
+  
+  const orderStates = [
+    { name: 'PENDING', color: '#fbbf24', position: 0 },
+    { name: 'PROCESSING', color: '#3b82f6', position: 1 },
+    { name: 'SHIPPED', color: '#8b5cf6', position: 2 },
+    { name: 'DELIVERED', color: '#10b981', position: 3 },
+    { name: 'CANCELLED', color: '#ef4444', position: 4 },
+  ];
+
+  for (const s of orderStates) {
+    await prisma.orderState.upsert({
+      where: { name: s.name },
+      update: {},
+      create: s,
+    });
+  }
+  console.log('✅ Order States created');
+
+  
   await seedCustomers(prisma);
   console.log('✅ Customers and groups seeded');
 

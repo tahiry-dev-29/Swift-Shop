@@ -105,7 +105,7 @@ export const seedAttributes = async (prisma: PrismaClient) => {
 };
 
 
-// Products with combinations flag
+
 interface ProductDef {
   name: string;
   ref: string;
@@ -144,7 +144,7 @@ export const seedProducts = async (
     { name: 'Vin Rouge AOC', ref: 'VIN01', price: 18.99, category: 'Alimentation', description: 'Vin rouge Bordeaux AOC 2020' },
   ];
 
-  // Get attribute values for combinations
+  
   const sizeGroup = await prisma.attributeGroup.findFirst({ where: { name: 'Taille' } });
   const colorGroup = await prisma.attributeGroup.findFirst({ where: { name: 'Couleur' } });
   
@@ -187,11 +187,11 @@ export const seedProducts = async (
         },
       });
 
-      // Create combinations for clothing products
+      
       if (prod.hasCombinations && sizes.length > 0 && colors.length > 0) {
-        // Select subset of sizes and colors for variety
-        const selectedSizes = sizes.slice(1, 4); // S, M, L
-        const selectedColors = colors.slice(0, 3); // Noir, Blanc, Rouge
+        
+        const selectedSizes = sizes.slice(1, 4); 
+        const selectedColors = colors.slice(0, 3); 
 
         let isFirst = true;
         for (const size of selectedSizes) {
@@ -200,14 +200,14 @@ export const seedProducts = async (
               data: {
                 productId: created.id,
                 reference: `${prod.ref}-${size.name}-${color.name}`,
-                priceImpact: size.name === 'L' ? 5 : 0, // L size costs more
+                priceImpact: size.name === 'L' ? 5 : 0, 
                 weightImpact: 0.1,
                 active: true,
                 isDefault: isFirst,
               },
             });
 
-            // Link attributes to combination
+            
             await prisma.productCombinationAttribute.createMany({
               data: [
                 { combinationId: combination.id, attributeValueId: size.id },
@@ -215,7 +215,7 @@ export const seedProducts = async (
               ],
             });
 
-            // Create stock for combination
+            
             await prisma.stock.create({
               data: {
                 combinationId: combination.id,
@@ -230,7 +230,7 @@ export const seedProducts = async (
         }
         console.log(`  ✅ Created: ${prod.name} (with ${selectedSizes.length * selectedColors.length} combinations)`);
       } else {
-        // Simple product without combinations
+        
         await prisma.stock.create({
           data: {
             productId: created.id,

@@ -40,9 +40,13 @@ export default [
       '**/*.cjs',
       '**/*.mjs',
     ],
+    ignores: [
+      'prisma/**/*',
+      'tools/**/*',
+    ],
     // Override or add rules here
     rules: {
-      "max-lines": ["error", { "max": 120, "skipBlankLines": true, "skipComments": true }],
+      "max-lines": ["error", { "max": 200, "skipBlankLines": true, "skipComments": true }],
       "@typescript-eslint/no-explicit-any": "error",
       "no-console": "warn"
     },

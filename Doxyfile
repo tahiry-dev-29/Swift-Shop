@@ -1,0 +1,67 @@
+# Doxyfile for DIMA Workspace
+# Tightened for security 🔐
+
+# Project settings
+PROJECT_NAME           = "DIMA Project"
+PROJECT_NUMBER         = "1.0.0"
+OUTPUT_DIRECTORY       = docs
+CREATE_SUBDIRS         = NO
+OUTPUT_LANGUAGE        = French
+BRIEF_MEMBER_DESC      = YES
+REPEAT_BRIEF           = YES
+
+# Input parsing & extensions mapping
+EXTENSION_MAPPING      = ts=C++ tsx=C++ js=C++ jsx=C++
+FILE_PATTERNS          = *.ts *.tsx *.js *.jsx *.md
+RECURSIVE              = YES
+
+# Inputs (Explicit folders only)
+INPUT                  = README.md apps libs prisma shared
+
+# Exclusions (Strict security & performance)
+EXCLUDE                = node_modules \
+                         dist \
+                         .nx \
+                         .angular \
+                         .git \
+                         .env \
+                         tmp
+EXCLUDE_PATTERNS       = */node_modules/* \
+                         */dist/* \
+                         */.git/* \
+                         */.angular/* \
+                         */.env* \
+                         */spec.ts \
+                         */*.spec.ts \
+                         */*.test.ts
+
+# Extraction settings (Security focused)
+EXTRACT_ALL            = NO
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = NO
+EXTRACT_LOCAL_CLASSES  = NO
+EXTRACT_LOCAL_METHODS  = NO
+HIDE_UNDOC_MEMBERS     = YES
+HIDE_UNDOC_CLASSES     = YES
+
+# Source code protection (Do NOT show source in HTML)
+SOURCE_BROWSER         = NO
+VERBATIM_HEADERS       = NO
+INLINE_SOURCES         = NO
+
+# Markdown support
+USE_MDFILE_AS_MAINPAGE = README.md
+
+# Output formats
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+HTML_FILE_EXTENSION    = .html
+HTML_COLORSTYLE        = LIGHT
+GENERATE_LATEX         = NO
+GENERATE_XML           = NO
+
+# Warnings and logging
+QUIET                  = YES
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = NO
+WARN_IF_DOC_ERROR      = YES

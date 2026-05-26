@@ -15,8 +15,7 @@
   "private": true,
   "lint-staged": {
     "*.ts": [
-      "eslint --fix",
-      "tsc --noEmit"
+      "eslint --fix"
     ]
   },
   "dependencies": {

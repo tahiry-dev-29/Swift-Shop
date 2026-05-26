@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dima Backend API Tester (GraphQL)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Configuration Tailwind CSS -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6', // Blue
+                        secondary: '#10b981', // Emerald
+                        'bg-dark': '#0f172a', // Slate 900
+                        card: '#1e293b', // Slate 800
+                        'console-bg': '#0f172a',
+                        'console-border': '#334155',
+                        'accent-yellow': '#facc15', // Amber 400
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Consolas', 'Monaco', 'monospace'],
+                    },
+                    animation: {
+                        fadeIn: 'fadeIn 0.3s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Base styles */
+        body {
+            background-color: #0f172a; /* bg-dark */
+            color: #e2e8f0; /* Slate 200 */
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+        .op-button {
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: #94a3b8;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+            text-align: left;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+        }
+        .op-button:hover {
+            background: #334155;
+            color: #fff;
+            transform: translateX(2px);
+            border-color: #475569;
+        }
+        .op-button.active {
+            background: #3b82f6;
+            color: #fff;
+            border-color: #3b82f6;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+        }
+        .op-button:active {
+            transform: scale(0.98);
+        }
+
+        /* Console Syntax Highlighting */
+        .json-key { color: #f97316; } /* Orange 500 */
+        .json-string { color: #84cc16; } /* Lime 500 */
+        .json-number { color: #38bdf8; } /* Sky 400 */
+        .json-boolean { color: #10b981; } /* Emerald 500 */
+        .json-null { color: #ef4444; } /* Red 500 */
+        .log-error { border-left: 4px solid #ef4444; }
+        .log-success { border-left: 4px solid #10b981; }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-card border-b border-slate-700 p-4 flex justify-between items-center shadow-lg z-10">
+        <h1 class="font-bold text-xl text-white tracking-wide flex items-center gap-3">
+            <span class="text-primary text-2xl">⚡</span> Dima Backend API Tester (GraphQL)
+        </h1>
+        <div class="flex gap-4 text-sm text-slate-400">
+            <div class="flex items-center gap-2">
+                <span id="admin-status" class="w-2 h-2 rounded-full bg-red-500 transition-all duration-300"></span>
+                <span>Admin</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span id="customer-status" class="w-2 h-2 rounded-full bg-red-500 transition-all duration-300"></span>
+                <span>Client</span>
+            </div>
+            <button onclick="clearLogs()" class="text-xs text-red-400 hover:text-red-300 transition-colors">Clear Console</button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex flex-1 overflow-hidden">
+        <!-- Sidebar: API Operations -->
+        <aside class="w-80 bg-card p-4 overflow-y-auto border-r border-slate-700 space-y-6 flex-shrink-0">
+
+            <!-- 1. Authentication Area -->
+            <div class="p-4 border border-slate-700 rounded-lg bg-bg-dark space-y-3">
+                <h2 class="font-bold text-white mb-3">🔐 Authentification</h2>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-semibold text-slate-400 block">Identifiants Admin</label>
+                    <input id="admin-email" type="text" value="superadmin@dima.com" placeholder="Email Admin"
+                        class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-1.5 text-sm focus:border-primary focus:outline-none transition-colors">
+                    <input id="admin-pass" type="password" value="admin123" placeholder="Mot de passe"
+                        class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-1.5 text-sm focus:border-primary focus:outline-none transition-colors">
+                    <button onclick="runOp('adminLogin')"
+                        class="w-full bg-primary hover:bg-blue-600 text-white text-sm font-medium py-1.5 rounded transition-all active:scale-95">
+                        Login Admin
+                    </button>
+                </div>
+
+                <div class="pt-3 border-t border-slate-700 space-y-2">
+                    <label class="text-xs font-semibold text-slate-400 block">Identifiants Client</label>
+                    <input id="customer-email" type="text" value="customer@example.com" placeholder="Email Client"
+                        class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-1.5 text-sm focus:border-secondary focus:outline-none transition-colors">
+                    <input id="customer-pass" type="password" value="customer123" placeholder="Mot de passe"
+                        class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-1.5 text-sm focus:border-secondary focus:outline-none transition-colors">
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="runOp('customerLogin')"
+                            class="w-full bg-secondary hover:bg-emerald-600 text-white text-sm font-medium py-1.5 rounded transition-all active:scale-95">
+                            Login Client
+                        </button>
+                        <button onclick="runOp('customerRegister')"
+                            class="w-full bg-transparent border border-secondary text-secondary hover:bg-secondary/10 text-xs font-medium py-1.5 rounded transition-all active:scale-95">
+                            Register New
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Common Inputs for IDs -->
+            <div class="p-4 border border-slate-700 rounded-lg bg-bg-dark space-y-2">
+                <h3 class="font-bold text-white text-sm mb-2">Variables d'ID (UUIDs pour les Mut/Query)</h3>
+                <div class="grid grid-cols-2 gap-2">
+                    <input id="product-id" type="text" placeholder="Product UUID" value=""
+                        class="w-full bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-xs focus:border-primary focus:outline-none transition-colors">
+                    <input id="combination-id" type="text" placeholder="Combination UUID" value=""
+                        class="w-full bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-xs focus:border-primary focus:outline-none transition-colors">
+                    <input id="customer-id" type="text" placeholder="Customer UUID" value=""
+                        class="w-full bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-xs focus:border-primary focus:outline-none transition-colors">
+                    <input id="country-id" type="text" placeholder="Country UUID" value=""
+                        class="w-full bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-xs focus:border-primary focus:outline-none transition-colors">
+                </div>
+            </div>
+
+            <!-- 3. Operations List -->
+            <div id="ops-container" class="space-y-3">
+                
+                <!-- Customer Area -->
+                <div class="border border-secondary/30 rounded-lg overflow-hidden">
+                    <button onclick="toggleSection('customer-ops')" class="w-full bg-secondary/10 hover:bg-secondary/20 transition-colors p-3 flex justify-between items-center">
+                        <h3 class="font-bold text-secondary flex items-center gap-2">
+                            <span>👤</span> Espace Client
+                        </h3>
+                        <span id="customer-ops-icon" class="text-secondary">▼</span>
+                    </button>
+                    <div id="customer-ops" class="p-3 space-y-2">
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="selectOperation('customerMe', event)" class="op-button">
+                                <span class="text-xs">📋</span> Profile (Me)
+                            </button>
+                            <button onclick="selectOperation('myAddresses', event)" class="op-button">
+                                <span class="text-xs">📍</span> Addresses
+                            </button>
+                            <button onclick="selectOperation('createAddress', event)" class="op-button">
+                                <span class="text-xs">➕</span> New Address
+                            </button>
+                            <button onclick="selectOperation('updateAddress', event)" class="op-button">
+                                <span class="text-xs">✏️</span> Update Address
+                            </button>
+                            <button onclick="selectOperation('deleteAddress', event)" class="op-button text-red-400 border-red-900/50 hover:bg-red-900/20">
+                                <span class="text-xs">🗑️</span> Delete Address
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin: Products -->
+                <div class="border border-primary/30 rounded-lg overflow-hidden">
+                    <button onclick="toggleSection('product-ops')" class="w-full bg-primary/10 hover:bg-primary/20 transition-colors p-3 flex justify-between items-center">
+                        <h3 class="font-bold text-primary flex items-center gap-2">
+                            <span>🛍️</span> Produits
+                        </h3>
+                        <span id="product-ops-icon" class="text-primary">▼</span>
+                    </button>
+                    <div id="product-ops" class="p-3 space-y-3">
+                        <!-- Products CRUD -->
+                        <div>
+                            <p class="text-[10px] text-slate-400 mb-2 uppercase tracking-wider font-bold flex items-center gap-1">
+                                <span class="w-1 h-3 bg-primary rounded"></span> CRUD Produits
+                            </p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="selectOperation('products', event)" class="op-button">
+                                    <span class="text-xs">📋</span> List (10)
+                                </button>
+                                <button onclick="selectOperation('createProduct', event)" class="op-button">
+                                    <span class="text-xs">➕</span> Create
+                                </button>
+                                <button onclick="selectOperation('getProduct', event)" class="op-button">
+                                    <span class="text-xs">🔍</span> Get by ID
+                                </button>
+                                <button onclick="selectOperation('updateProduct', event)" class="op-button">
+                                    <span class="text-xs">✏️</span> Update
+                                </button>
+                                <button onclick="selectOperation('deleteProduct', event)" class="op-button text-red-400 border-red-900/50 hover:bg-red-900/20">
+                                    <span class="text-xs">🗑️</span> Delete
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Images -->
+                        <div class="pt-2 border-t border-slate-700">
+                            <p class="text-[10px] text-slate-400 mb-2 uppercase tracking-wider font-bold flex items-center gap-1">
+                                <span class="w-1 h-3 bg-purple-500 rounded"></span> Images
+                            </p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="selectOperation('addProductImage', event)" class="op-button">
+                                    <span class="text-xs">🖼️</span> Add Image
+                                </button>
+                                <button onclick="selectOperation('setProductCoverImage', event)" class="op-button">
+                                    <span class="text-xs">⭐</span> Set Cover
+                                </button>
+                                <button onclick="selectOperation('removeProductImage', event)" class="op-button text-red-400 border-red-900/50 hover:bg-red-900/20">
+                                    <span class="text-xs">🗑️</span> Remove
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Combinations -->
+                        <div class="pt-2 border-t border-slate-700">
+                            <p class="text-[10px] text-slate-400 mb-2 uppercase tracking-wider font-bold flex items-center gap-1">
+                                <span class="w-1 h-3 bg-amber-500 rounded"></span> Combinaisons (Variantes)
+                            </p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="selectOperation('addProductCombination', event)" class="op-button">
+                                    <span class="text-xs">🎨</span> Add Combo
+                                </button>
+                                <button onclick="selectOperation('updateProductCombination', event)" class="op-button">
+                                    <span class="text-xs">✏️</span> Update
+                                </button>
+                                <button onclick="selectOperation('deleteProductCombination', event)" class="op-button text-red-400 border-red-900/50 hover:bg-red-900/20">
+                                    <span class="text-xs">🗑️</span> Delete
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Stock -->
+                        <div class="pt-2 border-t border-slate-700">
+                            <p class="text-[10px] text-slate-400 mb-2 uppercase tracking-wider font-bold flex items-center gap-1">
+                                <span class="w-1 h-3 bg-green-500 rounded"></span> Stock
+                            </p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="selectOperation('updateStock', event)" class="op-button">
+                                    <span class="text-xs">📦</span> Set Stock
+                                </button>
+                                <button onclick="selectOperation('incrementStock', event)" class="op-button">
+                                    <span class="text-xs">⬆️</span> Increment
+                                </button>
+                                <button onclick="selectOperation('decrementStock', event)" class="op-button">
+                                    <span class="text-xs">⬇️</span> Decrement
+                                </button>
+                                <button onclick="selectOperation('checkProductAvailability', event)" class="op-button">
+                                    <span class="text-xs">✅</span> Check Avail.
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin: Categories -->
+                <div class="border border-primary/30 rounded-lg overflow-hidden">
+                    <button onclick="toggleSection('category-ops')" class="w-full bg-primary/10 hover:bg-primary/20 transition-colors p-3 flex justify-between items-center">
+                        <h3 class="font-bold text-primary flex items-center gap-2">
+                            <span>📁</span> Catégories
+                        </h3>
+                        <span id="category-ops-icon" class="text-primary">▼</span>
+                    </button>
+                    <div id="category-ops" class="p-3 space-y-2">
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="selectOperation('categoryTree', event)" class="op-button">
+                                <span class="text-xs">🌳</span> Tree View
+                            </button>
+                            <button onclick="selectOperation('createCategory', event)" class="op-button">
+                                <span class="text-xs">➕</span> Create
+                            </button>
+                            <button onclick="selectOperation('updateCategory', event)" class="op-button">
+                                <span class="text-xs">✏️</span> Update
+                            </button>
+                            <button onclick="selectOperation('deleteCategory', event)" class="op-button text-red-400 border-red-900/50 hover:bg-red-900/20">
+                                <span class="text-xs">🗑️</span> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin: Attributes -->
+                <div class="border border-primary/30 rounded-lg overflow-hidden">
+                    <button onclick="toggleSection('attribute-ops')" class="w-full bg-primary/10 hover:bg-primary/20 transition-colors p-3 flex justify-between items-center">
+                        <h3 class="font-bold text-primary flex items-center gap-2">
+                            <span>🎨</span> Attributs (Taille, Couleur...)
+                        </h3>
+                        <span id="attribute-ops-icon" class="text-primary">▼</span>
+                    </button>
+                    <div id="attribute-ops" class="p-3 space-y-3">
+                        <!-- Attribute Groups -->
+                        <div>
+                            <p class="text-[10px] text-slate-400 mb-2 uppercase tracking-wider font-bold flex items-center gap-1">
+                                <span class="w-1 h-3 bg-cyan-500 rounded"></span> Groupes d'Attributs
+                            </p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="selectOperation('attributeGroups', event)" class="op-button">
+                                    <span class="text-xs">📋</span> List Groups
+                                </button>
+                                <button onclick="selectOperation('createAttributeGroup', event)" class="op-button">
+                                    <span class="text-xs">➕</span> Create Group
+                                </button>
+                                <button onclick="selectOperation('updateAttributeGroup', event)" class="op-button">
+                                    <span class="text-xs">✏️</span> Update Group
+                                </button>
+                                <button onclick="selectOperation('deleteAttributeGroup', event)" class="op-button text-red-400 border-red-900/50 hover:bg-red-900/20">
+                                    <span class="text-xs">🗑️</span> Delete Group
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Attribute Values -->
+                        <div class="pt-2 border-t border-slate-700">
+                            <p class="text-[10px] text-slate-400 mb-2 uppercase tracking-wider font-bold flex items-center gap-1">
+                                <span class="w-1 h-3 bg-pink-500 rounded"></span> Valeurs d'Attributs
+                            </p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="selectOperation('createAttributeValue', event)" class="op-button">
+                                    <span class="text-xs">➕</span> Add Value
+                                </button>
+                                <button onclick="selectOperation('updateAttributeValue', event)" class="op-button">
+                                    <span class="text-xs">✏️</span> Update Value
+                                </button>
+                                <button onclick="selectOperation('deleteAttributeValue', event)" class="op-button text-red-400 border-red-900/50 hover:bg-red-900/20">
+                                    <span class="text-xs">🗑️</span> Delete Value
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin: Pricing (New) -->
+                <div class="border border-primary/30 rounded-lg overflow-hidden">
+                    <button onclick="toggleSection('pricing-ops')" class="w-full bg-primary/10 hover:bg-primary/20 transition-colors p-3 flex justify-between items-center">
+                        <h3 class="font-bold text-primary flex items-center gap-2">
+                            <span>💸</span> Pricing & Taxes
+                        </h3>
+                        <span id="pricing-ops-icon" class="text-primary">▼</span>
+                    </button>
+                    <div id="pricing-ops" class="p-3 space-y-3">
+                        <!-- Countries -->
+                        <div>
+                            <p class="text-[10px] text-slate-400 mb-2 uppercase tracking-wider font-bold flex items-center gap-1">
+                                <span class="w-1 h-3 bg-indigo-500 rounded"></span> Pays & Taxes
+                            </p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="selectOperation('countries', event)" class="op-button">
+                                    <span class="text-xs">🌍</span> List Countries
+                                </button>
+                                <button onclick="selectOperation('createCountry', event)" class="op-button">
+                                    <span class="text-xs">➕</span> Add Country
+                                </button>
+                                <button onclick="selectOperation('updateCountry', event)" class="op-button">
+                                    <span class="text-xs">✏️</span> Update Country
+                                </button>
+                                <button onclick="selectOperation('deleteCountry', event)" class="op-button text-red-400 border-red-900/50 hover:bg-red-900/20">
+                                    <span class="text-xs">🗑️</span> Delete Country
+                                </button>
+                            </div>
+                        </div>
+
+                         <!-- Specific Prices -->
+                        <div class="pt-2 border-t border-slate-700">
+                             <p class="text-[10px] text-slate-400 mb-2 uppercase tracking-wider font-bold flex items-center gap-1">
+                                <span class="w-1 h-3 bg-red-500 rounded"></span> Prix Spécifiques
+                            </p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="selectOperation('specificPrices', event)" class="op-button">
+                                    <span class="text-xs">📋</span> List Rules
+                                </button>
+                                <button onclick="selectOperation('createSpecificPrice', event)" class="op-button">
+                                    <span class="text-xs">🏷️</span> Create Rule
+                                </button>
+                                <button onclick="selectOperation('deleteSpecificPrice', event)" class="op-button text-red-400 border-red-900/50 hover:bg-red-900/20">
+                                    <span class="text-xs">🗑️</span> Delete Rule
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Calculator -->
+                        <div class="pt-2 border-t border-slate-700">
+                            <p class="text-[10px] text-slate-400 mb-2 uppercase tracking-wider font-bold flex items-center gap-1">
+                                <span class="w-1 h-3 bg-green-500 rounded"></span> Simulateur
+                            </p>
+                            <div class="grid grid-cols-1 gap-2">
+                                <button onclick="selectOperation('calculatePrice', event)" class="op-button justify-center">
+                                    <span class="text-xs">🧮</span> Calculer Prix Final
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin: Other -->
+                <div class="border border-primary/30 rounded-lg overflow-hidden">
+                    <button onclick="toggleSection('other-ops')" class="w-full bg-primary/10 hover:bg-primary/20 transition-colors p-3 flex justify-between items-center">
+                        <h3 class="font-bold text-primary flex items-center gap-2">
+                            <span>⚙️</span> Autres
+                        </h3>
+                        <span id="other-ops-icon" class="text-primary">▼</span>
+                    </button>
+                    <div id="other-ops" class="p-3 space-y-2" style="display:none;">
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="selectOperation('customers', event)" class="op-button">
+                                <span class="text-xs">👥</span> Customers
+                            </button>
+                            <button onclick="selectOperation('customerGroups', event)" class="op-button">
+                                <span class="text-xs">👥</span> Groups
+                            </button>
+                            <button onclick="selectOperation('employees', event)" class="op-button">
+                                <span class="text-xs">👔</span> Employees
+                            </button>
+                            <button onclick="selectOperation('employeeMe', event)" class="op-button">
+                                <span class="text-xs">👤</span> My Profile
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Dynamic Form & Console Wrapper -->
+        <div class="flex flex-1 overflow-hidden">
+            
+            <!-- Dynamic Form Area (New addition) -->
+            <section id="form-section" class="w-96 bg-card p-4 overflow-y-auto border-r border-slate-700 flex-shrink-0" style="display:none;">
+                <h2 class="font-bold text-lg text-accent-yellow mb-4" id="form-title">Détails de l'Opération</h2>
+                <div class="text-xs text-slate-400 mb-3" id="form-description">
+                    Utilisez ce formulaire pour modifier les données avant d'exécuter la mutation.
+                </div>
+                
+                <form id="dynamic-form" class="space-y-4">
+                    <!-- Dynamic fields will be inserted here -->
+                </form>
+
+                <button id="execute-button" 
+                    class="w-full mt-6 bg-primary hover:bg-blue-600 text-white text-base font-semibold py-2 rounded transition-all active:scale-[0.99] disabled:bg-slate-700 disabled:cursor-not-allowed"
+                    disabled>
+                    Exécuter la Mutation
+                </button>
+            </section>
+
+            <!-- Main Console Area -->
+            <section class="flex-1 overflow-hidden p-4 flex flex-col">
+                <h2 class="font-bold text-lg text-white mb-4">🚀 Console de Réponse GraphQL</h2>
+                <div id="log-container" class="flex-1 bg-console-bg border border-console-border rounded-lg overflow-y-auto font-mono text-sm p-3 space-y-3">
+                    <!-- Log entries will be inserted here -->
+                    <div class="text-slate-500 text-center py-10">
+                        Cliquez sur une opération dans le panneau de gauche pour commencer.
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        // --- Configuration & State ---
+        const API_URL = 'http://localhost:3000/graphql';
+
+        const state = {
+            adminToken: null,
+            customerToken: null,
+            logCount: 0,
+            
+            // Auto-incremented IDs for testing
+            lastCatId: 1,
+            lastGroupId: 1, // Last attribute group ID
+            lastAddressId: 1,
+            lastRoleId: 5,
+            lastEmployeeId: 999,
+            lastCustGroupId: 2,
+            lastProductId: 1,
+            lastImageId: 1,
+            lastCombinationId: 1,
+            lastStockId: 1,
+            lastCountryId: 1,
+            lastSpecificPriceId: 1,
+            
+            // Currently selected operation
+            currentOpName: null,
+        };
+
+        // --- Core GraphQL Function ---
+        async function gql(query, token = null) {
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({ query }),
+                });
+
+                // Handle HTTP errors (e.g., 401, 500)
+                if (!response.ok) {
+                    return {
+                        errors: [{ message: `HTTP Error ${response.status}: ${response.statusText}` }]
+                    };
+                }
+
+                return await response.json();
+            } catch (error) {
+                // Handle network errors
+                return {
+                    errors: [{ message: `Network or Fetch Error: ${error.message}` }]
+                };
+            }
+        }
+
+        // --- UI & Logging ---
+
+        function updateAuthStatus() {
+            const adminEl = document.getElementById('admin-status');
+            const customerEl = document.getElementById('customer-status');
+
+            if (state.adminToken) {
+                adminEl.classList.remove('bg-red-500');
+                adminEl.classList.add('bg-green-500', 'shadow-[0_0_10px_#22c55e]');
+            } else {
+                adminEl.classList.add('bg-red-500');
+                adminEl.classList.remove('bg-green-500', 'shadow-[0_0_10px_#22c55e]');
+            }
+
+            if (state.customerToken) {
+                customerEl.classList.remove('bg-red-500');
+                customerEl.classList.add('bg-green-500', 'shadow-[0_0_10px_#22c55e]');
+            } else {
+                customerEl.classList.add('bg-red-500');
+                customerEl.classList.remove('bg-green-500', 'shadow-[0_0_10px_#22c55e]');
+            }
+        }
+
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            const icon = document.getElementById(sectionId + '-icon');
+            
+            if (section.style.display === 'none') {
+                section.style.display = 'block';
+                icon.textContent = '▼';
+            } else {
+                section.style.display = 'none';
+                icon.textContent = '▶';
+            }
+        }
+
+        function log(opName, query, response, isError) {
+            const logContainer = document.getElementById('log-container');
+            if (logContainer.children.length === 1 && logContainer.children[0].classList.contains('text-slate-500')) {
+                 logContainer.innerHTML = '';
+            }
+
+            const timestamp = new Date().toLocaleTimeString();
+            const logClass = isError ? 'log-error' : 'log-success';
+            const logTitle = isError ? 'ERROR' : 'SUCCESS';
+            
+            const logEntry = document.createElement('div');
+            logEntry.classList.add('p-3', 'rounded-lg', 'bg-card', 'animate-fadeIn', 'shadow-md', logClass);
+            logEntry.innerHTML = `
+                <div class="flex justify-between items-start mb-2 border-b border-slate-700 pb-1">
+                    <span class="font-bold tracking-wider text-xs ${isError ? 'text-red-400' : 'text-secondary'}">${logTitle}: ${opName}</span>
+                    <span class="text-xs text-slate-500">${timestamp}</span>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-bg-dark p-2 rounded text-slate-400 text-xs break-all overflow-auto max-h-20 font-mono">
+                        <span class="font-semibold text-white">QUERY:</span> ${query.trim()}
+                    </div>
+                    <pre class="bg-bg-dark p-2 rounded text-xs overflow-auto max-h-60 whitespace-pre-wrap">${syntaxHighlight(response)}</pre>
+                </div>
+            `;
+            logContainer.prepend(logEntry);
+        }
+
+        function clearLogs() {
+            const logContainer = document.getElementById('log-container');
+            logContainer.innerHTML = `
+                <div class="text-slate-500 text-center py-10">
+                    Cliquez sur une opération dans le panneau de gauche pour commencer.
+                </div>
+            `;
+        }
+        
+        // --- Dynamic Form Logic ---
+        function selectOperation(opName, event) {
+            // 1. Reset all button states
+            document.querySelectorAll('.op-button').forEach(btn => btn.classList.remove('active'));
+            
+            // 2. Set current button as active
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
+
+            const op = OPS[opName];
+            state.currentOpName = opName;
+            
+            const formSection = document.getElementById('form-section');
+            const dynamicForm = document.getElementById('dynamic-form');
+            const executeButton = document.getElementById('execute-button');
+            const formTitle = document.getElementById('form-title');
+            const formDescription = document.getElementById('form-description');
+
+            formTitle.textContent = op.title;
+            dynamicForm.innerHTML = '';
+
+            if (op.fields && op.fields.length > 0) {
+                // Operation requires input, show form
+                formSection.style.display = 'block';
+                executeButton.textContent = `Exécuter ${op.type || 'Mutation'}`;
+                executeButton.onclick = () => runOp(opName);
+                executeButton.disabled = false;
+                formDescription.textContent = op.description || 'Modifiez les valeurs des champs et cliquez sur Exécuter.';
+
+                op.fields.forEach(field => {
+                    const fieldId = `field-${field.name}`;
+                    let inputHtml = '';
+                    
+                    if (field.type === 'textarea') {
+                         inputHtml = `<textarea id="${fieldId}" rows="3" placeholder="${field.placeholder}" class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-1.5 text-sm focus:border-primary focus:outline-none transition-colors">${field.defaultValue || ''}</textarea>`;
+                    } else {
+                         inputHtml = `<input id="${fieldId}" type="${field.type}" value="${field.defaultValue || ''}" placeholder="${field.placeholder}" class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-1.5 text-sm focus:border-primary focus:outline-none transition-colors">`;
+                    }
+
+                    const fieldContainer = document.createElement('div');
+                    fieldContainer.innerHTML = `
+                        <label for="${fieldId}" class="text-xs font-semibold text-slate-400 block mb-1">${field.label}${field.required ? ' *' : ''}</label>
+                        ${inputHtml}
+                    `;
+                    dynamicForm.appendChild(fieldContainer);
+                });
+            } else {
+                // Operation is a simple query or fixed mutation, hide form and run directly
+                formSection.style.display = 'none';
+                // Automatically run simple queries that don't need a form
+                if (op.type === 'Query' || op.user === null) {
+                    runOp(opName);
+                }
+            }
+        }
+
+        // Helper to get form data
+        function getFormData(fields) {
+            const data = {};
+            fields.forEach(field => {
+                const element = document.getElementById(`field-${field.name}`);
+                if (element) {
+                    let value = element.value;
+                    
+                    // Basic type conversion
+                    if (field.type === 'number') {
+                        value = parseFloat(value);
+                        if (isNaN(value)) value = field.defaultValue;
+                    }
+                    if (field.type === 'checkbox') {
+                        value = element.checked;
+                    }
+                    if (field.type === 'text' && field.name.includes('Id')) {
+                        // Attempt to convert IDs from string to number if possible
+                        const numValue = parseInt(value);
+                        if (!isNaN(numValue)) value = numValue;
+                    }
+
+                    if (value !== undefined && value !== '') {
+                        data[field.name] = value;
+                    } else if (field.required) {
+                        // Handle required field validation (simplified)
+                        throw new Error(`Le champ obligatoire "${field.label}" est vide.`);
+                    }
+                }
+            });
+            return data;
+        }
+
+
+        // --- Operation Definitions ---
+        const OPS = {
+            // --- Authentication ---
+            adminLogin: {
+                title: 'Admin Login', type: 'Mutation', user: null,
+                get query() {
+                    const email = document.getElementById('admin-email').value;
+                    const pass = document.getElementById('admin-pass').value;
+                    return `mutation { employeeLogin(email: "${email}", password: "${pass}") { accessToken employee { id firstname } } }`
+                },
+                onSuccess: (data) => {
+                    state.adminToken = data.employeeLogin.accessToken;
+                    updateAuthStatus();
+                }
+            },
+            customerLogin: {
+                title: 'Customer Login', type: 'Mutation', user: null,
+                get query() {
+                    const email = document.getElementById('customer-email').value;
+                    const pass = document.getElementById('customer-pass').value;
+                    return `mutation { customerLogin(email: "${email}", password: "${pass}") { accessToken customer { id firstname } } }`
+                },
+                onSuccess: (data) => {
+                    state.customerToken = data.customerLogin.accessToken;
+                    updateAuthStatus();
+                }
+            },
+            customerRegister: {
+                title: 'Customer Register', type: 'Mutation', user: null,
+                fields: [
+                    { name: 'email', label: 'Email', type: 'text', placeholder: 'new_user@test.com', required: true, defaultValue: `user_${Date.now()}@test.com` },
+                    { name: 'password', label: 'Password', type: 'password', placeholder: 'customer123', required: true, defaultValue: 'customer123' },
+                    { name: 'firstname', label: 'First Name', type: 'text', placeholder: 'John', required: true, defaultValue: 'Test' },
+                    { name: 'lastname', label: 'Last Name', type: 'text', placeholder: 'Doe', required: true, defaultValue: 'User' },
+                ],
+                get query() {
+                    const data = getFormData(OPS.customerRegister.fields);
+                    return `mutation { customerRegister(input: { email: "${data.email}", password: "${data.password}", firstname: "${data.firstname}", lastname: "${data.lastname}", groupId: 1 }) { accessToken customer { id email } } }`
+                },
+                onSuccess: (data) => {
+                    state.customerToken = data.customerRegister.accessToken;
+                    document.getElementById('customer-email').value = data.customerRegister.customer.email;
+                    document.getElementById('customer-pass').value = OPS.customerRegister.fields.find(f => f.name === 'password').defaultValue;
+                    updateAuthStatus();
+                }
+            },
+
+
+            // --- Customer Operations ---
+            customerMe: { user: 'customer', title: 'Customer Me', type: 'Query', query: `query { customerMe { id firstname lastname email active } }` },
+            myAddresses: { user: 'customer', title: 'List Addresses', type: 'Query', query: `query { myAddresses { id alias address1 city } }` },
+            createAddress: {
+                user: 'customer', title: 'Create Address', type: 'Mutation',
+                fields: [
+                    { name: 'alias', label: 'Alias (Ex: Home)', type: 'text', placeholder: 'Home', required: true, defaultValue: `Home ${Date.now()}` },
+                    { name: 'firstname', label: 'First Name', type: 'text', placeholder: 'John', required: true, defaultValue: 'John' },
+                    { name: 'lastname', label: 'Last Name', type: 'text', placeholder: 'Doe', required: true, defaultValue: 'Doe' },
+                    { name: 'address1', label: 'Address Line 1', type: 'text', placeholder: '123 Test St', required: true, defaultValue: '123 Test St' },
+                    { name: 'postcode', label: 'Postcode', type: 'text', placeholder: '75000', required: true, defaultValue: '75000' },
+                    { name: 'city', label: 'City', type: 'text', placeholder: 'Paris', required: true, defaultValue: 'Paris' },
+                    { name: 'countryId', label: 'Country ID', type: 'number', placeholder: '1', required: true, defaultValue: 1 },
+                ],
+                get query() {
+                    const data = getFormData(OPS.createAddress.fields);
+                    return `mutation { createAddress(input: { alias: "${data.alias}", firstname: "${data.firstname}", lastname: "${data.lastname}", address1: "${data.address1}", postcode: "${data.postcode}", city: "${data.city}", countryId: ${data.countryId} }) { id alias } }`
+                },
+                onSuccess: (data) => { state.lastAddressId = data.createAddress.id; }
+            },
+            updateAddress: {
+                user: 'customer', title: 'Update Last Address', type: 'Mutation',
+                fields: [
+                    { name: 'id', label: 'Address ID', type: 'number', placeholder: 'Address ID', required: true, get defaultValue() { return state.lastAddressId; } },
+                    { name: 'alias', label: 'New Alias', type: 'text', placeholder: 'Work', defaultValue: `Updated Alias ${Date.now()}` },
+                    { name: 'address2', label: 'Address Line 2', type: 'text', placeholder: 'Apt 4B' },
+                ],
+                get query() {
+                    const data = getFormData(OPS.updateAddress.fields);
+                    // Build the input object dynamically to include only provided fields
+                    let input = [];
+                    if (data.alias) input.push(`alias: "${data.alias}"`);
+                    if (data.address2 !== undefined) input.push(`address2: "${data.address2}"`);
+
+                    return `mutation { updateAddress(id: ${data.id}, input: { ${input.join(', ')} }) { id alias address2 } }`
+                }
+            },
+            deleteAddress: {
+                user: 'customer', title: 'Delete Last Address', type: 'Mutation',
+                fields: [
+                    { name: 'id', label: 'Address ID to Delete', type: 'number', placeholder: 'Address ID', required: true, get defaultValue() { return state.lastAddressId; } },
+                ],
+                get query() {
+                    const data = getFormData(OPS.deleteAddress.fields);
+                    return `mutation { deleteAddress(id: ${data.id}) { id deleted } }`
+                }
+            },
+            
+            // --- Admin: Products ---
+            products: { user: 'admin', title: 'List Products (10)', type: 'Query', query: `query { products(filter: { take: 10 }) { items { id reference name price active } total } }` },
+            createProduct: {
+                user: 'admin', title: 'Create Product', type: 'Mutation',
+                fields: [
+                    { name: 'reference', label: 'Reference', type: 'text', placeholder: 'PROD-001', required: true, defaultValue: `PROD-${Date.now()}` },
+                    { name: 'name', label: 'Name', type: 'text', placeholder: 'Super T-shirt', required: true, defaultValue: 'Test Product' },
+                    { name: 'price', label: 'Price (HT)', type: 'number', placeholder: '29.99', required: true, defaultValue: 29.99 },
+                    { name: 'description', label: 'Description', type: 'textarea', placeholder: 'Product long description...', defaultValue: 'This is a description for the new test product.' },
+                    { name: 'active', label: 'Active (true/false)', type: 'text', placeholder: 'true', defaultValue: 'true' },
+                ],
+                get query() {
+                    const data = getFormData(OPS.createProduct.fields);
+                    return `mutation { createProduct(input: { reference: "${data.reference}", name: "${data.name}", price: ${data.price}, description: "${data.description}", active: ${data.active} }) { id reference name } }`
+                },
+                onSuccess: (data) => {
+                    state.lastProductId = data.createProduct.id;
+                    document.getElementById('product-id').value = data.createProduct.id;
+                }
+            },
+            getProduct: {
+                user: 'admin', title: 'Get Product by ID', type: 'Query',
+                fields: [
+                    { name: 'id', label: 'Product ID', type: 'number', placeholder: 'Product ID', required: true, get defaultValue() { return document.getElementById('product-id').value || state.lastProductId || 1; } },
+                ],
+                get query() {
+                    const data = getFormData(OPS.getProduct.fields);
+                    return `query { product(id: ${data.id}) { id reference name price images { id path cover } combinations { id priceImpact stock { id quantity } } stock { id quantity } } }`
+                }
+            },
+            updateProduct: {
+                user: 'admin', title: 'Update Product', type: 'Mutation',
+                fields: [
+                    { name: 'id', label: 'Product ID', type: 'number', placeholder: 'Product ID', required: true, get defaultValue() { return document.getElementById('product-id').value || state.lastProductId || 1; } },
+                    { name: 'name', label: 'New Name', type: 'text', placeholder: 'Updated Product Name' },
+                    { name: 'price', label: 'New Price (HT)', type: 'number', placeholder: '39.99' },
+                    { name: 'active', label: 'Active (true/false)', type: 'text', placeholder: 'true' },
+                ],
+                get query() {
+                    const data = getFormData(OPS.updateProduct.fields);
+                    let input = [];
+                    if (data.name) input.push(`name: "${data.name}"`);
+                    if (data.price !== undefined) input.push(`price: ${data.price}`);
+                    if (data.active !== undefined) input.push(`active: ${data.active}`);
+
+                    return `mutation { updateProduct(id: ${data.id}, input: { ${input.join(', ')} }) { id name price active } }`
+                }
+            },
+            deleteProduct: {
+                user: 'admin', title: 'Delete Product', type: 'Mutation',
+                fields: [
+                    { name: 'id', label: 'Product ID to Delete', type: 'number', placeholder: 'Product ID', required: true, get defaultValue() { return document.getElementById('product-id').value || state.lastProductId || 1; } },
+                ],
+                get query() {
+                    const data = getFormData(OPS.deleteProduct.fields);
+                    return `mutation { deleteProduct(id: ${data.id}) { id } }`
+                }
+            },
+
+            // --- Admin: Stock & Images ---
+            addProductImage: {
+                user: 'admin', title: 'Add Product Image', type: 'Mutation',
+                fields: [
+                    { name: 'productId', label: 'Product ID', type: 'number', placeholder: 'Product ID', required: true, get defaultValue() { return document.getElementById('product-id').value || state.lastProductId || 1; } },
+                    { name: 'filename', label: 'Filename', type: 'text', placeholder: 'image.jpg', required: true, defaultValue: `img_${Date.now()}.jpg` },
+                    { name: 'path', label: 'Path', type: 'text', placeholder: 'uploads/path/image.jpg', required: true, get defaultValue() { return `uploads/products/${this.productId || 1}/img_${Date.now()}.jpg`; } },
+                    { name: 'cover', label: 'Set as Cover (true/false)', type: 'text', placeholder: 'false', defaultValue: 'false' },
+                ],
+                get query() {
+                    const data = getFormData(OPS.addProductImage.fields);
+                    return `mutation { addProductImage(productId: ${data.productId}, input: { filename: "${data.filename}", originalName: "image.jpg", path: "${data.path}", mimeType: "image/jpeg", size: 50000, cover: ${data.cover} }) { id path cover } }`
+                },
+                onSuccess: (data) => {
+                    state.lastImageId = data.addProductImage.id;
+                    document.getElementById('image-id').value = data.addProductImage.id;
+                }
+            },
+            removeProductImage: {
+                user: 'admin', title: 'Remove Product Image', type: 'Mutation',
+                fields: [
+                    { name: 'id', label: 'Image ID to Delete', type: 'number', placeholder: 'Image ID', required: true, get defaultValue() { return document.getElementById('image-id').value || state.lastImageId || 999; } },
+                ],
+                get query() {
+                    const data = getFormData(OPS.removeProductImage.fields);
+                    return `mutation { removeProductImage(id: ${data.id}) { id } }`
+                }
+            },
+            updateStock: {
+                user: 'admin', title: 'Set Stock Quantity', type: 'Mutation',
+                fields: [
+                    { name: 'quantity', label: 'New Quantity', type: 'number', placeholder: '100', required: true, defaultValue: 100 },
+                    { name: 'productId', label: 'Product ID (If no Combo)', type: 'number', placeholder: 'Product ID', get defaultValue() { return document.getElementById('product-id').value || state.lastProductId || 1; } },
+                    { name: 'combinationId', label: 'Combination ID (Optional)', type: 'number', placeholder: 'Combination ID', get defaultValue() { return document.getElementById('combination-id').value || state.lastCombinationId || ''; } },
+                ],
+                get query() {
+                    const data = getFormData(OPS.updateStock.fields);
+                    let targetId;
+                    if (data.combinationId) {
+                        targetId = `combinationId: ${data.combinationId}`;
+                    } else if (data.productId) {
+                        targetId = `productId: ${data.productId}`;
+                    } else {
+                        throw new Error("Un Product ID ou Combination ID est requis.");
+                    }
+                    
+                    return `mutation { updateStock(input: { ${targetId}, quantity: ${data.quantity} }) { id quantity } }`
+                },
+                onSuccess: (data) => {
+                    state.lastStockId = data.updateStock.id;
+                    document.getElementById('stock-id').value = data.updateStock.id;
+                }
+            },
+            
+            // Product Combination Mutations
+            addProductCombination: {
+                user: 'admin', title: 'Add Product Combination', type: 'Mutation',
+                fields: [
+                    { name: 'productId', label: 'Product ID', type: 'number', placeholder: 'Product ID', required: true, get defaultValue() { return document.getElementById('product-id').value || state.lastProductId || 1; } },
+                    { name: 'priceImpact', label: 'Price Impact (+/-)', type: 'number', placeholder: '0.00', defaultValue: 0 },
+                    { name: 'weightImpact', label: 'Weight Impact (+/-)', type: 'number', placeholder: '0.00', defaultValue: 0 },
+                    { name: 'reference', label: 'Reference (Optional)', type: 'text', placeholder: 'COMBO-001' },
+                    { name: 'attributeValueIds', label: 'Attribute Value IDs (comma-separated)', type: 'text', placeholder: '1,2,3', required: true, defaultValue: '1,2' },
+                    { name: 'isDefault', label: 'Set as Default (true/false)', type: 'text', placeholder: 'false', defaultValue: 'false' },
+                ],
+                get query() {
+                    const data = getFormData(OPS.addProductCombination.fields);
+                    const attrIds = data.attributeValueIds.split(',').map(id => parseInt(id.trim()));
+                    let input = [];
+                    if (data.priceImpact !== undefined) input.push(`priceImpact: ${data.priceImpact}`);
+                    if (data.weightImpact !== undefined) input.push(`weightImpact: ${data.weightImpact}`);
+                    if (data.reference) input.push(`reference: "${data.reference}"`);
+                    if (data.isDefault !== undefined) input.push(`isDefault: ${data.isDefault}`);
+                    input.push(`attributeValueIds: [${attrIds.join(',')}]`);
+                    
+                    return `mutation { addProductCombination(productId: ${data.productId}, input: { ${input.join(', ')} }) { id reference priceImpact weightImpact isDefault attributes { attributeValue { name } } stock { id quantity } } }`;
+                },
+                onSuccess: (data) => {
+                    state.lastCombinationId = data.addProductCombination.id;
+                    document.getElementById('combination-id').value = data.addProductCombination.id;
+                }
+            },
+            updateProductCombination: {
+                user: 'admin', title: 'Update Product Combination', type: 'Mutation',
+                fields: [
+                    { name: 'id', label: 'Combination ID', type: 'number', placeholder: 'Combination ID', required: true, get defaultValue() { return document.getElementById('combination-id').value || state.lastCombinationId || 1; } },
+                    { name: 'priceImpact', label: 'New Price Impact', type: 'number', placeholder: '5.00' },
+                    { name: 'weightImpact', label: 'New Weight Impact', type: 'number', placeholder: '0.5' },
+                    { name: 'reference', label: 'New Reference', type: 'text', placeholder: 'COMBO-002' },
+                    { name: 'isDefault', label: 'Set as Default (true/false)', type: 'text', placeholder: 'true' },
+                ],
+                get query() {
+                    const data = getFormData(OPS.updateProductCombination.fields);
+                    let input = [];
+                    if (data.priceImpact !== undefined) input.push(`priceImpact: ${data.priceImpact}`);
+                    if (data.weightImpact !== undefined) input.push(`weightImpact: ${data.weightImpact}`);
+                    if (data.reference) input.push(`reference: "${data.reference}"`);
+                    if (data.isDefault !== undefined) input.push(`isDefault: ${data.isDefault}`);
+
+                    return `mutation { updateProductCombination(id: ${data.id}, input: { ${input.join(', ')} }) { id reference priceImpact weightImpact isDefault } }`;
+                }
+            },
+            deleteProductCombination: {
+                user: 'admin', title: 'Delete Product Combination', type: 'Mutation',
+                fields: [
+                    { name: 'id', label: 'Combination ID to Delete', type: 'number', placeholder: 'Combination ID', required: true, get defaultValue() { return document.getElementById('combination-id').value || state.lastCombinationId || 1; } },
+                ],
+                get query() {
+                    const data = getFormData(OPS.deleteProductCombination.fields);
+                    return `mutation { deleteProductCombination(id: ${data.id}) { id } }`;
+                }
+            },
+            setProductCoverImage: {
+                user: 'admin', title: 'Set Product Cover Image', type: 'Mutation',
+                fields: [
+                    { name: 'imageId', label: 'Image ID', type: 'number', placeholder: 'Image ID', required: true, get defaultValue() { return document.getElementById('image-id').value || state.lastImageId || 1; } },
+                ],
+                get query() {
+                    const data = getFormData(OPS.setProductCoverImage.fields);
+                    return `mutation { setProductCoverImage(imageId: ${data.imageId}) { id path cover } }`;
+                }
+            },
+
+            // Category Operations
+            categoryTree: { user: 'admin', title: 'Category Tree', type: 'Query', query: `query { categoryTree { id name active children { id name active } } }` },
+            createCategory: {
+                user: 'admin', title: 'Create Category', type: 'Mutation',
+                fields: [
+                    { name: 'name', label: 'Category Name', type: 'text', placeholder: 'Electronics', required: true, defaultValue: `Category ${Date.now()}` },
+                    { name: 'description', label: 'Description', type: 'textarea', placeholder: 'Category description...' },
+                    { name: 'parentId', label: 'Parent Category ID (Optional)', type: 'number', placeholder: 'Leave empty for root' },
+                    { name: 'active', label: 'Active (true/false)', type: 'text', placeholder: 'true', defaultValue: 'true' },
+                    { name: 'position', label: 'Position', type: 'number', placeholder: '0', defaultValue: 0 },
+                ],
+                get query() {
+                    const data = getFormData(OPS.createCategory.fields);
+                    let input = [];
+                    input.push(`name: "${data.name}"`);
+                    if (data.description) input.push(`description: "${data.description}"`);
+                    if (data.parentId) input.push(`parentId: ${data.parentId}`);
+                    if (data.active !== undefined) input.push(`active: ${data.active}`);
+                    if (data.position !== undefined) input.push(`position: ${data.position}`);
+                    
+                    return `mutation { createCategory(input: { ${input.join(', ')} }) { id name description active position parentId } }`;
+                },
+                onSuccess: (data) => {
+                    state.lastCatId = data.createCategory.id;
+                }
+            },
+            updateCategory: {
+                user: 'admin', title: 'Update Category', type: 'Mutation',
+                fields: [
+                    { name: 'id', label: 'Category ID', type: 'number', placeholder: 'Category ID', required: true, get defaultValue() { return state.lastCatId || 1; } },
+                    { name: 'name', label: 'New Name', type: 'text', placeholder: 'Updated Category Name' },
+                    { name: 'description', label: 'New Description', type: 'textarea', placeholder: 'Updated description...' },
+                    { name: 'active', label: 'Active (true/false)', type: 'text', placeholder: 'true' },
+                    { name: 'position', label: 'New Position', type: 'number', placeholder: '1' },
+                ],
+                get query() {
+                    const data = getFormData(OPS.updateCategory.fields);
+                    let input = [];
+                    if (data.name) input.push(`name: "${data.name}"`);
+                    if (data.description !== undefined) input.push(`description: "${data.description}"`);
+                    if (data.active !== undefined) input.push(`active: ${data.active}`);
+                    if (data.position !== undefined) input.push(`position: ${data.position}`);
+
+                    return `mutation { updateCategory(id: ${data.id}, input: { ${input.join(', ')} }) { id name description active position } }`;
+                }
+            },
+            deleteCategory: {
+                user: 'admin', title: 'Delete Category', type: 'Mutation',
+                fields: [
+                    { name: 'id', label: 'Category ID to Delete', type: 'number', placeholder: 'Category ID', required: true, get defaultValue() { return state.lastCatId || 1; } },
+                ],
+                get query() {
+                    const data = getFormData(OPS.deleteCategory.fields);
+                    return `mutation { deleteCategory(id: ${data.id}) { id name } }`;
+                }
+            },
+            
+            // Attribute Operations
+            attributeGroups: { user: 'admin', title: 'List Attribute Groups', type: 'Query', query: `query { attributeGroups { id name publicName type values { id name color } } }` },
+            createAttributeGroup: {
+                user: 'admin', title: 'Create Attribute Group', type: 'Mutation',
+                fields: [
+                    { name: 'name', label: 'Internal Name', type: 'text', placeholder: 'size', required: true, defaultValue: `attr_${Date.now()}` },
+                    { name: 'publicName', label: 'Public Name', type: 'text', placeholder: 'Taille', required: true, defaultValue: 'Taille' },
+                    { name: 'type', label: 'Type (select/radio/color)', type: 'text', placeholder: 'select', defaultValue: 'select' },
+                    { name: 'position', label: 'Position', type: 'number', placeholder: '0', defaultValue: 0 },
+                ],
+                get query() {
+                    const data = getFormData(OPS.createAttributeGroup.fields);
+                    return `mutation { createAttributeGroup(input: { name: "${data.name}", publicName: "${data.publicName}", type: "${data.type}", position: ${data.position} }) { id name publicName type } }`;
+                },
+                onSuccess: (data) => {
+                    state.lastGroupId = data.createAttributeGroup.id;
+                }
+            },
+            updateAttributeGroup: {
+                user: 'admin', title: 'Update Attribute Group', type: 'Mutation',
+                fields: [
+                    { name: 'id', label: 'Group ID', type: 'number', placeholder: 'Group ID', required: true, get defaultValue() { return state.lastGroupId || 1; } },
+                    { name: 'name', label: 'New Internal Name', type: 'text', placeholder: 'size' },
+                    { name: 'publicName', label: 'New Public Name', type: 'text', placeholder: 'Taille' },
+                    { name: 'type', label: 'New Type', type: 'text', placeholder: 'select' },
+                ],
+                get query() {
+                    const data = getFormData(OPS.updateAttributeGroup.fields);
+                    let input = [];
+                    if (data.name) input.push(`name: "${data.name}"`);
+                    if (data.publicName) input.push(`publicName: "${data.publicName}"`);
+                    if (data.type) input.push(`type: "${data.type}"`);
+
+                    return `mutation { updateAttributeGroup(id: ${data.id}, input: { ${input.join(', ')} }) { id name publicName type } }`;
+                }
+            },
+            deleteAttributeGroup: {
+                user: 'admin', title: 'Delete Attribute Group', type: 'Mutation',
+                fields: [
+                    { name: 'id', label: 'Group ID to Delete', type: 'number', placeholder: 'Group ID', required: true, get defaultValue() { return state.lastGroupId || 1; } },
+                ],
+                get query() {
+                    const data = getFormData(OPS.deleteAttributeGroup.fields);
+                    return `mutation { deleteAttributeGroup(id: ${data.id}) { id name } }`;
+                }
+            },
+
+            // Attribute Values
+            createAttributeValue: {
+                user: 'admin', title: 'Create Attribute Value', type: 'Mutation',
+                fields: [
+                    { name: 'groupId', label: 'Attribute Group ID', type: 'number', placeholder: 'Group ID', required: true, get defaultValue() { return state.lastGroupId || 1; } },
+                    { name: 'name', label: 'Value Name', type: 'text', placeholder: 'S, M, L or Red, Blue...', required: true, defaultValue: 'M' },
+                    { name: 'color', label: 'Color (hex, optional)', type: 'text', placeholder: '#FF0000' },
+                    { name: 'position', label: 'Position', type: 'number', placeholder: '0', defaultValue: 0 },
+                ],
+                get query() {
+                    const data = getFormData(OPS.createAttributeValue.fields);
+                    let input = [];
+                    input.push(`name: "${data.name}"`);
+                    if (data.color) input.push(`color: "${data.color}"`);
+                    if (data.position !== undefined) input.push(`position: ${data.position}`);
+                    
+                    return `mutation { createAttributeValue(groupId: ${data.groupId}, input: { ${input.join(', ')} }) { id name color } }`;
+                }
+            },
+            updateAttributeValue: {
+                user: 'admin', title: 'Update Attribute Value', type: 'Mutation',
+                fields: [
+                    { name: 'id', label: 'Value ID', type: 'number', placeholder: 'Value ID', required: true },
+                    { name: 'name', label: 'New Name', type: 'text', placeholder: 'XL' },
+                    { name: 'color', label: 'New Color', type: 'text', placeholder: '#00FF00' },
+                ],
+                get query() {
+                    const data = getFormData(OPS.updateAttributeValue.fields);
+                    let input = [];
+                    if (data.name) input.push(`name: "${data.name}"`);
+                    if (data.color !== undefined) input.push(`color: "${data.color}"`);
+
+                    return `mutation { updateAttributeValue(id: ${data.id}, input: { ${input.join(', ')} }) { id name color } }`;
+                }
+            },
+            deleteAttributeValue: {
+                user: 'admin', title: 'Delete Attribute Value', type: 'Mutation',
+                fields: [
+                    { name: 'id', label: 'Value ID to Delete', type: 'number', placeholder: 'Value ID', required: true },
+                ],
+                get query() {
+                    const data = getFormData(OPS.deleteAttributeValue.fields);
+                    return `mutation { deleteAttributeValue(id: ${data.id}) { id name } }`;
+                }
+            },
+
+            // Stock Operations (increment, decrement, check)
+            incrementStock: {
+                user: 'admin', title: 'Increment Stock', type: 'Mutation',
+                fields: [
+                    { name: 'stockId', label: 'Stock ID', type: 'number', placeholder: 'Stock ID', required: true, get defaultValue() { return document.getElementById('stock-id').value || state.lastStockId || 1; } },
+                    { name: 'quantity', label: 'Quantity to Add', type: 'number', placeholder: '10', required: true, defaultValue: 10 },
+                ],
+                get query() {
+                    const data = getFormData(OPS.incrementStock.fields);
+                    return `mutation { incrementStock(stockId: ${data.stockId}, quantity: ${data.quantity}) { id quantity } }`;
+                }
+            },
+            decrementStock: {
+                user: 'admin', title: 'Decrement Stock', type: 'Mutation',
+                fields: [
+                    { name: 'stockId', label: 'Stock ID', type: 'number', placeholder: 'Stock ID', required: true, get defaultValue() { return document.getElementById('stock-id').value || state.lastStockId || 1; } },
+                    { name: 'quantity', label: 'Quantity to Remove', type: 'number', placeholder: '5', required: true, defaultValue: 5 },
+                ],
+                get query() {
+                    const data = getFormData(OPS.decrementStock.fields);
+                    return `mutation { decrementStock(stockId: ${data.stockId}, quantity: ${data.quantity}) { id quantity } }`;
+                }
+            },
+            checkProductAvailability: {
+                user: 'admin', title: 'Check Product Availability', type: 'Query',
+                fields: [
+                    { name: 'productId', label: 'Product ID (Optional)', type: 'number', placeholder: 'Product ID', get defaultValue() { return document.getElementById('product-id').value || ''; } },
+                    { name: 'combinationId', label: 'Combination ID (Optional)', type: 'number', placeholder: 'Combination ID', get defaultValue() { return document.getElementById('combination-id').value || ''; } },
+                    { name: 'quantity', label: 'Quantity to Check', type: 'number', placeholder: '1', defaultValue: 1 },
+                ],
+                get query() {
+                    const data = getFormData(OPS.checkProductAvailability.fields);
+                    let args = [];
+                    if (data.productId) args.push(`productId: ${data.productId}`);
+                    if (data.combinationId) args.push(`combinationId: ${data.combinationId}`);
+                    if (data.quantity) args.push(`quantity: ${data.quantity}`);
+                    
+                    return `query { checkProductAvailability(${args.join(', ')}) }`;
+                }
+            },
+            
+            // --- Pricing Operations ---
+            countries: { user: 'admin', title: 'List Countries', type: 'Query', query: `query { countries { id isoCode name active taxRate } }` },
+            
+            createCountry: {
+                user: 'admin', title: 'Add Country', type: 'Mutation',
+                fields: [
+                    { name: 'isoCode', label: 'ISO Code (e.g. MG)', type: 'text', placeholder: 'MG', required: true, defaultValue: 'MG' },
+                    { name: 'name', label: 'Country Name', type: 'text', placeholder: 'Madagascar', required: true, defaultValue: 'Madagascar' },
+                    { name: 'taxRate', label: 'Default Tax Rate (%)', type: 'number', placeholder: '20.0', required: true, defaultValue: 20.0 },
+                    { name: 'active', label: 'Active', type: 'text', placeholder: 'true', defaultValue: 'true' },
+                ],
+                get query() {
+                    const data = getFormData(OPS.createCountry.fields);
+                    return `mutation { createCountry(input: { isoCode: "${data.isoCode}", name: "${data.name}", taxRate: ${data.taxRate}, active: ${data.active} }) { id name isoCode taxRate } }`;
+                },
+                onSuccess: (data) => {
+                    state.lastCountryId = data.createCountry.id;
+                    document.getElementById('country-id').value = data.createCountry.id;
+                }
+            },
+
+            updateCountry: {
+                user: 'admin', title: 'Update Country', type: 'Mutation',
+                fields: [
+                    { name: 'id', label: 'Country ID', type: 'number', required: true, get defaultValue() { return document.getElementById('country-id').value || state.lastCountryId || 1; } },
+                    { name: 'name', label: 'New Name', type: 'text', placeholder: 'New Name' },
+                    { name: 'taxRate', label: 'New Tax Rate', type: 'number', placeholder: '20.0' },
+                    { name: 'active', label: 'Active', type: 'text', placeholder: 'true' },
+                ],
+                get query() {
+                    const data = getFormData(OPS.updateCountry.fields);
+                    let input = [];
+                    if (data.name) input.push(`name: "${data.name}"`);
+                    if (data.taxRate !== undefined) input.push(`taxRate: ${data.taxRate}`);
+                    if (data.active !== undefined) input.push(`active: ${data.active}`);
+                    
+                    return `mutation { updateCountry(id: ${data.id}, input: { ${input.join(', ')} }) { id name taxRate active } }`;
+                }
+            },
+
+            deleteCountry: {
+                user: 'admin', title: 'Delete Country', type: 'Mutation',
+                fields: [
+                    { name: 'id', label: 'Country ID', type: 'number', required: true, get defaultValue() { return document.getElementById('country-id').value || state.lastCountryId || 1; } },
+                ],
+                get query() {
+                    const data = getFormData(OPS.deleteCountry.fields);
+                    return `mutation { deleteCountry(id: ${data.id}) { id isoCode } }`;
+                }
+            },
+
+            specificPrices: { 
+                user: 'admin', title: 'List Specific Prices', type: 'Query', 
+                fields: [
+                    { name: 'productId', label: 'Product ID (Optional)', type: 'number' },
+                    { name: 'customerId', label: 'Customer ID (Optional)', type: 'number' },
+                ],
+                get query() {
+                    const data = getFormData(OPS.specificPrices.fields);
+                    let args = [];
+                    if (data.productId) args.push(`productId: ${data.productId}`);
+                    if (data.customerId) args.push(`customerId: ${data.customerId}`);
+                    return `query { specificPrices${args.length ? '(' + args.join(', ') + ')' : ''} { id reduction reductionType fromQuantity dateFrom } }`;
+                }
+            },
+
+            createSpecificPrice: {
+                user: 'admin', title: 'Create Specific Price Rule', type: 'Mutation',
+                fields: [
+                    { name: 'productId', label: 'Product ID (Optional)', type: 'number', get defaultValue() { return document.getElementById('product-id').value || ''; } },
+                    { name: 'customerId', label: 'Customer ID (Optional)', type: 'number' },
+                    { name: 'countryId', label: 'Country ID (Optional)', type: 'number' },
+                    { name: 'reductionType', label: 'Type (percentage/amount)', type: 'text', required: true, defaultValue: 'percentage' },
+                    { name: 'reduction', label: 'Reduction Value', type: 'number', required: true, defaultValue: 10 },
+                    { name: 'fromQuantity', label: 'From Quantity', type: 'number', defaultValue: 1 },
+                ],
+                get query() {
+                    const data = getFormData(OPS.createSpecificPrice.fields);
+                    let input = [`reductionType: "${data.reductionType}"`, `reduction: ${data.reduction}`];
+                    if (data.productId) input.push(`productId: ${data.productId}`);
+                    if (data.customerId) input.push(`customerId: ${data.customerId}`);
+                    if (data.countryId) input.push(`countryId: ${data.countryId}`);
+                    if (data.fromQuantity) input.push(`fromQuantity: ${data.fromQuantity}`);
+                    
+                    return `mutation { createSpecificPrice(input: { ${input.join(', ')} }) { id reduction reductionType } }`;
+                }
+            },
+
+            deleteSpecificPrice: {
+                user: 'admin', title: 'Delete Rule', type: 'Mutation',
+                fields: [
+                    { name: 'id', label: 'Rule ID', type: 'number', required: true },
+                ],
+                get query() {
+                    const data = getFormData(OPS.deleteSpecificPrice.fields);
+                    return `mutation { deleteSpecificPrice(id: ${data.id}) { id } }`;
+                }
+            },
+
+            calculatePrice: {
+                user: 'admin', title: 'Simulate Price Calculation', type: 'Query',
+                fields: [
+                    { name: 'productId', label: 'Product ID', type: 'number', required: true, get defaultValue() { return document.getElementById('product-id').value || 1; } },
+                    { name: 'countryId', label: 'Country ID', type: 'number', required: true, get defaultValue() { return document.getElementById('country-id').value || 1; } },
+                    { name: 'combinationId', label: 'Combination ID (Optional)', type: 'number', get defaultValue() { return document.getElementById('combination-id').value || ''; } },
+                    { name: 'customerId', label: 'Customer ID (Optional)', type: 'number', get defaultValue() { return document.getElementById('customer-id').value || ''; } },
+                    { name: 'quantity', label: 'Quantity', type: 'number', defaultValue: 1 },
+                ],
+                get query() {
+                    const data = getFormData(OPS.calculatePrice.fields);
+                    let args = [
+                        `productId: ${data.productId}`,
+                        `countryId: ${data.countryId}`,
+                        `quantity: ${data.quantity}`
+                    ];
+                    if (data.combinationId) args.push(`combinationId: ${data.combinationId}`);
+                    if (data.customerId) args.push(`customerId: ${data.customerId}`);
+                    
+                    return `query { calculatePrice(${args.join(', ')}) { basePrice combinationImpact customerGroupReduction specificPriceReduction priceHT taxRate taxAmount priceTTC } }`;
+                }
+            },
+
+            // Placeholder ops (non-form dependent)
+            customers: { user: 'admin', title: 'List All Customers', type: 'Query', query: `query { customers { id firstname lastname email active group { name } } }` },
+            customerGroups: { user: 'admin', title: 'List Customer Groups', type: 'Query', query: `query { customerGroups { id name reduction } }` },
+            employees: { user: 'admin', title: 'List All Employees', type: 'Query', query: `query { employees { id firstname email role { name } } }` },
+            employeeMe: { user: 'admin', title: 'Employee Me', type: 'Query', query: `query { employeeMe { id firstname role { name } lastConnectionDate } }` },
+        };
+
+        async function runOp(opName) {
+            const op = OPS[opName];
+            if (!op) return console.error('Op not found', opName);
+
+            let query;
+            try {
+                // Get query string from the getter, which uses current form data
+                query = op.query;
+            } catch (error) {
+                log(opName, 'Form Data Error', { errors: [{ message: error.message }] }, true);
+                return;
+            }
+
+            const token = op.user === 'admin' ? state.adminToken : (op.user === 'customer' ? state.customerToken : null);
+            
+            // Auto-login check (except for login/register)
+            if (op.user && !token && op.type !== 'Authentication') {
+                log(opName, query, { errors: [{ message: `Authentification Requise: Veuillez vous connecter en tant que ${op.user} d'abord.` }] }, true);
+                return;
+            }
+
+            // Simple loading indicator on the execution button
+            const executeButton = document.getElementById('execute-button');
+            const originalText = executeButton.textContent;
+            executeButton.textContent = 'Executing...';
+            executeButton.disabled = true;
+
+            try {
+                const res = await gql(query, token);
+
+                if (!res.errors && res.data && op.onSuccess) {
+                    op.onSuccess(res.data);
+                }
+
+                log(opName, query, res, !!res.errors);
+            } catch (e) {
+                log(opName, query, { errors: [{ message: e.message || 'Unknown execution error.' }] }, true);
+            } finally {
+                executeButton.textContent = originalText;
+                executeButton.disabled = false;
+                
+                // If it was an auto-run query (i.e., no form), re-enable selection
+                if (!op.fields || op.fields.length === 0) {
+                     document.querySelectorAll('.op-button').forEach(btn => btn.classList.remove('active'));
+                     state.currentOpName = null;
+                }
+            }
+        }
+
+        // --- Util Functions ---
+        function syntaxHighlight(json) {
+            if (typeof json != 'string') {
+                json = JSON.stringify(json, undefined, 2);
+            }
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                var cls = 'json-number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'json-key';
+                    } else {
+                        cls = 'json-string';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'json-boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'json-null';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+
+        // Initialize state display on load
+        document.addEventListener('DOMContentLoaded', updateAuthStatus);
+
+    </script>
+</body>
+</html>

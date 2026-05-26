@@ -1,6 +1,6 @@
 import { ObjectType, Field, Int, ID, Float, InputType } from '@nestjs/graphql';
-import { ProductType } from '@dima-new/backend/products';
-import { ProductCombinationType } from '@dima-new/backend/products';
+import { ProductType } from '@dima-new/backend/catalog';
+import { ProductCombinationType } from '@dima-new/backend/catalog';
 import { PriceDetailType } from '@dima-new/backend/pricing';
 
 @ObjectType()
@@ -30,7 +30,7 @@ export class CartItemType {
   priceDetail?: PriceDetailType;
 
   @Field(() => Float)
-  lineTotal!: number; // Calculated field (P.U * Qty)
+  lineTotal!: number; 
 
   @Field()
   dateAdd!: Date;
