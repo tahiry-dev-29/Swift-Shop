@@ -3,15 +3,22 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "start:all": "nx run-many --target=serve --projects=store,admin,api --parallel",
-    "start:store": "nx run store:serve:development --port=4200",
-    "start:admin": "nx run admin:serve:development --port=4201",
-    "start:api": "nx run api:serve:development",
-    "prisma:generate": "dotenv -e .env -- prisma generate",
-    "prisma:seed": "dotenv -e .env -- ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts",
-    "strip-comments": "find apps libs prisma -name '*.ts' -type f | xargs stripcomments -w --confirm-overwrite --language=TypeScript"
+    "start:all": "bunx nx run-many --target=serve --projects=store,admin,api --parallel",
+    "start:store": "bunx nx run store:serve:development --port=4200",
+    "start:admin": "bunx nx run admin:serve:development --port=4201",
+    "start:api": "bunx nx run api:serve:development",
+    "prisma:generate": "bunx prisma generate",
+    "prisma:seed": "bun prisma/seed.ts",
+    "docs:generate": "doxygen Doxyfile",
+    "prepare": "husky"
   },
   "private": true,
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix",
+      "tsc --noEmit"
+    ]
+  },
   "dependencies": {
     "@angular/common": "21.0.3",
     "@angular/compiler": "21.0.3",
@@ -70,7 +77,6 @@
     "@nx/web": "22.1.3",
     "@nx/webpack": "22.1.3",
     "@nx/workspace": "22.1.3",
-    "@prasadrajandran/strip-comments-cli": "1.0.0-beta.1",
     "@schematics/angular": "~21.0.2",
     "@swc-node/register": "~1.9.1",
     "@swc/core": "~1.5.7",
@@ -90,8 +96,10 @@
     "dotenv-cli": "^11.0.0",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
+    "husky": "^9.1.7",
     "jiti": "2.4.2",
     "jsdom": "~22.1.0",
+    "lint-staged": "^17.0.5",
     "nx": "22.1.3",
     "prettier": "^2.6.2",
     "prisma": "^7.1.0",

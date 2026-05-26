@@ -41,6 +41,10 @@ export default [
       '**/*.mjs',
     ],
     // Override or add rules here
-    rules: {},
+    rules: {
+      "max-lines": ["error", { "max": 120, "skipBlankLines": true, "skipComments": true }],
+      "@typescript-eslint/no-explicit-any": "error",
+      "no-console": "warn"
+    },
   },
 ];
