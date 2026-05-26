@@ -1,5 +1,5 @@
 # Doxyfile for DIMA Workspace
-# Tightened for security 🔐
+# Tightened for security & zero warnings 🔐🛡️
 
 # Project settings
 PROJECT_NAME           = "DIMA Project"
@@ -15,10 +15,10 @@ EXTENSION_MAPPING      = ts=C++ tsx=C++ js=C++ jsx=C++
 FILE_PATTERNS          = *.ts *.tsx *.js *.jsx *.md
 RECURSIVE              = YES
 
-# Inputs (Explicit folders only)
+# Inputs
 INPUT                  = README.md apps libs prisma shared
 
-# Exclusions (Strict security & performance)
+# Exclusions (Security, Performance & Warning fix)
 EXCLUDE                = node_modules \
                          dist \
                          .nx \
@@ -33,9 +33,12 @@ EXCLUDE_PATTERNS       = */node_modules/* \
                          */.env* \
                          */spec.ts \
                          */*.spec.ts \
-                         */*.test.ts
+                         */*.test.ts \
+                         */libs/*/README.md \
+                         */shared/*/README.md \
+                         */apps/*/README.md
 
-# Extraction settings (Security focused)
+# Extraction settings (Public API only for security)
 EXTRACT_ALL            = NO
 EXTRACT_PRIVATE        = NO
 EXTRACT_STATIC         = NO
@@ -44,10 +47,11 @@ EXTRACT_LOCAL_METHODS  = NO
 HIDE_UNDOC_MEMBERS     = YES
 HIDE_UNDOC_CLASSES     = YES
 
-# Source code protection (Do NOT show source in HTML)
+# Source code protection (Maximum security)
 SOURCE_BROWSER         = NO
 VERBATIM_HEADERS       = NO
 INLINE_SOURCES         = NO
+STRIP_CODE_COMMENTS    = YES
 
 # Markdown support
 USE_MDFILE_AS_MAINPAGE = README.md

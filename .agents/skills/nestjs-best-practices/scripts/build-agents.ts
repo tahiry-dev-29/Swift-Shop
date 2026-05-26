@@ -76,10 +76,12 @@ function generateTableOfContents(rulesByCategory: Map<string, Rule[]>): string {
 function generateAgentsMd(rules: Rule[], metadata: Metadata): string {
   const rulesByCategory = new Map<string, Rule[]>();
   for (const rule of rules) {
-    if (!rulesByCategory.has(rule.category)) {
-      rulesByCategory.set(rule.category, []);
+    let categoryRules = rulesByCategory.get(rule.category);
+    if (!categoryRules) {
+      categoryRules = [];
+      rulesByCategory.set(rule.category, categoryRules);
     }
-    rulesByCategory.get(rule.category)!.push(rule);
+    categoryRules.push(rule);
   }
 
   for (const categoryRules of rulesByCategory.values()) {
