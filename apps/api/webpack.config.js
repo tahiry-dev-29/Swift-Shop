@@ -9,6 +9,7 @@ module.exports = {
       devtoolModuleFilenameTemplate: '[absolute-resource-path]',
     }),
   },
+  ignoreWarnings: [/baseline-browser-mapping/],
   plugins: [
     new NxAppWebpackPlugin({
       target: 'node',
