@@ -45,11 +45,14 @@ Thumbs.db
 
 .angular
 
+# Documentation
+/docs
+
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
 
 /libs/data-access-prisma/src/lib/generated/prisma
 
-tools
+# tools
 
-todos
+# todos

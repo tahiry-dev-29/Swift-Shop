@@ -9,7 +9,7 @@ export interface CustomerData {
   birthday?: Date;
 }
 
-// Customer list with realistic data
+
 const customersList: CustomerData[] = [
   { email: 'marie.dupont@gmail.com', firstname: 'Marie', lastname: 'Dupont', birthday: new Date('1990-03-15') },
   { email: 'jean.martin@yahoo.fr', firstname: 'Jean', lastname: 'Martin', company: 'Tech Solutions' },
@@ -31,7 +31,7 @@ const customersList: CustomerData[] = [
 export const seedCustomers = async (prisma: PrismaClient) => {
   console.log('👥 Seeding Customers...');
 
-  // Create customer groups
+  
   const groups = [
     { name: 'Default', reduction: 0, showPrices: true },
     { name: 'VIP', reduction: 10, showPrices: true },
@@ -58,17 +58,17 @@ export const seedCustomers = async (prisma: PrismaClient) => {
     createdGroups.push(existing);
   }
 
-  // Hash password once for all customers
+  
   const password = await argon2.hash('customer123');
 
-  // Create customers
+  
   let created = 0;
   for (let i = 0; i < customersList.length; i++) {
     const customer = customersList[i];
     const existing = await prisma.customer.findUnique({ where: { email: customer.email } });
 
     if (!existing) {
-      // Assign group based on index for variety
+      
       const groupIndex = i < 10 ? 0 : i < 13 ? 1 : i < 14 ? 2 : 3;
       
       await prisma.customer.create({

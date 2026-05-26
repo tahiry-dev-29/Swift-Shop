@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 export const seedPricing = async (prisma: PrismaClient) => {
   console.log('💰 Seeding Pricing Data (Countries, TaxRules, SpecificPrices)...');
 
-  // Create Countries with tax rates
+  
   const countries = [
     { isoCode: 'FR', name: 'France', taxRate: 20.00 },
     { isoCode: 'DE', name: 'Germany', taxRate: 19.00 },
@@ -30,7 +30,7 @@ export const seedPricing = async (prisma: PrismaClient) => {
     }
   }
 
-  // Create Tax Rules for France (multiple VAT rates)
+  
   const frCountry = await prisma.country.findUnique({ where: { isoCode: 'FR' } });
   if (frCountry) {
     const taxRules = [
@@ -61,18 +61,18 @@ export const seedPricing = async (prisma: PrismaClient) => {
     }
   }
 
-  // Create Specific Prices
+  
   console.log('  📊 Creating Specific Prices...');
   
-  // Get VIP group for group-specific pricing
+  
   const vipGroup = await prisma.customerGroup.findFirst({ where: { name: 'VIP' } });
   const wholesaleGroup = await prisma.customerGroup.findFirst({ where: { name: 'Wholesale' } });
   
-  // Get some products for specific prices
+  
   const products = await prisma.product.findMany({ take: 10 });
 
   if (products.length > 0) {
-    // 1. General promotion: 10% off on first product
+    
     const promo10 = await prisma.specificPrice.findFirst({
       where: { productId: products[0].id, reductionType: 'percentage', reduction: 10, customerId: null, customerGroupId: null },
     });
@@ -89,7 +89,7 @@ export const seedPricing = async (prisma: PrismaClient) => {
       console.log(`    ✅ 10% off on ${products[0].name}`);
     }
 
-    // 2. VIP Group discount: 15% off on electronics
+    
     if (vipGroup && products.length > 1) {
       const vipPromo = await prisma.specificPrice.findFirst({
         where: { productId: products[1].id, customerGroupId: vipGroup.id },
@@ -109,7 +109,7 @@ export const seedPricing = async (prisma: PrismaClient) => {
       }
     }
 
-    // 3. Quantity discount: Buy 3+ get 5€ off
+    
     if (products.length > 2) {
       const qtyPromo = await prisma.specificPrice.findFirst({
         where: { productId: products[2].id, fromQuantity: 3 },
@@ -129,7 +129,7 @@ export const seedPricing = async (prisma: PrismaClient) => {
       }
     }
 
-    // 4. Wholesale group: 20% off on multiple products
+    
     if (wholesaleGroup && products.length > 4) {
       for (let i = 3; i < Math.min(6, products.length); i++) {
         const wsPromo = await prisma.specificPrice.findFirst({
@@ -151,7 +151,7 @@ export const seedPricing = async (prisma: PrismaClient) => {
       }
     }
 
-    // 5. Flash sale (time-limited) - expires in 30 days
+    
     if (products.length > 6) {
       const flashPromo = await prisma.specificPrice.findFirst({
         where: { productId: products[6].id, dateTo: { not: null } },

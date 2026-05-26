@@ -3,16 +3,25 @@ import { UseGuards, UnauthorizedException } from '@nestjs/common';
 import { CustomerService } from './customer.service';
 import { AuthService, CustomerGuard, EmployeeGuard } from '@dima-new/backend/auth';
 import { CustomerType, CustomerAuthResponse, CustomerRegisterInput } from './dto';
+import { CartService } from '@dima-new/backend/cart';
+
+interface GraphQLContext {
+  req: {
+    headers: Record<string, string | string[] | undefined>;
+  };
+}
 
 @Resolver()
 export class CustomerResolver {
   constructor(
     private readonly customerService: CustomerService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly cartService: CartService
   ) {}
 
   @Mutation(() => CustomerAuthResponse)
   async customerLogin(
+    @Context() context: GraphQLContext,
     @Args('email') email: string,
     @Args('password') password: string
   ) {
@@ -22,6 +31,15 @@ export class CustomerResolver {
     }
 
     const token = this.authService.generateCustomerToken(customer);
+
+    const sessionId = context.req?.headers?.['x-session-id'];
+    if (sessionId) {
+        await this.cartService.mergeGuestCart(
+          Array.isArray(sessionId) ? sessionId[0] : sessionId,
+          customer.id
+        );
+    }
+
     return { ...token, customer };
   }
 

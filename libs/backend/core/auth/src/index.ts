@@ -5,7 +5,6 @@ export * from './lib/guards/jwt-auth-guard';
 export * from './lib/guards/customer-guard';
 export * from './lib/guards/employee-guard';
 export * from './lib/guards/super-admin-guard';
+export * from './lib/guards/optional-customer.guard';
 export * from './lib/decorators/current-user.decorator';
 export { JwtPayload } from '@dima-new/models';
-
-

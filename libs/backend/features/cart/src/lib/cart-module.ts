@@ -3,8 +3,10 @@ import { CartService } from './cart-service';
 import { CartResolver } from './cart-resolver';
 import { PricingModule } from '@dima-new/backend/pricing';
 
+import { DataAccessPrismaModule } from '@dima-new/data-access-prisma';
+
 @Module({
-  imports: [PricingModule],
+  imports: [DataAccessPrismaModule, PricingModule],
   providers: [CartService, CartResolver],
   exports: [CartService],
 })
