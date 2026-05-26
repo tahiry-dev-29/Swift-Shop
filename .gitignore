@@ -45,7 +45,7 @@ Thumbs.db
 
 .angular
 
-# Documentation
+  # Documentation
 /docs
 
 vite.config.*.timestamp*
