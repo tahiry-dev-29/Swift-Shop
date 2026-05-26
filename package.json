@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "start:all": "bunx nx run-many --target=serve --projects=store,admin,api --parallel",
+    "start:all": "bun run prisma:generate && bunx nx run-many --target=serve --projects=store,admin,api --parallel",
     "start:store": "bunx nx run store:serve:development --port=4200",
     "start:admin": "bunx nx run admin:serve:development --port=4201",
     "start:api": "bunx nx run api:serve:development",
