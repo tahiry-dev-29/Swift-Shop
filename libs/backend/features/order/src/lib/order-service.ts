@@ -71,7 +71,6 @@ export class OrderService {
             include: { state: true }
         });
 
-        
         await tx.orderAddress.create({
             data: {
                 orderId: order.id,
@@ -84,11 +83,23 @@ export class OrderService {
                 postcode: deliveryAddress.postcode,
                 city: deliveryAddress.city,
                 country: deliveryAddress.countryId, 
-                
-                
-                
-                
                 phone: deliveryAddress.phone || deliveryAddress.phoneMobile,
+            } 
+        });
+
+        await tx.orderAddress.create({
+            data: {
+                orderId: order.id,
+                type: 'billing',
+                firstname: billingAddress.firstname,
+                lastname: billingAddress.lastname,
+                company: billingAddress.company,
+                address1: billingAddress.address1,
+                address2: billingAddress.address2,
+                postcode: billingAddress.postcode,
+                city: billingAddress.city,
+                country: billingAddress.countryId, 
+                phone: billingAddress.phone || billingAddress.phoneMobile,
             } 
         });
         

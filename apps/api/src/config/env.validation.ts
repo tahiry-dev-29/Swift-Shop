@@ -1,0 +1,43 @@
+type Environment = Record<string, string | undefined>;
+
+type ValidatedEnvironment = Record<string, string | number | undefined> & {
+  DATABASE_URL: string;
+  JWT_SECRET: string;
+  PORT: number;
+};
+
+const DEFAULT_PORT = 3000;
+
+function requireValue(env: Environment, key: string): string {
+  const value = env[key];
+
+  if (!value?.trim()) {
+    throw new Error(`Missing required environment variable: ${key}`);
+  }
+
+  return value;
+}
+
+function parsePort(value: string | undefined): number {
+  if (!value) {
+    return DEFAULT_PORT;
+  }
+
+  const port = Number(value);
+
+  if (!Number.isInteger(port) || port <= 0 || port > 65535) {
+    throw new Error('PORT must be an integer between 1 and 65535');
+  }
+
+  return port;
+}
+
+export function validateEnvironment(env: Environment): ValidatedEnvironment {
+  const { PORT, DATABASE_URL, JWT_SECRET, ...rest } = env;
+  return {
+    ...rest,
+    DATABASE_URL: requireValue(env, 'DATABASE_URL'),
+    JWT_SECRET: requireValue(env, 'JWT_SECRET'),
+    PORT: parsePort(PORT),
+  } as ValidatedEnvironment;
+}
