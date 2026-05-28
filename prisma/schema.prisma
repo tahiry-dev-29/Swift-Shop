@@ -177,6 +177,43 @@ model AttributeValue {
 }
 
 // ----------------------------------------------------------------------
+// CATALOG - FEATURES (Product characteristics like Material, Style)
+// ----------------------------------------------------------------------
+
+model Feature {
+  id          String         @id @default(uuid())
+  name        String         @unique  // Internal name (e.g. "Material")
+  publicName  String         // Customer facing name (e.g. "Matière")
+  position    Int            @default(0)
+  
+  values      FeatureValue[]
+}
+
+model FeatureValue {
+  id          String         @id @default(uuid())
+  featureId   String
+  value       String         // e.g. "Cotton", "Leather"
+  position    Int            @default(0)
+  custom      Boolean        @default(false) // If true, it's a custom value
+  
+  feature     Feature        @relation(fields: [featureId], references: [id], onDelete: Cascade)
+  productFeatures ProductFeature[]
+  
+  @@unique([featureId, value])
+}
+
+model ProductFeature {
+  id             String       @id @default(uuid())
+  productId      String
+  featureValueId String
+  
+  product        Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  featureValue   FeatureValue @relation(fields: [featureValueId], references: [id], onDelete: Cascade)
+  
+  @@unique([productId, featureValueId])
+}
+
+// ----------------------------------------------------------------------
 // PRODUCTS CORE
 // ----------------------------------------------------------------------
 
@@ -215,6 +252,7 @@ model Product {
   
   images           ProductImage[]
   combinations     ProductCombination[]
+  features         ProductFeature[]
   stock            Stock?     // For products without combinations
   specificPrices   SpecificPrice[]
   cartItems        CartItem[]
