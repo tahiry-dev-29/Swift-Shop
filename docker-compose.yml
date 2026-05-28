@@ -1,0 +1,110 @@
+services:
+  store:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: store
+    image: dima-new-store:local
+    container_name: dima-new-store
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      API_URL: ${API_URL:-http://localhost:3010}
+      GRAPHQL_URL: ${GRAPHQL_URL:-http://localhost:3010/graphql}
+    ports:
+      - "${DOCKER_PORT_STORE:-4210}:${PORT_STORE:-4200}"
+    depends_on:
+      api:
+        condition: service_started
+    networks:
+      - dima-new-network
+
+  admin:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: admin
+    image: dima-new-admin:local
+    container_name: dima-new-admin
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      API_URL: ${API_URL:-http://localhost:3010}
+      GRAPHQL_URL: ${GRAPHQL_URL:-http://localhost:3010/graphql}
+    ports:
+      - "${DOCKER_PORT_ADMIN:-4211}:${PORT_ADMIN:-4201}"
+    depends_on:
+      api:
+        condition: service_started
+    networks:
+      - dima-new-network
+
+  prisma-studio:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prisma-studio
+    image: dima-new-prisma-studio:local
+    container_name: dima-new-prisma-studio
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://${POSTGRES_USER:-tahiry}:${POSTGRES_PASSWORD:-tahiry4534}@postgres:5432/${POSTGRES_DB:-dima_new}?schema=public
+    ports:
+      - "${DOCKER_PORT_PRISMA_STUDIO:-5556}:5555"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - dima-new-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api
+    image: dima-new-api:local
+    container_name: dima-new-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: ${PORT_API:-3000}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-tahiry}:${POSTGRES_PASSWORD:-tahiry4534}@postgres:5432/${POSTGRES_DB:-dima_new}?schema=public
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "${DOCKER_PORT_API:-3010}:${PORT_API:-3000}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - dima-new-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: dima-new-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-tahiry}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tahiry4534}
+      POSTGRES_DB: ${POSTGRES_DB:-dima_new}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "${DOCKER_PORT_POSTGRES:-5442}:5432"
+    volumes:
+      - dima-new-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - dima-new-network
+
+volumes:
+  dima-new-postgres-data:
+    name: dima-new-postgres-data
+
+networks:
+  dima-new-network:
+    name: dima-new-network
+    driver: bridge
