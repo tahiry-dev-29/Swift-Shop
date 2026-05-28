@@ -6,6 +6,8 @@ import { AttributeService } from './attribute/attribute.service';
 import { AttributeResolver } from './attribute/attribute.resolver';
 import { ProductService } from './product/product.service';
 import { ProductResolver } from './product/product.resolver';
+import { FeatureService } from './feature/feature.service';
+import { FeatureResolver } from './feature/feature.resolver';
 
 @Module({
   imports: [DataAccessPrismaModule],
@@ -16,6 +18,8 @@ import { ProductResolver } from './product/product.resolver';
     AttributeResolver,
     ProductService,
     ProductResolver,
+    FeatureService,
+    FeatureResolver,
   ],
   exports: [
     CategoryService, 
@@ -24,6 +28,8 @@ import { ProductResolver } from './product/product.resolver';
     AttributeResolver,
     ProductService,
     ProductResolver,
+    FeatureService,
+    FeatureResolver,
   ],
 })
 export class CatalogModule {}

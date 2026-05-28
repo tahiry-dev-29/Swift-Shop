@@ -1,0 +1,15 @@
+.git
+.nx
+coverage
+dist
+docs
+node_modules
+tmp
+
+.env
+.env.*
+!.env.example
+
+Dockerfile
+docker-compose*.yml
+*.log

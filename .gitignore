@@ -51,11 +51,18 @@ Thumbs.db
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
 
+.env
+.env.local
+.env.docker
+.env.production
+!.env.example
+
 /libs/data-access-prisma/src/lib/generated/prisma
 
 # tools
 
 # todos
+todos/
 
 .claude/worktrees
 .nx/polygraph
