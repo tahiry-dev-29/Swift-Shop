@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
@@ -14,10 +15,15 @@ import { CatalogModule } from '@dima-new/backend/catalog';
 import { PricingModule } from '@dima-new/backend/pricing';
 import { CartModule } from '@dima-new/backend/cart';
 import { OrderModule } from '@dima-new/backend/order';
+import { validateEnvironment } from './config/env.validation';
 
 @Module({
   imports: [
-    
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validate: validateEnvironment,
+    }),
+
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(__dirname, 'schema.gql'),
@@ -26,9 +32,9 @@ import { OrderModule } from '@dima-new/backend/order';
       introspection: true,
       context: ({ req }) => ({ req }),
     }),
-    
+
     DataAccessPrismaModule,
-    
+
     AuthModule,
     CustomerModule,
     EmployeeModule,
