@@ -33,7 +33,9 @@ export class CustomerAuthResponse {
   @Field()
   accessToken!: string;
 
+  @Field({ nullable: true })
+  refreshToken?: string;
+
   @Field(() => CustomerType)
   customer!: CustomerType;
 }
-

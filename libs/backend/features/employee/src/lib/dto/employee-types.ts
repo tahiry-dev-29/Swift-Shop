@@ -45,6 +45,9 @@ export class EmployeeAuthResponse {
   @Field()
   accessToken!: string;
 
+  @Field({ nullable: true })
+  refreshToken?: string;
+
   @Field(() => EmployeeType)
   employee!: EmployeeType;
 }

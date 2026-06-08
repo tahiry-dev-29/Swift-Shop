@@ -21,7 +21,7 @@ export class EmployeeResolver {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const token = this.authService.generateEmployeeToken(employee);
+    const token = await this.authService.generateEmployeeToken(employee);
     return { ...token, employee };
   }
 
@@ -82,6 +82,20 @@ export class EmployeeResolver {
       throw new NotFoundException(`Employee #${id} not found`);
     }
     return this.employeeService.delete(id);
+  }
+
+  @Mutation(() => EmployeeAuthResponse)
+  async employeeRefreshToken(@Args('token') token: string) {
+    const result = await this.authService.refreshToken(token);
+    return result;
+  }
+
+  @Mutation(() => Boolean)
+  @UseGuards(EmployeeGuard)
+  async employeeLogout(@Context() ctx: { req: { user: { id: string, jti?: string, exp?: number } } }) {
+    const user = ctx.req.user;
+    await this.authService.logout(user.id, user.jti, user.exp);
+    return true;
   }
 }
 
