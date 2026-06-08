@@ -57,14 +57,7 @@ export class UsersService {
 
   // Use QueryBuilder for complex selections
   async getUserSummary(id: string): Promise<UserSummary> {
-    return this.repo
-      .createQueryBuilder('user')
-      .select('user.name', 'name')
-      .addSelect('COUNT(post.id)', 'postCount')
-      .leftJoin('user.posts', 'post')
-      .where('user.id = :id', { id })
-      .groupBy('user.id')
-      .getRawOne();
+    return this.repo.createQueryBuilder('user').select('user.name', 'name').addSelect('COUNT(post.id)', 'postCount').leftJoin('user.posts', 'post').where('user.id = :id', { id }).groupBy('user.id').getRawOne();
   }
 
   // Fetch relations only when needed

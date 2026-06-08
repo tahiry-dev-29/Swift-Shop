@@ -21,11 +21,9 @@ import {
 export class ProductResolver {
   constructor(private readonly productService: ProductService) {}
 
-  
-
   @Query(() => ProductListType)
   async products(
-    @Args('filter', { nullable: true }) filter?: ProductFilterInput
+    @Args('filter', { nullable: true }) filter?: ProductFilterInput,
   ) {
     return this.productService.findAll(filter);
   }
@@ -34,8 +32,6 @@ export class ProductResolver {
   async product(@Args('id', { type: () => ID }) id: string) {
     return this.productService.findById(id);
   }
-
-  
 
   @Mutation(() => ProductType)
   @UseGuards(SuperAdminGuard)
@@ -47,7 +43,7 @@ export class ProductResolver {
   @UseGuards(SuperAdminGuard)
   async updateProduct(
     @Args('id', { type: () => ID }) id: string,
-    @Args('input') input: UpdateProductInput
+    @Args('input') input: UpdateProductInput,
   ) {
     return this.productService.update(id, input);
   }
@@ -58,13 +54,11 @@ export class ProductResolver {
     return this.productService.delete(id);
   }
 
-  
-
   @Mutation(() => ProductImageType)
   @UseGuards(SuperAdminGuard)
   async addProductImage(
     @Args('productId', { type: () => ID }) productId: string,
-    @Args('input') input: CreateProductImageInput
+    @Args('input') input: CreateProductImageInput,
   ) {
     return this.productService.addImage(productId, input);
   }
@@ -77,17 +71,17 @@ export class ProductResolver {
 
   @Mutation(() => ProductImageType)
   @UseGuards(SuperAdminGuard)
-  async setProductCoverImage(@Args('imageId', { type: () => ID }) imageId: string) {
+  async setProductCoverImage(
+    @Args('imageId', { type: () => ID }) imageId: string,
+  ) {
     return this.productService.setCoverImage(imageId);
   }
-
-  
 
   @Mutation(() => ProductCombinationType)
   @UseGuards(SuperAdminGuard)
   async addProductCombination(
     @Args('productId', { type: () => ID }) productId: string,
-    @Args('input') input: CreateProductCombinationInput
+    @Args('input') input: CreateProductCombinationInput,
   ) {
     return this.productService.addCombination(productId, input);
   }
@@ -96,7 +90,7 @@ export class ProductResolver {
   @UseGuards(SuperAdminGuard)
   async updateProductCombination(
     @Args('id', { type: () => ID }) id: string,
-    @Args('input') input: UpdateProductCombinationInput
+    @Args('input') input: UpdateProductCombinationInput,
   ) {
     return this.productService.updateCombination(id, input);
   }
@@ -106,8 +100,6 @@ export class ProductResolver {
   async deleteProductCombination(@Args('id', { type: () => ID }) id: string) {
     return this.productService.deleteCombination(id);
   }
-
-  
 
   @Mutation(() => StockType)
   @UseGuards(SuperAdminGuard)
@@ -119,7 +111,7 @@ export class ProductResolver {
   @UseGuards(SuperAdminGuard)
   async incrementStock(
     @Args('stockId', { type: () => ID }) stockId: string,
-    @Args('quantity', { type: () => Int }) quantity: number
+    @Args('quantity', { type: () => Int }) quantity: number,
   ) {
     return this.productService.incrementStock(stockId, quantity);
   }
@@ -128,7 +120,7 @@ export class ProductResolver {
   @UseGuards(SuperAdminGuard)
   async decrementStock(
     @Args('stockId', { type: () => ID }) stockId: string,
-    @Args('quantity', { type: () => Int }) quantity: number
+    @Args('quantity', { type: () => Int }) quantity: number,
   ) {
     return this.productService.decrementStock(stockId, quantity);
   }
@@ -136,10 +128,14 @@ export class ProductResolver {
   @Query(() => Boolean)
   async checkProductAvailability(
     @Args('productId', { type: () => ID, nullable: true }) productId?: string,
-    @Args('combinationId', { type: () => ID, nullable: true }) combinationId?: string,
-    @Args('quantity', { type: () => Int, nullable: true }) quantity?: number
+    @Args('combinationId', { type: () => ID, nullable: true })
+    combinationId?: string,
+    @Args('quantity', { type: () => Int, nullable: true }) quantity?: number,
   ) {
-    return this.productService.checkAvailability(productId, combinationId, quantity);
+    return this.productService.checkAvailability(
+      productId,
+      combinationId,
+      quantity,
+    );
   }
 }
-

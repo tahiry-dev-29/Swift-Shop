@@ -19,8 +19,8 @@ gql() {
     -H "Content-Type: application/json" \
     -H "${AUTH_HEADER}" \
     -d "{\"query\":\"$query\"}")
-  
-  if echo "$response" | jq -e '.errors' > /dev/null 2>&1; then
+
+  if echo "$response" | jq -e '.errors' >/dev/null 2>&1; then
     echo -e "${RED}❌ FAILED${NC}"
     echo "$response" | jq '.errors'
   else
@@ -78,7 +78,7 @@ MANAGER_ROLE_ID=$(echo "$ROLES_RESPONSE" | jq -r '.data.roles[] | select(.name =
 if [ "$MANAGER_ROLE_ID" != "null" ] && [ -n "$MANAGER_ROLE_ID" ]; then
   # Update Role
   gql "mutation { updateRole(id: $MANAGER_ROLE_ID, input: { description: \"Updated Manager\" }) { id name description } }" "Update Role"
-  
+
   # Delete Role
   gql "mutation { deleteRole(id: $MANAGER_ROLE_ID) { id name } }" "Delete Role"
 fi
@@ -110,10 +110,10 @@ TEST_EMPLOYEE_ID=$(echo "$EMPLOYEES_RESPONSE" | jq -r '.data.employees[] | selec
 if [ "$TEST_EMPLOYEE_ID" != "null" ] && [ -n "$TEST_EMPLOYEE_ID" ]; then
   # Get One Employee
   gql "query { employee(id: $TEST_EMPLOYEE_ID) { id firstname lastname email role { name } active } }" "Get One Employee"
-  
+
   # Update Employee
   gql "mutation { updateEmployee(id: $TEST_EMPLOYEE_ID, input: { active: false }) { id active } }" "Update Employee"
-  
+
   # Delete Employee
   gql "mutation { deleteEmployee(id: $TEST_EMPLOYEE_ID) { id email } }" "Delete Employee"
 fi
@@ -171,10 +171,10 @@ VIP_GROUP_ID=$(echo "$GROUPS_RESPONSE" | jq -r '.data.customerGroups[] | select(
 if [ "$VIP_GROUP_ID" != "null" ] && [ -n "$VIP_GROUP_ID" ]; then
   # Get One Group
   gql "query { customerGroup(id: $VIP_GROUP_ID) { id name reduction showPrices } }" "Get One Customer Group"
-  
+
   # Update Group
   gql "mutation { updateCustomerGroup(id: $VIP_GROUP_ID, input: { reduction: 15.0 }) { id name reduction } }" "Update Customer Group"
-  
+
   # Delete Group
   gql "mutation { deleteCustomerGroup(id: $VIP_GROUP_ID) { id name } }" "Delete Customer Group"
 fi

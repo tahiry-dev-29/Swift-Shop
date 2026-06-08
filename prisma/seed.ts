@@ -3,7 +3,11 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 import * as argon2 from 'argon2';
 import { seedPricing } from './seeds/seed-pricing';
-import { seedCategories, seedAttributes, seedProducts } from './seeds/seed-catalog';
+import {
+  seedCategories,
+  seedAttributes,
+  seedProducts,
+} from './seeds/seed-catalog';
 import { seedCustomers } from './seeds/seed-customers';
 
 const pool = new Pool({
@@ -32,10 +36,13 @@ async function main() {
   }
   console.log('✅ Roles created');
 
-  const superAdminRole = await prisma.role.findUniqueOrThrow({ where: { name: 'SUPER_ADMIN' } });
-  const salesRole = await prisma.role.findUniqueOrThrow({ where: { name: 'SALES' } });
+  const superAdminRole = await prisma.role.findUniqueOrThrow({
+    where: { name: 'SUPER_ADMIN' },
+  });
+  const salesRole = await prisma.role.findUniqueOrThrow({
+    where: { name: 'SALES' },
+  });
 
-  
   const superAdmin = await prisma.employee.upsert({
     where: { email: 'superadmin@dima.com' },
     update: {},
@@ -50,7 +57,6 @@ async function main() {
   });
   console.log('✅ SuperAdmin created:', superAdmin.email);
 
-  
   const employee = await prisma.employee.upsert({
     where: { email: 'staff@dima.com' },
     update: {},
@@ -65,7 +71,6 @@ async function main() {
   });
   console.log('✅ Employee created:', employee.email);
 
-  
   const orderStates = [
     { name: 'PENDING', color: '#fbbf24', position: 0 },
     { name: 'PROCESSING', color: '#3b82f6', position: 1 },
@@ -83,14 +88,12 @@ async function main() {
   }
   console.log('✅ Order States created');
 
-  
   await seedCustomers(prisma);
   console.log('✅ Customers and groups seeded');
 
   await seedPricing(prisma);
   console.log('✅ Pricing data seeded');
 
-  
   const categories = await seedCategories(prisma);
   await seedAttributes(prisma);
   await seedProducts(prisma, categories);
@@ -116,4 +119,3 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
-

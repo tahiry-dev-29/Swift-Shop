@@ -3,9 +3,11 @@
 > Hierarchical category management with tree structure
 
 ## 📍 GraphQL Playground
+
 `http://localhost:3000/graphql`
 
 ## 🔑 Authentication
+
 - **Public**: `categories`, `categoryTree`, `category`, `categoryPath`
 - **SuperAdmin Only**: `createCategory`, `updateCategory`, `deleteCategory`
 
@@ -53,6 +55,7 @@ query {
 ```
 
 **Response Example:**
+
 ```json
 {
   "data": {
@@ -111,6 +114,7 @@ query {
 ```
 
 **Response Example:**
+
 ```json
 {
   "data": {
@@ -126,6 +130,7 @@ query {
 > ⚠️ **All mutations require SuperAdmin authentication**
 
 **Header:**
+
 ```json
 { "Authorization": "Bearer <superAdminToken>" }
 ```
@@ -134,12 +139,7 @@ query {
 
 ```graphql
 mutation {
-  createCategory(input: {
-    name: "Electronics"
-    description: "Electronic devices and gadgets"
-    active: true
-    position: 1
-  }) {
+  createCategory(input: { name: "Electronics", description: "Electronic devices and gadgets", active: true, position: 1 }) {
     id
     name
     description
@@ -149,14 +149,10 @@ mutation {
 ```
 
 **Create Child Category:**
+
 ```graphql
 mutation {
-  createCategory(input: {
-    name: "Smartphones"
-    description: "Mobile phones and accessories"
-    parentId: 1
-    position: 1
-  }) {
+  createCategory(input: { name: "Smartphones", description: "Mobile phones and accessories", parentId: 1, position: 1 }) {
     id
     name
     parentId
@@ -170,11 +166,7 @@ mutation {
 
 ```graphql
 mutation {
-  updateCategory(id: 1, input: {
-    name: "Consumer Electronics"
-    description: "Updated description"
-    active: true
-  }) {
+  updateCategory(id: 1, input: { name: "Consumer Electronics", description: "Updated description", active: true }) {
     id
     name
     description
@@ -183,11 +175,10 @@ mutation {
 ```
 
 **Move Category (Change Parent):**
+
 ```graphql
 mutation {
-  updateCategory(id: 2, input: {
-    parentId: 3
-  }) {
+  updateCategory(id: 2, input: { parentId: 3 }) {
     id
     name
     parentId
@@ -211,11 +202,14 @@ mutation {
 > ⚠️ **Note:** Cannot delete a category that has children. Delete children first or move them to another parent.
 
 **Error Example:**
+
 ```json
 {
-  "errors": [{
-    "message": "Cannot delete category with children"
-  }]
+  "errors": [
+    {
+      "message": "Cannot delete category with children"
+    }
+  ]
 }
 ```
 
@@ -226,39 +220,27 @@ mutation {
 ```graphql
 # 1. Create Root Category
 mutation {
-  createCategory(input: {
-    name: "Fashion"
-    description: "Clothing and accessories"
-  }) {
+  createCategory(input: { name: "Fashion", description: "Clothing and accessories" }) {
     id
   }
 }
 
 # 2. Create Sub-Categories
 mutation {
-  createCategory(input: {
-    name: "Men"
-    parentId: 1
-  }) {
+  createCategory(input: { name: "Men", parentId: 1 }) {
     id
   }
 }
 
 mutation {
-  createCategory(input: {
-    name: "Women"
-    parentId: 1
-  }) {
+  createCategory(input: { name: "Women", parentId: 1 }) {
     id
   }
 }
 
 # 3. Create Nested Sub-Category
 mutation {
-  createCategory(input: {
-    name: "Shirts"
-    parentId: 2
-  }) {
+  createCategory(input: { name: "Shirts", parentId: 2 }) {
     id
   }
 }
@@ -287,9 +269,7 @@ query {
 
 # 6. Update Category
 mutation {
-  updateCategory(id: 4, input: {
-    name: "Dress Shirts"
-  }) {
+  updateCategory(id: 4, input: { name: "Dress Shirts" }) {
     id
     name
   }
@@ -297,9 +277,7 @@ mutation {
 
 # 7. Move Category to Different Parent
 mutation {
-  updateCategory(id: 4, input: {
-    parentId: 3
-  }) {
+  updateCategory(id: 4, input: { parentId: 3 }) {
     id
     name
     parentId
@@ -319,6 +297,7 @@ mutation {
 ## 🎯 Use Cases
 
 ### E-commerce Navigation
+
 ```graphql
 query {
   categoryTree {
@@ -331,9 +310,11 @@ query {
   }
 }
 ```
+
 Use for main navigation menu.
 
 ### Product Filters
+
 ```graphql
 query {
   category(id: 1) {
@@ -346,14 +327,17 @@ query {
   }
 }
 ```
+
 Get subcategories for filtering products.
 
 ### Breadcrumb Navigation
+
 ```graphql
 query {
   categoryPath(id: 5)
 }
 ```
+
 Display: Home > Electronics > Smartphones > iPhone
 
 ---
@@ -386,6 +370,7 @@ Display: Home > Electronics > Smartphones > iPhone
 ## 📋 Query Operations
 
 ### List Attribute Groups
+
 ```graphql
 query {
   attributeGroups {
@@ -403,6 +388,7 @@ query {
 ```
 
 ### Get One Group
+
 ```graphql
 query {
   attributeGroup(id: 1) {
@@ -419,13 +405,10 @@ query {
 ## ✏️ Mutation Operations (SuperAdmin Only)
 
 ### Create Group
+
 ```graphql
 mutation {
-  createAttributeGroup(input: {
-    name: "Size"
-    publicName: "Taille"
-    type: "select"
-  }) {
+  createAttributeGroup(input: { name: "Size", publicName: "Taille", type: "select" }) {
     id
     name
   }
@@ -433,12 +416,10 @@ mutation {
 ```
 
 ### Create Value
+
 ```graphql
 mutation {
-  createAttributeValue(groupId: 1, input: {
-    name: "L"
-    position: 3
-  }) {
+  createAttributeValue(groupId: 1, input: { name: "L", position: 3 }) {
     id
     name
   }
@@ -446,12 +427,10 @@ mutation {
 ```
 
 ### Create Color Value
+
 ```graphql
 mutation {
-  createAttributeValue(groupId: 2, input: {
-    name: "Red"
-    color: "#FF0000"
-  }) {
+  createAttributeValue(groupId: 2, input: { name: "Red", color: "#FF0000" }) {
     id
     name
     color
@@ -460,6 +439,7 @@ mutation {
 ```
 
 ### Delete Group (Cascades delete values)
+
 ```graphql
 mutation {
   deleteAttributeGroup(id: 1) {

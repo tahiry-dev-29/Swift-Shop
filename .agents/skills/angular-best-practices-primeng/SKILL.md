@@ -9,12 +9,12 @@ description: >-
 license: MIT
 metadata:
   author: alfredoperez
-  version: "1.2.0"
+  version: '1.2.0'
 tags: [angular, primeng, ui-components]
 globs:
-  - "**/*.ts"
-  - "**/*.component.ts"
-  - "**/*.html"
+  - '**/*.ts'
+  - '**/*.component.ts'
+  - '**/*.html'
 ---
 
 # Angular PrimeNG Best Practices
@@ -37,11 +37,11 @@ skill for comprehensive Angular coverage.
 
 ## Rules
 
-| Rule | Impact | Description |
-|------|--------|-------------|
-| Tree-Shake PrimeNG Imports | MEDIUM | Standalone component imports for smaller bundles |
-| Use PrimeNG Table with Lazy Loading | HIGH | Server-side pagination for large datasets |
-| Use PrimeNG Theme System | MEDIUM | Design tokens via providePrimeNG instead of CSS overrides |
+| Rule                                | Impact | Description                                               |
+| ----------------------------------- | ------ | --------------------------------------------------------- |
+| Tree-Shake PrimeNG Imports          | MEDIUM | Standalone component imports for smaller bundles          |
+| Use PrimeNG Table with Lazy Loading | HIGH   | Server-side pagination for large datasets                 |
+| Use PrimeNG Theme System            | MEDIUM | Design tokens via providePrimeNG instead of CSS overrides |
 
 ## Install
 

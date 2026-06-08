@@ -23,7 +23,11 @@ export class CustomerGroupService {
     });
   }
 
-  async create(data: { name: string; reduction?: number; showPrices?: boolean }) {
+  async create(data: {
+    name: string;
+    reduction?: number;
+    showPrices?: boolean;
+  }) {
     return this.prisma.customerGroup.create({
       data: {
         name: data.name,
@@ -33,7 +37,10 @@ export class CustomerGroupService {
     });
   }
 
-  async update(id: string, data: { name?: string; reduction?: number; showPrices?: boolean }) {
+  async update(
+    id: string,
+    data: { name?: string; reduction?: number; showPrices?: boolean },
+  ) {
     return this.prisma.customerGroup.update({
       where: { id },
       data,
@@ -46,4 +53,3 @@ export class CustomerGroupService {
     });
   }
 }
-

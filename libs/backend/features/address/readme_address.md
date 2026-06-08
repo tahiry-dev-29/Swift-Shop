@@ -3,9 +3,11 @@
 > Customer address management with ownership security
 
 ## 📍 GraphQL Playground
+
 `http://localhost:3000/graphql`
 
 ## 🔑 Authentication Required
+
 All endpoints require authentication (CustomerGuard or EmployeeGuard).
 
 ---
@@ -15,6 +17,7 @@ All endpoints require authentication (CustomerGuard or EmployeeGuard).
 ### My Addresses (Customer)
 
 **Header:**
+
 ```json
 { "Authorization": "Bearer <customerToken>" }
 ```
@@ -64,18 +67,7 @@ query {
 
 ```graphql
 mutation {
-  createAddress(input: {
-    alias: "Home"
-    firstname: "Jane"
-    lastname: "Doe"
-    address1: "123 Main Street"
-    address2: "Apt 4B"
-    postcode: "75001"
-    city: "Paris"
-    countryId: 1
-    phone: "0123456789"
-    phoneMobile: "0612345678"
-  }) {
+  createAddress(input: { alias: "Home", firstname: "Jane", lastname: "Doe", address1: "123 Main Street", address2: "Apt 4B", postcode: "75001", city: "Paris", countryId: 1, phone: "0123456789", phoneMobile: "0612345678" }) {
     id
     alias
     address1
@@ -90,10 +82,7 @@ mutation {
 
 ```graphql
 mutation {
-  updateAddress(id: 1, input: {
-    alias: "Work"
-    phone: "0198765432"
-  }) {
+  updateAddress(id: 1, input: { alias: "Work", phone: "0198765432" }) {
     id
     alias
     phone
@@ -123,6 +112,7 @@ mutation {
 ### List All Addresses (EmployeeGuard)
 
 **Header:**
+
 ```json
 { "Authorization": "Bearer <employeeToken>" }
 ```
@@ -166,15 +156,7 @@ mutation {
 
 # 2. Create Address (with token from step 1)
 mutation {
-  createAddress(input: {
-    alias: "Home"
-    firstname: "John"
-    lastname: "Doe"
-    address1: "456 Oak Avenue"
-    postcode: "69001"
-    city: "Lyon"
-    countryId: 1
-  }) {
+  createAddress(input: { alias: "Home", firstname: "John", lastname: "Doe", address1: "456 Oak Avenue", postcode: "69001", city: "Lyon", countryId: 1 }) {
     id
   }
 }
@@ -182,21 +164,25 @@ mutation {
 # 3. List My Addresses
 query {
   myAddresses {
-    id alias city
+    id
+    alias
+    city
   }
 }
 
 # 4. Update
 mutation {
   updateAddress(id: 1, input: { alias: "Primary Address" }) {
-    id alias
+    id
+    alias
   }
 }
 
 # 5. Delete
 mutation {
   deleteAddress(id: 1) {
-    id deleted
+    id
+    deleted
   }
 }
 ```
