@@ -3,16 +3,19 @@
 > ⚠️ **Requires SUPER_ADMIN role**
 
 ## 📍 GraphQL Playground
+
 `http://localhost:3000/graphql`
 
 ---
 
 ## Roles Management (Dynamic)
+
 Implemented via `RoleResolver`. Protected by `SUPER_ADMIN`.
 
 System roles (`SUPER_ADMIN`, `ADMIN`, `SALES`, `WAREHOUSE`) cannot be deleted or renamed (`isSystem: true`).
 
 ### List Roles
+
 ```graphql
 query {
   roles {
@@ -25,12 +28,10 @@ query {
 ```
 
 ### Create Role
+
 ```graphql
 mutation {
-  createRole(input: {
-    name: "MANAGER"
-    description: "Manager Role"
-  }) {
+  createRole(input: { name: "MANAGER", description: "Manager Role" }) {
     id
     name
   }
@@ -38,11 +39,10 @@ mutation {
 ```
 
 ### Update Role
+
 ```graphql
 mutation {
-  updateRole(id: 5, input: {
-    name: "SENIOR_MANAGER"
-  }) {
+  updateRole(id: 5, input: { name: "SENIOR_MANAGER" }) {
     id
     name
   }
@@ -50,6 +50,7 @@ mutation {
 ```
 
 ### Delete Role
+
 ```graphql
 mutation {
   deleteRole(id: 5) {

@@ -30,7 +30,7 @@ import { validateEnvironment } from './config/env.validation';
       sortSchema: true,
       playground: true,
       introspection: true,
-      context: ({ req }) => ({ req }),
+      context: ({ req, res }) => ({ req, res }),
     }),
 
     DataAccessPrismaModule,

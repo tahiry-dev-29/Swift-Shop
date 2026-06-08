@@ -1,4 +1,8 @@
-import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtAuthGuard } from './jwt-auth-guard';
 
 interface AuthUser {
@@ -13,7 +17,12 @@ export class CustomerGuard extends JwtAuthGuard {
     return super.canActivate(context);
   }
 
-  handleRequest<TUser = AuthUser>(err: unknown, user: TUser, _info: unknown, _context: ExecutionContext): TUser {
+  handleRequest<TUser = AuthUser>(
+    err: unknown,
+    user: TUser,
+    _info: unknown,
+    _context: ExecutionContext,
+  ): TUser {
     if (err || !user) {
       throw err || new UnauthorizedException('Authentication required');
     }
@@ -23,4 +32,3 @@ export class CustomerGuard extends JwtAuthGuard {
     return user;
   }
 }
-

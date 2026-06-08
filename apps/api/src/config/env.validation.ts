@@ -32,8 +32,27 @@ function parsePort(value: string | undefined): number {
   return port;
 }
 
+function requireProductionValues(env: Environment, keys: string[]): void {
+  if (env['NODE_ENV'] !== 'production') {
+    return;
+  }
+
+  for (const key of keys) {
+    requireValue(env, key);
+  }
+}
+
 export function validateEnvironment(env: Environment): ValidatedEnvironment {
   const { PORT, DATABASE_URL, JWT_SECRET, ...rest } = env;
+  requireProductionValues(env, [
+    'EMAIL_PROVIDER_API_URL',
+    'EMAIL_PROVIDER_API_KEY',
+    'EMAIL_FROM',
+    'GOOGLE_CLIENT_ID',
+    'GOOGLE_CLIENT_SECRET',
+    'FACEBOOK_CLIENT_ID',
+    'FACEBOOK_CLIENT_SECRET',
+  ]);
   return {
     ...rest,
     DATABASE_URL: requireValue(env, 'DATABASE_URL'),

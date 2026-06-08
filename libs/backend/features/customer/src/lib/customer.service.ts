@@ -6,7 +6,7 @@ import { AuthService } from '@dima-new/backend/auth';
 export class CustomerService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
 
   async findById(id: string) {
@@ -51,13 +51,16 @@ export class CustomerService {
     });
   }
 
-  async updateProfile(id: string, data: {
-    firstname?: string;
-    lastname?: string;
-    company?: string;
-    birthday?: Date;
-    optin?: boolean;
-  }) {
+  async updateProfile(
+    id: string,
+    data: {
+      firstname?: string;
+      lastname?: string;
+      company?: string;
+      birthday?: Date;
+      optin?: boolean;
+    },
+  ) {
     return this.prisma.customer.update({
       where: { id },
       data,
@@ -65,4 +68,3 @@ export class CustomerService {
     });
   }
 }
-
