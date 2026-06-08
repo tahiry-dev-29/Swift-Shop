@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@dima-new/data-access-prisma';
-import { 
-  CreateFeatureInput, 
+import {
+  CreateFeatureInput,
   UpdateFeatureInput,
   CreateFeatureValueInput,
-  UpdateFeatureValueInput 
+  UpdateFeatureValueInput,
 } from './dto';
 
 @Injectable()
@@ -14,10 +14,10 @@ export class FeatureService {
   async findAllFeatures() {
     return this.prisma.feature.findMany({
       orderBy: { position: 'asc' },
-      include: { 
+      include: {
         values: {
-          orderBy: { position: 'asc' }
-        }
+          orderBy: { position: 'asc' },
+        },
       },
     });
   }
@@ -25,10 +25,10 @@ export class FeatureService {
   async findFeatureById(id: string) {
     return this.prisma.feature.findUnique({
       where: { id },
-      include: { 
+      include: {
         values: {
-          orderBy: { position: 'asc' }
-        }
+          orderBy: { position: 'asc' },
+        },
       },
     });
   }

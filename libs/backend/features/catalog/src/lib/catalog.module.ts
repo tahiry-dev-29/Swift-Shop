@@ -12,7 +12,7 @@ import { FeatureResolver } from './feature/feature.resolver';
 @Module({
   imports: [DataAccessPrismaModule],
   providers: [
-    CategoryService, 
+    CategoryService,
     CategoryResolver,
     AttributeService,
     AttributeResolver,
@@ -22,7 +22,7 @@ import { FeatureResolver } from './feature/feature.resolver';
     FeatureResolver,
   ],
   exports: [
-    CategoryService, 
+    CategoryService,
     CategoryResolver,
     AttributeService,
     AttributeResolver,
@@ -33,4 +33,3 @@ import { FeatureResolver } from './feature/feature.resolver';
   ],
 })
 export class CatalogModule {}
-

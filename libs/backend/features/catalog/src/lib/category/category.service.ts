@@ -41,17 +41,17 @@ export class CategoryService {
   async getPath(id: string): Promise<string[]> {
     const category = await this.findById(id);
     if (!category) return [];
-    
+
     const path = [category.name];
     let current = category;
-    
+
     while (current.parentId) {
       const parent = await this.findById(current.parentId);
       if (!parent) break;
       path.unshift(parent.name);
       current = parent;
     }
-    
+
     return path;
   }
 
@@ -74,14 +74,13 @@ export class CategoryService {
     const hasChildren = await this.prisma.category.count({
       where: { parentId: id },
     });
-    
+
     if (hasChildren > 0) {
       throw new Error('Cannot delete category with children');
     }
-    
+
     return this.prisma.category.delete({
       where: { id },
     });
   }
 }
-

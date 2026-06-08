@@ -14,11 +14,9 @@ import {
 export class ProductService {
   constructor(private readonly prisma: PrismaService) {}
 
-  
-
   async findAll(filter?: ProductFilterInput) {
     const where: Record<string, unknown> = {};
-    
+
     if (filter?.categoryId) where['categoryId'] = filter.categoryId;
     if (filter?.active !== undefined) where['active'] = filter.active;
     if (filter?.search) {
@@ -103,12 +101,9 @@ export class ProductService {
     });
   }
 
-  
-
   async addImage(productId: string, input: CreateProductImageInput) {
     await this.findById(productId);
 
-    
     if (input.cover) {
       await this.prisma.productImage.updateMany({
         where: { productId },
@@ -147,27 +142,25 @@ export class ProductService {
       throw new NotFoundException(`ProductImage #${imageId} not found`);
     }
 
-    
     await this.prisma.productImage.updateMany({
       where: { productId: image.productId },
       data: { cover: false },
     });
 
-    
     return this.prisma.productImage.update({
       where: { id: imageId },
       data: { cover: true },
     });
   }
 
-  
-
-  async addCombination(productId: string, input: CreateProductCombinationInput) {
+  async addCombination(
+    productId: string,
+    input: CreateProductCombinationInput,
+  ) {
     await this.findById(productId);
 
     const { attributeValueIds, ...combinationData } = input;
 
-    
     if (input.isDefault) {
       await this.prisma.productCombination.updateMany({
         where: { productId },
@@ -201,7 +194,6 @@ export class ProductService {
       throw new NotFoundException(`ProductCombination #${id} not found`);
     }
 
-    
     if (input.isDefault) {
       await this.prisma.productCombination.updateMany({
         where: { productId: combination.productId, NOT: { id } },
@@ -233,12 +225,9 @@ export class ProductService {
     });
   }
 
-  
-
   async updateStock(input: UpdateStockInput) {
     const { productId, combinationId, ...stockData } = input;
 
-    
     const existingStock = await this.prisma.stock.findFirst({
       where: {
         OR: [
@@ -287,7 +276,11 @@ export class ProductService {
     });
   }
 
-  async checkAvailability(productId?: string, combinationId?: string, quantity: number = 1) {
+  async checkAvailability(
+    productId?: string,
+    combinationId?: string,
+    quantity: number = 1,
+  ) {
     const stock = await this.prisma.stock.findFirst({
       where: {
         OR: [
@@ -303,4 +296,3 @@ export class ProductService {
     return stock.quantity >= quantity;
   }
 }
-

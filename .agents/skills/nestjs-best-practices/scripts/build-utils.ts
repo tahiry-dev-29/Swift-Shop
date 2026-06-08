@@ -33,7 +33,12 @@ export interface Category {
 
 export const CATEGORIES: Category[] = [
   { prefix: 'arch-', name: 'Architecture', impact: 'CRITICAL', section: 1 },
-  { prefix: 'di-', name: 'Dependency Injection', impact: 'CRITICAL', section: 2 },
+  {
+    prefix: 'di-',
+    name: 'Dependency Injection',
+    impact: 'CRITICAL',
+    section: 2,
+  },
   { prefix: 'error-', name: 'Error Handling', impact: 'HIGH', section: 3 },
   { prefix: 'security-', name: 'Security', impact: 'HIGH', section: 4 },
   { prefix: 'perf-', name: 'Performance', impact: 'HIGH', section: 5 },
@@ -41,10 +46,18 @@ export const CATEGORIES: Category[] = [
   { prefix: 'db-', name: 'Database & ORM', impact: 'MEDIUM-HIGH', section: 7 },
   { prefix: 'api-', name: 'API Design', impact: 'MEDIUM', section: 8 },
   { prefix: 'micro-', name: 'Microservices', impact: 'MEDIUM', section: 9 },
-  { prefix: 'devops-', name: 'DevOps & Deployment', impact: 'LOW-MEDIUM', section: 10 },
+  {
+    prefix: 'devops-',
+    name: 'DevOps & Deployment',
+    impact: 'LOW-MEDIUM',
+    section: 10,
+  },
 ];
 
-export function parseFrontmatter(content: string): { frontmatter: RuleFrontmatter | null; body: string } {
+export function parseFrontmatter(content: string): {
+  frontmatter: RuleFrontmatter | null;
+  body: string;
+} {
   const frontmatterRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
   const match = content.match(frontmatterRegex);
 
@@ -91,12 +104,12 @@ export function parseFrontmatter(content: string): { frontmatter: RuleFrontmatte
 
   return {
     frontmatter: frontmatter as RuleFrontmatter,
-    body: body.trim()
+    body: body.trim(),
   };
 }
 
 export function getCategoryForFile(filename: string): Category | null {
-  return CATEGORIES.find(cat => filename.startsWith(cat.prefix)) || null;
+  return CATEGORIES.find((cat) => filename.startsWith(cat.prefix)) || null;
 }
 
 export function readMetadata(dir: string): Metadata {

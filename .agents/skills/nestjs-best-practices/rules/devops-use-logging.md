@@ -44,10 +44,7 @@ logger.log('User ' + userId + ' created at ' + new Date());
 // Configure logger in main.ts
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger:
-      process.env.NODE_ENV === 'production'
-        ? ['error', 'warn', 'log']
-        : ['error', 'warn', 'log', 'debug', 'verbose'],
+    logger: process.env.NODE_ENV === 'production' ? ['error', 'warn', 'log'] : ['error', 'warn', 'log', 'debug', 'verbose'],
   });
 }
 
@@ -194,10 +191,7 @@ import { LoggerModule } from 'nestjs-pino';
     LoggerModule.forRoot({
       pinoHttp: {
         level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
-        transport:
-          process.env.NODE_ENV !== 'production'
-            ? { target: 'pino-pretty' }
-            : undefined,
+        transport: process.env.NODE_ENV !== 'production' ? { target: 'pino-pretty' } : undefined,
         redact: ['req.headers.authorization', 'req.body.password'],
         serializers: {
           req: (req) => ({

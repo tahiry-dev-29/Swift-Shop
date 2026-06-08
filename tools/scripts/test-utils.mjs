@@ -3,11 +3,11 @@ const API_URL = 'http://localhost:3000/graphql';
 export const gql = async (query, token = null) => {
   const headers = { 'Content-Type': 'application/json' };
   if (token) headers['Authorization'] = `Bearer ${token}`;
-  
+
   const res = await fetch(API_URL, {
     method: 'POST',
     headers,
-    body: JSON.stringify({ query })
+    body: JSON.stringify({ query }),
   });
   return res.json();
 };

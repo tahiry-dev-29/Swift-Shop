@@ -1,5 +1,9 @@
 import { Resolver, Query, Mutation, Args, Int, ID } from '@nestjs/graphql';
-import { UseGuards, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  UseGuards,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { SuperAdminGuard } from '@dima-new/backend/auth';
 import { CategoryType, CreateCategoryInput, UpdateCategoryInput } from './dto';
@@ -42,7 +46,7 @@ export class CategoryResolver {
   @UseGuards(SuperAdminGuard)
   async updateCategory(
     @Args('id', { type: () => ID }) id: string,
-    @Args('input') input: UpdateCategoryInput
+    @Args('input') input: UpdateCategoryInput,
   ) {
     const category = await this.categoryService.findById(id);
     if (!category) {
@@ -58,7 +62,7 @@ export class CategoryResolver {
     if (!category) {
       throw new NotFoundException(`Category #${id} not found`);
     }
-    
+
     try {
       return await this.categoryService.delete(id);
     } catch (error) {
@@ -66,4 +70,3 @@ export class CategoryResolver {
     }
   }
 }
-

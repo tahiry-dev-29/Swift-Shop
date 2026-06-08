@@ -1,5 +1,5 @@
 import { InputType, Field, ID } from '@nestjs/graphql';
-  
+
 @InputType()
 export class CreateAddressInput {
   @Field()
@@ -80,4 +80,3 @@ export class UpdateAddressInput {
   @Field({ nullable: true })
   active?: boolean;
 }
-
