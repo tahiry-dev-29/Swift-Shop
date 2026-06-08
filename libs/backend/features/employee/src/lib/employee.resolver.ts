@@ -99,175 +99,8 @@ export class EmployeeResolver {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const isTrustedDevice = await this.authService.verifyTrustedEmployeeDevice(
-      employee.id,
-      trustedDeviceToken ??
-        cookieValue(
-          headerValue(context.req.headers.cookie),
-          TRUSTED_DEVICE_COOKIE_NAME,
-        ),
-    );
-
-    if (employee.twoFactorEnabled) {
-      if (!totp && !isTrustedDevice) {
-        return { requires2FA: true };
-      }
-      if (!isTrustedDevice) {
-        if (!employee.twoFactorSecret) {
-          throw new UnauthorizedException('2FA configuration error');
-        }
-        if (
-          !totp ||
-          !this.authService.verifyTwoFactorToken(employee.twoFactorSecret, totp)
-        ) {
-          throw new UnauthorizedException('Invalid TOTP token');
-        }
-      }
-    }
-
-    if (employee.forcePasswordReset) {
-      return {
-        requiresPasswordReset: true,
-        passwordResetToken:
-          this.authService.generateEmployeePasswordResetToken(employee),
-      };
-    }
-
-    const token = this.authService.generateEmployeeToken(employee);
-    const newTrustedDeviceToken =
-      rememberDevice && employee.twoFactorEnabled
-        ? await this.authService.trustEmployeeDevice(employee.id)
-        : undefined;
-    if (newTrustedDeviceToken) {
-      context.res?.cookie(
-        TRUSTED_DEVICE_COOKIE_NAME,
-        newTrustedDeviceToken,
-        trustedDeviceCookieOptions(),
-      );
-    }
-    await this.authService.audit({
-      action: 'employee.login_success',
-      actorType: 'employee',
-      actorId: employee.id,
-      employeeId: employee.id,
-      ...requestMeta(context),
-    });
-    return {
-      ...token,
-      employee,
-      requires2FA: false,
-      requiresPasswordReset: false,
-      trustedDeviceToken: newTrustedDeviceToken,
-    };
-  }
-
-  @Mutation(() => EmployeeAuthResponse)
-  @UseGuards(AuthRateLimitGuard)
-  async completeEmployeeForcedPasswordReset(
-    @Context() context: GraphQLContext,
-    @Args('token') token: string,
-    @Args('password') password: string,
-  ) {
-    const employee = await this.authService.completeForcedPasswordReset(
-      token,
-      password,
-    );
-    if (!employee) {
-      throw new UnauthorizedException('Invalid password reset token');
-    }
-    const accessToken = this.authService.generateEmployeeToken(employee);
-    await this.authService.audit({
-      action: 'employee.password_reset_completed',
-      actorType: 'employee',
-      actorId: employee.id,
-      employeeId: employee.id,
-      ...requestMeta(context),
-    });
-    return {
-      ...accessToken,
-      employee,
-      requires2FA: false,
-      requiresPasswordReset: false,
-    };
-  }
-
-  @Mutation(() => TwoFactorGenerateResponse)
-  @UseGuards(EmployeeGuard)
-  async generate2FASecret(
-    @Context() ctx: { req: { user: { id: string; email: string } } },
-  ) {
-    const { secret, otpauthUrl } = this.authService.generateTwoFactorSecret(
-      ctx.req.user.email,
-    );
-    const qrCodeUrl = await this.authService.generateQrCodeDataURL(otpauthUrl);
-    await this.employeeService.update(ctx.req.user.id, {
-      twoFactorSecret: secret,
-    });
-    return { secret, qrCodeUrl };
-  }
-
-  @Mutation(() => Boolean)
-  @UseGuards(EmployeeGuard)
-  async enable2FA(
-    @Context() ctx: { req: { user: { id: string } } },
-    @Args('token') token: string,
-  ) {
-    const employee = await this.employeeService.findById(ctx.req.user.id);
-    if (!employee || !employee.twoFactorSecret) {
-      throw new UnauthorizedException(
-        'No 2FA secret found. Generate one first.',
-      );
-    }
-    const isValid = this.authService.verifyTwoFactorToken(
-      employee.twoFactorSecret,
-      token,
-    );
-    if (!isValid) {
-      throw new UnauthorizedException('Invalid TOTP token');
-    }
-    await this.employeeService.update(ctx.req.user.id, {
-      twoFactorEnabled: true,
-    });
-    await this.authService.audit({
-      action: 'employee.2fa_enabled',
-      actorType: 'employee',
-      actorId: ctx.req.user.id,
-      employeeId: ctx.req.user.id,
-    });
-    return true;
-  }
-
-  @Mutation(() => Boolean)
-  @UseGuards(EmployeeGuard)
-  async disable2FA(
-    @Context() ctx: { req: { user: { id: string } } },
-    @Args('token') token: string,
-  ) {
-    const employee = await this.employeeService.findById(ctx.req.user.id);
-    if (!employee || !employee.twoFactorEnabled) {
-      return true;
-    }
-    if (!employee.twoFactorSecret) {
-      throw new UnauthorizedException('No 2FA secret configured.');
-    }
-    const isValid = this.authService.verifyTwoFactorToken(
-      employee.twoFactorSecret,
-      token,
-    );
-    if (!isValid) {
-      throw new UnauthorizedException('Invalid TOTP token');
-    }
-    await this.employeeService.update(ctx.req.user.id, {
-      twoFactorEnabled: false,
-      twoFactorSecret: null,
-    });
-    await this.authService.audit({
-      action: 'employee.2fa_disabled',
-      actorType: 'employee',
-      actorId: ctx.req.user.id,
-      employeeId: ctx.req.user.id,
-    });
-    return true;
+    const token = await this.authService.generateEmployeeToken(employee);
+    return { ...token, employee };
   }
 
   @Query(() => EmployeeType)
@@ -327,5 +160,19 @@ export class EmployeeResolver {
       throw new NotFoundException(`Employee #${id} not found`);
     }
     return this.employeeService.delete(id);
+  }
+
+  @Mutation(() => EmployeeAuthResponse)
+  async employeeRefreshToken(@Args('token') token: string) {
+    const result = await this.authService.refreshToken(token);
+    return result;
+  }
+
+  @Mutation(() => Boolean)
+  @UseGuards(EmployeeGuard)
+  async employeeLogout(@Context() ctx: { req: { user: { id: string, jti?: string, exp?: number } } }) {
+    const user = ctx.req.user;
+    await this.authService.logout(user.id, user.jti, user.exp);
+    return true;
   }
 }

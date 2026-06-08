@@ -7,12 +7,7 @@ import { DataAccessPrismaModule } from '@dima-new/data-access-prisma';
 import { AuthMailService } from './auth-mail.service';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
-import { AuthRateLimitGuard } from './rate-limiting/auth-rate-limit.guard';
-import {
-  AUTH_RATE_LIMIT_IP_ATTEMPTS,
-  AUTH_RATE_LIMIT_TTL_MS,
-} from './rate-limiting/rate-limit.constants';
-import { RedisThrottlerStorage } from './rate-limiting/redis-throttler-storage';
+import { RedisService } from './redis.service';
 
 @Module({
   imports: [
@@ -37,11 +32,11 @@ import { RedisThrottlerStorage } from './rate-limiting/redis-throttler-storage';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.getOrThrow<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '1d' },
+        signOptions: { expiresIn: '15m' }, // Short lived access token
       }),
     }),
   ],
-  providers: [AuthMailService, AuthService, JwtStrategy, AuthRateLimitGuard],
-  exports: [AuthMailService, AuthService, JwtModule, AuthRateLimitGuard],
+  providers: [AuthService, JwtStrategy, RedisService],
+  exports: [AuthService, JwtModule, RedisService],
 })
 export class AuthModule {}

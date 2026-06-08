@@ -33,21 +33,9 @@ export class CustomerAuthResponse {
   @Field()
   accessToken!: string;
 
+  @Field({ nullable: true })
+  refreshToken?: string;
+
   @Field(() => CustomerType)
   customer!: CustomerType;
-}
-
-@ObjectType()
-export class MagicLinkResponse {
-  @Field()
-  sent!: boolean;
-
-  @Field({ nullable: true })
-  magicLink?: string;
-}
-
-@ObjectType()
-export class OAuthAuthorizationResponse {
-  @Field()
-  authorizationUrl!: string;
 }

@@ -57,13 +57,10 @@ export class EmployeeAuthResponse {
   requires2FA?: boolean;
 
   @Field({ nullable: true })
-  requiresPasswordReset?: boolean;
+  refreshToken?: string;
 
-  @Field({ nullable: true })
-  passwordResetToken?: string;
-
-  @Field({ nullable: true })
-  trustedDeviceToken?: string;
+  @Field(() => EmployeeType)
+  employee!: EmployeeType;
 }
 
 @ObjectType()

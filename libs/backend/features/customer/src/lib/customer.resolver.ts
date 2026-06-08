@@ -75,7 +75,7 @@ export class CustomerResolver {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const token = this.authService.generateCustomerToken(customer);
+    const token = await this.authService.generateCustomerToken(customer);
 
     const sessionId = context.req?.headers?.['x-session-id'];
     if (sessionId) {
@@ -105,103 +105,7 @@ export class CustomerResolver {
     }
 
     const customer = await this.customerService.register(input);
-    const token = this.authService.generateCustomerToken(customer);
-    await this.authService.audit({
-      action: 'customer.registered',
-      actorType: 'customer',
-      actorId: customer.id,
-      customerId: customer.id,
-    });
-    return { ...token, customer };
-  }
-
-  @Mutation(() => MagicLinkResponse)
-  @UseGuards(AuthRateLimitGuard)
-  async requestCustomerMagicLink(
-    @Context() context: GraphQLContext,
-    @Args('email') email: string,
-  ) {
-    const customer = await this.customerService.findByEmail(email);
-    if (!customer || !customer.active) {
-      return { sent: true };
-    }
-    const token = this.authService.generateCustomerMagicLinkToken(customer);
-    const path = `/auth/customer/magic-link?token=${encodeURIComponent(token)}`;
-    const baseUrl = publicBaseUrl(context);
-    const magicLink = baseUrl ? `${baseUrl}${path}` : path;
-    await this.authService.sendCustomerMagicLink(customer.email, magicLink);
-    await this.authService.audit({
-      action: 'customer.magic_link_requested',
-      actorType: 'customer',
-      actorId: customer.id,
-      customerId: customer.id,
-      ...requestMeta(context),
-    });
-    return { sent: true, magicLink };
-  }
-
-  @Mutation(() => CustomerAuthResponse)
-  @UseGuards(AuthRateLimitGuard)
-  async customerLoginWithMagicLink(
-    @Context() context: GraphQLContext,
-    @Args('token') token: string,
-  ) {
-    const customer = await this.authService.verifyCustomerMagicLink(token);
-    if (!customer) {
-      throw new UnauthorizedException('Invalid magic link');
-    }
-    const authToken = this.authService.generateCustomerToken(customer);
-    await this.authService.audit({
-      action: 'customer.magic_link_login_success',
-      actorType: 'customer',
-      actorId: customer.id,
-      customerId: customer.id,
-      ...requestMeta(context),
-    });
-    return { ...authToken, customer };
-  }
-
-  @Query(() => OAuthAuthorizationResponse)
-  async customerOAuth2AuthorizationUrl(
-    @Args('provider') provider: OAuthProvider,
-    @Args('redirectUri') redirectUri: string,
-    @Args('codeChallenge') codeChallenge: string,
-    @Args('state') state: string,
-  ) {
-    return {
-      authorizationUrl: await this.authService.createOAuthAuthorizationUrl(
-        provider,
-        redirectUri,
-        codeChallenge,
-        state,
-      ),
-    };
-  }
-
-  @Mutation(() => CustomerAuthResponse)
-  @UseGuards(AuthRateLimitGuard)
-  async customerOAuth2Login(
-    @Context() context: GraphQLContext,
-    @Args('provider') provider: OAuthProvider,
-    @Args('authorizationCode') authorizationCode: string,
-    @Args('codeVerifier') codeVerifier: string,
-    @Args('redirectUri') redirectUri: string,
-  ) {
-    const customer = await this.authService.loginCustomerWithOAuth2(
-      provider,
-      authorizationCode,
-      codeVerifier,
-      redirectUri,
-    );
-    const token = this.authService.generateCustomerToken(customer);
-    await this.authService.audit({
-      action: 'customer.oauth2_login_success',
-      actorType: 'customer',
-      actorId: customer.id,
-      customerId: customer.id,
-      metadata: { provider },
-      ...requestMeta(context),
-    });
+    const token = await this.authService.generateCustomerToken(customer);
     return { ...token, customer };
   }
 
@@ -219,5 +123,19 @@ export class CustomerResolver {
   @UseGuards(EmployeeGuard)
   async customers() {
     return this.customerService.findAll();
+  }
+
+  @Mutation(() => CustomerAuthResponse)
+  async customerRefreshToken(@Args('token') token: string) {
+    const result = await this.authService.refreshToken(token);
+    return result;
+  }
+
+  @Mutation(() => Boolean)
+  @UseGuards(CustomerGuard)
+  async customerLogout(@Context() ctx: { req: { user: { id: string, jti?: string, exp?: number } } }) {
+    const user = ctx.req.user;
+    await this.authService.logout(user.id, user.jti, user.exp);
+    return true;
   }
 }
