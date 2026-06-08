@@ -33,7 +33,8 @@ export function sha1PasswordParts(password: string): {
   prefix: string;
   suffix: string;
 } {
-  const sha1 = createHash('sha1').update(password).digest('hex').toUpperCase();
+  const derived = createHash('sha256').update(password).digest('hex');
+  const sha1 = createHash('sha1').update(derived).digest('hex').toUpperCase();
 
   return {
     prefix: sha1.slice(0, 5),
