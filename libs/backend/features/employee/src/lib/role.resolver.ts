@@ -1,12 +1,16 @@
 import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
-import { UseGuards, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  UseGuards,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { SuperAdminGuard } from '@dima-new/backend/auth';
 import { RoleService } from './role.service';
 import { RoleType } from './dto/employee-types';
 import { CreateRoleInput, UpdateRoleInput } from './dto/role-inputs';
 
 @Resolver(() => RoleType)
-@UseGuards(SuperAdminGuard) 
+@UseGuards(SuperAdminGuard)
 export class RoleResolver {
   constructor(private readonly roleService: RoleService) {}
 
@@ -36,7 +40,7 @@ export class RoleResolver {
   @Mutation(() => RoleType)
   async updateRole(
     @Args('id', { type: () => ID }) id: string,
-    @Args('input') input: UpdateRoleInput
+    @Args('input') input: UpdateRoleInput,
   ) {
     try {
       return await this.roleService.update(id, input);
@@ -54,4 +58,3 @@ export class RoleResolver {
     }
   }
 }
-

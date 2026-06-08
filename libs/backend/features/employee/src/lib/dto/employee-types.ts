@@ -1,6 +1,5 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
 
-
 @ObjectType()
 export class RoleType {
   @Field(() => ID)
@@ -38,12 +37,24 @@ export class EmployeeType {
 
   @Field({ nullable: true })
   lastConnectionDate?: Date;
+
+  @Field()
+  twoFactorEnabled!: boolean;
+
+  @Field()
+  forcePasswordReset!: boolean;
 }
 
 @ObjectType()
 export class EmployeeAuthResponse {
-  @Field()
-  accessToken!: string;
+  @Field({ nullable: true })
+  accessToken?: string;
+
+  @Field(() => EmployeeType, { nullable: true })
+  employee?: EmployeeType;
+
+  @Field({ nullable: true })
+  requires2FA?: boolean;
 
   @Field({ nullable: true })
   refreshToken?: string;
@@ -52,3 +63,11 @@ export class EmployeeAuthResponse {
   employee!: EmployeeType;
 }
 
+@ObjectType()
+export class TwoFactorGenerateResponse {
+  @Field()
+  secret!: string;
+
+  @Field()
+  qrCodeUrl!: string;
+}

@@ -1,23 +1,101 @@
 import { Resolver, Query, Mutation, Args, Context, ID } from '@nestjs/graphql';
-import { UseGuards, UnauthorizedException, NotFoundException } from '@nestjs/common';
+import {
+  UseGuards,
+  UnauthorizedException,
+  NotFoundException,
+} from '@nestjs/common';
 import { EmployeeService } from './employee.service';
-import { AuthService, EmployeeGuard, SuperAdminGuard } from '@dima-new/backend/auth';
-import { EmployeeType, EmployeeAuthResponse, CreateEmployeeInput, UpdateEmployeeInput } from './dto';
+import {
+  AuthRateLimitGuard,
+  AuthService,
+  EmployeeGuard,
+  SuperAdminGuard,
+} from '@dima-new/backend/auth';
+import {
+  EmployeeType,
+  EmployeeAuthResponse,
+  TwoFactorGenerateResponse,
+  CreateEmployeeInput,
+  UpdateEmployeeInput,
+} from './dto';
+
+interface GraphQLContext {
+  req: {
+    headers: Record<string, string | string[] | undefined>;
+    ip?: string;
+  };
+  res?: {
+    cookie: (name: string, value: string, options: TrustedDeviceCookie) => void;
+  };
+}
+
+type TrustedDeviceCookie = {
+  httpOnly: boolean;
+  secure: boolean;
+  sameSite: 'strict';
+  maxAge: number;
+  path: string;
+};
+
+const TRUSTED_DEVICE_COOKIE_NAME = 'dima_trusted_employee_device';
+const TRUSTED_DEVICE_COOKIE_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
+
+function headerValue(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function requestMeta(context: GraphQLContext) {
+  return {
+    ipAddress:
+      headerValue(context.req.headers['x-forwarded-for']) ?? context.req.ip,
+    userAgent: headerValue(context.req.headers['user-agent']),
+  };
+}
+
+function cookieValue(cookieHeader: string | undefined, name: string) {
+  return cookieHeader
+    ?.split(';')
+    .map((cookie) => cookie.trim())
+    .find((cookie) => cookie.startsWith(`${name}=`))
+    ?.slice(name.length + 1);
+}
+
+function trustedDeviceCookieOptions(): TrustedDeviceCookie {
+  return {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict',
+    maxAge: TRUSTED_DEVICE_COOKIE_MAX_AGE,
+    path: '/',
+  };
+}
 
 @Resolver()
 export class EmployeeResolver {
   constructor(
     private readonly employeeService: EmployeeService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
 
   @Mutation(() => EmployeeAuthResponse)
+  @UseGuards(AuthRateLimitGuard)
   async employeeLogin(
+    @Context() context: GraphQLContext,
     @Args('email') email: string,
-    @Args('password') password: string
+    @Args('password') password: string,
+    @Args('totp', { nullable: true }) totp?: string,
+    @Args('trustedDeviceToken', { nullable: true })
+    trustedDeviceToken?: string,
+    @Args('rememberDevice', { nullable: true }) rememberDevice?: boolean,
   ) {
     const employee = await this.authService.validateEmployee(email, password);
     if (!employee) {
+      await this.authService.audit({
+        action: 'employee.login_failed',
+        actorType: 'employee',
+        metadata: { email },
+        ...requestMeta(context),
+      });
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -65,7 +143,7 @@ export class EmployeeResolver {
   @UseGuards(SuperAdminGuard)
   async updateEmployee(
     @Args('id', { type: () => ID }) id: string,
-    @Args('input') input: UpdateEmployeeInput
+    @Args('input') input: UpdateEmployeeInput,
   ) {
     const employee = await this.employeeService.findById(id);
     if (!employee) {
@@ -98,4 +176,3 @@ export class EmployeeResolver {
     return true;
   }
 }
-

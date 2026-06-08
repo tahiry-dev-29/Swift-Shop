@@ -1,14 +1,52 @@
 import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
 import { UseGuards, UnauthorizedException } from '@nestjs/common';
 import { CustomerService } from './customer.service';
-import { AuthService, CustomerGuard, EmployeeGuard } from '@dima-new/backend/auth';
-import { CustomerType, CustomerAuthResponse, CustomerRegisterInput } from './dto';
+import {
+  AuthRateLimitGuard,
+  AuthService,
+  CustomerGuard,
+  EmployeeGuard,
+} from '@dima-new/backend/auth';
+import {
+  CustomerType,
+  CustomerAuthResponse,
+  CustomerRegisterInput,
+  MagicLinkResponse,
+  OAuthAuthorizationResponse,
+} from './dto';
 import { CartService } from '@dima-new/backend/cart';
 
 interface GraphQLContext {
   req: {
     headers: Record<string, string | string[] | undefined>;
+    ip?: string;
   };
+}
+
+type OAuthProvider = 'google' | 'facebook';
+
+function headerValue(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function requestMeta(context: GraphQLContext) {
+  return {
+    ipAddress:
+      headerValue(context.req.headers['x-forwarded-for']) ?? context.req.ip,
+    userAgent: headerValue(context.req.headers['user-agent']),
+  };
+}
+
+function publicBaseUrl(context: GraphQLContext): string | undefined {
+  const host =
+    headerValue(context.req.headers['x-forwarded-host']) ??
+    headerValue(context.req.headers.host);
+  if (!host) {
+    return undefined;
+  }
+  const protocol =
+    headerValue(context.req.headers['x-forwarded-proto']) ?? 'http';
+  return `${protocol}://${host}`;
 }
 
 @Resolver()
@@ -16,17 +54,24 @@ export class CustomerResolver {
   constructor(
     private readonly customerService: CustomerService,
     private readonly authService: AuthService,
-    private readonly cartService: CartService
+    private readonly cartService: CartService,
   ) {}
 
   @Mutation(() => CustomerAuthResponse)
+  @UseGuards(AuthRateLimitGuard)
   async customerLogin(
     @Context() context: GraphQLContext,
     @Args('email') email: string,
-    @Args('password') password: string
+    @Args('password') password: string,
   ) {
     const customer = await this.authService.validateCustomer(email, password);
     if (!customer) {
+      await this.authService.audit({
+        action: 'customer.login_failed',
+        actorType: 'customer',
+        metadata: { email },
+        ...requestMeta(context),
+      });
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -34,16 +79,25 @@ export class CustomerResolver {
 
     const sessionId = context.req?.headers?.['x-session-id'];
     if (sessionId) {
-        await this.cartService.mergeGuestCart(
-          Array.isArray(sessionId) ? sessionId[0] : sessionId,
-          customer.id
-        );
+      await this.cartService.mergeGuestCart(
+        Array.isArray(sessionId) ? sessionId[0] : sessionId,
+        customer.id,
+      );
     }
+
+    await this.authService.audit({
+      action: 'customer.login_success',
+      actorType: 'customer',
+      actorId: customer.id,
+      customerId: customer.id,
+      ...requestMeta(context),
+    });
 
     return { ...token, customer };
   }
 
   @Mutation(() => CustomerAuthResponse)
+  @UseGuards(AuthRateLimitGuard)
   async customerRegister(@Args('input') input: CustomerRegisterInput) {
     const existing = await this.customerService.findByEmail(input.email);
     if (existing) {
@@ -85,4 +139,3 @@ export class CustomerResolver {
     return true;
   }
 }
-

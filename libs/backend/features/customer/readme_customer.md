@@ -1,11 +1,13 @@
 # 👤 Customer Module - API Tests
 
 ## 📍 GraphQL Playground
+
 `http://localhost:3000/graphql`
 
 ---
 
 ## Login
+
 OK
 
 ```graphql
@@ -25,17 +27,12 @@ mutation {
 ---
 
 ## Register
+
 Ok
 
 ```graphql
 mutation {
-  customerRegister(input: {
-    email: "new@example.com"
-    password: "secret123"
-    firstname: "Jane"
-    lastname: "Smith"
-    groupId: 1
-  }) {
+  customerRegister(input: { email: "new@example.com", password: "secret123", firstname: "Jane", lastname: "Smith", groupId: 1 }) {
     accessToken
     customer {
       id
@@ -50,6 +47,7 @@ mutation {
 ## Me (Protected) 🔒
 
 **Header:**
+
 ```json
 { "Authorization": "Bearer <accessToken>" }
 ```

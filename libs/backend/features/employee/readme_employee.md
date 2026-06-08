@@ -1,6 +1,7 @@
 # 👔 Employee Module - API Tests
 
 ## 📍 GraphQL Playground
+
 `http://localhost:3000/graphql`
 
 ---
@@ -16,18 +17,26 @@ mutation {
       firstname
       lastname
       email
-      role { name }
+      role {
+        name
+      }
     }
   }
 }
 ```
 
 **Autres comptes:**
+
 ```graphql
 mutation {
   employeeLogin(email: "staff@dima.com", password: "employee123") {
     accessToken
-    employee { id role { name } }
+    employee {
+      id
+      role {
+        name
+      }
+    }
   }
 }
 ```
@@ -37,6 +46,7 @@ mutation {
 ## 👤 Me (Protected) 🔒
 
 **Header:**
+
 ```json
 { "Authorization": "Bearer <accessToken>" }
 ```
@@ -48,7 +58,9 @@ query {
     firstname
     lastname
     email
-    role { name }
+    role {
+      name
+    }
     lastConnectionDate
   }
 }
@@ -61,6 +73,7 @@ query {
 > ⚠️ **Requires SUPER_ADMIN role**
 
 ### List All Employees
+
 ```graphql
 query {
   employees {
@@ -68,13 +81,16 @@ query {
     firstname
     lastname
     email
-    role { name }
+    role {
+      name
+    }
     active
   }
 }
 ```
 
 ### Get One Employee
+
 ```graphql
 query {
   employee(id: 1) {
@@ -82,7 +98,9 @@ query {
     firstname
     lastname
     email
-    role { name }
+    role {
+      name
+    }
     active
     lastConnectionDate
   }
@@ -90,37 +108,35 @@ query {
 ```
 
 ### Create Employee
+
 ```graphql
 mutation {
-  createEmployee(input: {
-    email: "manager@dima.com"
-    password: "manager123"
-    firstname: "Manager"
-    lastname: "User"
-    roleId: 2
-  }) {
+  createEmployee(input: { email: "manager@dima.com", password: "manager123", firstname: "Manager", lastname: "User", roleId: 2 }) {
     id
     email
-    role { name }
+    role {
+      name
+    }
   }
 }
 ```
 
 ### Update Employee
+
 ```graphql
 mutation {
-  updateEmployee(id: 2, input: {
-    roleId: 3
-    active: true
-  }) {
+  updateEmployee(id: 2, input: { roleId: 3, active: true }) {
     id
-    role { name }
+    role {
+      name
+    }
     active
   }
 }
 ```
 
 ### Delete Employee
+
 ```graphql
 mutation {
   deleteEmployee(id: 3) {
