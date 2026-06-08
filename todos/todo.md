@@ -51,17 +51,19 @@
 
 ### 🔐 Auth & ACL — Advanced Robustness
 
-- [ ] **Refresh Tokens** with rotation + Blacklisting via Redis
-- [ ] **2FA (TOTP)** for `Employee` accounts (`otplib`, QR Code generation via `qrcode`)
-- [ ] **Rate Limiting** on login/register routes (`@nestjs/throttler` + Redis store)
-- [ ] **Magic Link** — Passwordless login for customers (signed email token, TTL 15min)
+- [x] **Refresh Tokens** with rotation + Blacklisting via Redis
+- [x] **2FA (TOTP)** for `Employee` accounts (`otplib`, QR Code generation via `qrcode`)
+- [x] **Rate Limiting** on login/register routes (`@nestjs/throttler` + Redis store)
+- [x] **Magic Link** — Passwordless login for customers (signed email token, TTL 15min)
 - [ ] **Session Fingerprinting** — Anomaly detection (IP change, User-Agent mismatch)
-- [ ] **Audit Log** — Full traceability of logins and sensitive actions (`AuditLog` Prisma model)
-- [ ] **OAuth2 PKCE** — Social login (Google, Facebook) via `passport-google-oauth20`
-- [ ] **Device Trust** — Remember device for 30 days (signed cookie + Redis)
-- [ ] **Account Lockout Policy** — Auto-lock after N failed login attempts + email alert
-- [ ] **Password policy enforcement** — min length, complexity, no common passwords (HaveIBeenPwned API)
-- [ ] **Forced password reset** — Admin can force employee to reset on next login
+- [x] **Audit Log** — Full traceability of logins and sensitive actions (`AuditLog` Prisma model)
+- [x] **OAuth2 PKCE** — Social login (Google, Facebook) via `passport-google-oauth20`
+- [x] **Device Trust** — Remember device for 30 days (signed cookie + Redis)
+- [x] **Account Lockout Policy** — Auto-lock after N failed login attempts + email alert
+- [x] **Password policy enforcement** — min length, complexity, no common passwords (HaveIBeenPwned API)
+- [x] **Forced password reset** — Admin can force employee to reset on next login
+
+> Status prod hardening applique: Magic Link branche sur provider email configurable, OAuth env vars validees en production, Device Trust stocke en cookie secure/httpOnly, lockout alerte par email, password policy branchee sur HaveIBeenPwned, tests unitaires dedies ajoutes. Session Fingerprinting reste volontairement hors scope.
 
 ---
 

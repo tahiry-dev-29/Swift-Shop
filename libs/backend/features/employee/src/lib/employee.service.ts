@@ -6,7 +6,7 @@ import { AuthService } from '@dima-new/backend/auth';
 export class EmployeeService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
 
   async findAll() {
@@ -39,11 +39,12 @@ export class EmployeeService {
   }) {
     const hashedPassword = await this.authService.hashPassword(data.password);
 
-    
     let roleId = data.roleId;
     if (!roleId) {
-       const salesRole = await this.prisma.role.findFirst({ where: { name: 'SALES' } });
-       roleId = salesRole?.id;
+      const salesRole = await this.prisma.role.findFirst({
+        where: { name: 'SALES' },
+      });
+      roleId = salesRole?.id;
     }
     if (!roleId) throw new Error('Role ID required or SALES role missing');
 
@@ -59,18 +60,32 @@ export class EmployeeService {
     });
   }
 
-  async update(id: string, data: {
-    firstname?: string;
-    lastname?: string;
-    roleId?: string;
-    active?: boolean;
-  }) {
-    const updateData: any = {
-      ...data,
+  async update(
+    id: string,
+    data: {
+      firstname?: string;
+      lastname?: string;
+      roleId?: string;
+      active?: boolean;
+      twoFactorSecret?: string | null;
+      twoFactorEnabled?: boolean;
+      forcePasswordReset?: boolean;
+    },
+  ) {
+    const { roleId, ...employeeData } = data;
+    const updateData: {
+      firstname?: string;
+      lastname?: string;
+      active?: boolean;
+      twoFactorSecret?: string | null;
+      twoFactorEnabled?: boolean;
+      forcePasswordReset?: boolean;
+      role?: { connect: { id: string } };
+    } = {
+      ...employeeData,
     };
-    if (data.roleId) {
-      updateData.role = { connect: { id: data.roleId } };
-      delete updateData.roleId;
+    if (roleId) {
+      updateData.role = { connect: { id: roleId } };
     }
 
     return this.prisma.employee.update({
@@ -93,4 +108,3 @@ export class EmployeeService {
     });
   }
 }
-

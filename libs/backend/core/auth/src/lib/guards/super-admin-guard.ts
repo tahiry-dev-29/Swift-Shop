@@ -1,4 +1,8 @@
-import { Injectable, ExecutionContext, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  ExecutionContext,
+  ForbiddenException,
+} from '@nestjs/common';
 import { EmployeeGuard } from './employee-guard';
 
 interface AuthUser {
@@ -14,7 +18,7 @@ export class SuperAdminGuard extends EmployeeGuard {
     err: unknown,
     user: TUser,
     info: unknown,
-    context: ExecutionContext
+    context: ExecutionContext,
   ): TUser {
     const validUser = super.handleRequest(err, user, info, context);
     if ((validUser as AuthUser).role !== 'SUPER_ADMIN') {
@@ -23,4 +27,3 @@ export class SuperAdminGuard extends EmployeeGuard {
     return validUser;
   }
 }
-

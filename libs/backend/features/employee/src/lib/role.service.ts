@@ -17,28 +17,24 @@ export class RoleService {
     });
   }
 
-  
   async create(data: { name: string; description?: string }) {
     return this.prisma.role.create({
       data: {
         name: data.name,
         description: data.description,
-        isSystem: false, 
+        isSystem: false,
       },
     });
   }
 
-  
-  
   async update(id: string, data: { name?: string; description?: string }) {
     const role = await this.findById(id);
     if (!role) throw new Error('Role not found');
 
     if (role.isSystem) {
       if (data.name && data.name !== role.name) {
-         throw new Error('Cannot rename system roles');
+        throw new Error('Cannot rename system roles');
       }
-      
     }
 
     return this.prisma.role.update({
@@ -50,7 +46,7 @@ export class RoleService {
   async delete(id: string) {
     const role = await this.findById(id);
     if (!role) throw new Error('Role not found');
-    
+
     if (role.isSystem) {
       throw new Error('Cannot delete system roles');
     }
@@ -60,4 +56,3 @@ export class RoleService {
     });
   }
 }
-

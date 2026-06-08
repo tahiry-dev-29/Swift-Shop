@@ -31,5 +31,7 @@ export class UpdateEmployeeInput {
 
   @Field({ nullable: true })
   active?: boolean;
-}
 
+  @Field({ nullable: true })
+  forcePasswordReset?: boolean;
+}

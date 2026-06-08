@@ -3,6 +3,7 @@ export interface JwtPayload {
   sub: string;
   email: string;
   type: 'customer' | 'employee';
+  purpose?: 'access' | 'customer_magic_link' | 'employee_password_reset';
   firstname: string;
   lastname: string;
   // Customer specific
