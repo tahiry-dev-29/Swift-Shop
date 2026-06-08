@@ -2,14 +2,36 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { DataAccessPrismaModule } from '@dima-new/data-access-prisma';
+import { AuthMailService } from './auth-mail.service';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
+import { AuthRateLimitGuard } from './rate-limiting/auth-rate-limit.guard';
+import {
+  AUTH_RATE_LIMIT_IP_ATTEMPTS,
+  AUTH_RATE_LIMIT_TTL_MS,
+} from './rate-limiting/rate-limit.constants';
+import { RedisThrottlerStorage } from './rate-limiting/redis-throttler-storage';
 
 @Module({
   imports: [
     DataAccessPrismaModule,
     ConfigModule,
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        throttlers: [
+          {
+            name: 'auth',
+            ttl: AUTH_RATE_LIMIT_TTL_MS,
+            limit: AUTH_RATE_LIMIT_IP_ATTEMPTS,
+          },
+        ],
+        storage: new RedisThrottlerStorage(configService),
+      }),
+    }),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       inject: [ConfigService],
@@ -19,7 +41,7 @@ import { JwtStrategy } from './jwt.strategy';
       }),
     }),
   ],
-  providers: [AuthService, JwtStrategy],
-  exports: [AuthService, JwtModule],
+  providers: [AuthMailService, AuthService, JwtStrategy, AuthRateLimitGuard],
+  exports: [AuthMailService, AuthService, JwtModule, AuthRateLimitGuard],
 })
 export class AuthModule {}

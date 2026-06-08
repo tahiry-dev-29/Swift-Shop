@@ -1,9 +1,11 @@
 # 🔐 Auth Module - API Tests
 
 ## 📍 GraphQL Playground
+
 `http://localhost:3000/graphql`
 
 ---
+
 All OK
 
 ## 👔 Employee Login
@@ -26,12 +28,12 @@ mutation {
 }
 ```
 
-
 ---
 
 ## 👔 Employee Me (Protected)
 
 **Header:**
+
 ```json
 { "Authorization": "Bearer <accessToken>" }
 ```
@@ -76,13 +78,7 @@ mutation {
 
 ```graphql
 mutation {
-  customerRegister(input: {
-    email: "newuser@example.com"
-    password: "password123"
-    firstname: "John"
-    lastname: "Doe"
-    groupId: 1
-  }) {
+  customerRegister(input: { email: "newuser@example.com", password: "password123", firstname: "John", lastname: "Doe", groupId: 1 }) {
     accessToken
     customer {
       id
@@ -98,6 +94,7 @@ mutation {
 ## 👤 Customer Me (Protected)
 
 **Header:**
+
 ```json
 { "Authorization": "Bearer <accessToken>" }
 ```
