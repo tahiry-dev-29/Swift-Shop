@@ -21,9 +21,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       type: payload.type,
       firstname: payload.firstname,
       lastname: payload.lastname,
-      role: payload.role, 
-      groupName: payload.groupName, 
-      groupReduction: payload.groupReduction, 
+      role: payload.role,
+      groupName: payload.groupName,
+      groupReduction: payload.groupReduction,
     };
   }
 }

@@ -26,4 +26,3 @@ export class CustomerRegisterInput {
   @Field({ nullable: true, defaultValue: false })
   optin?: boolean;
 }
-
