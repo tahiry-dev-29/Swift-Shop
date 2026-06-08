@@ -47,6 +47,8 @@ model Customer {
   
   // Status & Logic
   active          Boolean   @default(true)
+  failedLoginAttempts Int    @default(0)
+  lockedUntil     DateTime?
   isGuest         Boolean   @default(false)
   optin           Boolean   @default(false)
   dateAdd         DateTime  @default(now())
@@ -63,6 +65,9 @@ model Customer {
   orders          Order[]
   cart            Cart?
   specificPrices  SpecificPrice[]
+  auditLogs       AuditLog[]
+  oauthAccounts   OAuthAccount[]
+  trustedDevices  TrustedDevice[]
 }
 
 model CustomerGroup {
@@ -94,10 +99,72 @@ model Employee {
   roleId        String
   role          Role     @relation(fields: [roleId], references: [id])
   
+  // 2FA TOTP
+  twoFactorEnabled Boolean  @default(false)
+  twoFactorSecret  String?
+  
   active        Boolean  @default(true)
+  failedLoginAttempts Int @default(0)
+  lockedUntil   DateTime?
+  forcePasswordReset Boolean @default(false)
   lastConnectionDate DateTime?
   dateAdd       DateTime @default(now())
   dateUpd       DateTime @updatedAt
+
+  auditLogs      AuditLog[]
+  trustedDevices TrustedDevice[]
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  action      String
+  actorType   String?
+  actorId     String?
+  customerId  String?
+  employeeId  String?
+  ipAddress   String?
+  userAgent   String?
+  metadata    Json?
+  dateAdd     DateTime @default(now())
+
+  customer    Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  employee    Employee? @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+
+  @@index([action, dateAdd])
+  @@index([actorType, actorId])
+}
+
+model OAuthAccount {
+  id                String   @id @default(uuid())
+  provider          String
+  providerAccountId String
+  email             String
+  customerId        String
+  dateAdd           DateTime @default(now())
+  dateUpd           DateTime @updatedAt
+
+  customer          Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([customerId])
+}
+
+model TrustedDevice {
+  id          String   @id @default(uuid())
+  tokenHash   String   @unique
+  label       String?
+  expiresAt   DateTime
+  customerId  String?
+  employeeId  String?
+  dateAdd     DateTime @default(now())
+  lastUsedAt  DateTime?
+
+  customer    Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  employee    Employee? @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@index([employeeId])
+  @@index([expiresAt])
 }
 
 // ----------------------------------------------------------------------
