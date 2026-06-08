@@ -30,7 +30,7 @@ export class CustomerResolver {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const token = this.authService.generateCustomerToken(customer);
+    const token = await this.authService.generateCustomerToken(customer);
 
     const sessionId = context.req?.headers?.['x-session-id'];
     if (sessionId) {
@@ -51,7 +51,7 @@ export class CustomerResolver {
     }
 
     const customer = await this.customerService.register(input);
-    const token = this.authService.generateCustomerToken(customer);
+    const token = await this.authService.generateCustomerToken(customer);
     return { ...token, customer };
   }
 
@@ -69,6 +69,20 @@ export class CustomerResolver {
   @UseGuards(EmployeeGuard)
   async customers() {
     return this.customerService.findAll();
+  }
+
+  @Mutation(() => CustomerAuthResponse)
+  async customerRefreshToken(@Args('token') token: string) {
+    const result = await this.authService.refreshToken(token);
+    return result;
+  }
+
+  @Mutation(() => Boolean)
+  @UseGuards(CustomerGuard)
+  async customerLogout(@Context() ctx: { req: { user: { id: string, jti?: string, exp?: number } } }) {
+    const user = ctx.req.user;
+    await this.authService.logout(user.id, user.jti, user.exp);
+    return true;
   }
 }
 

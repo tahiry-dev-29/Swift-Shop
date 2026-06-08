@@ -10,6 +10,9 @@ export interface JwtPayload {
   groupReduction?: number;
   // Employee specific
   role?: string;
+  // Token specific
+  jti?: string;
+  tokenType?: 'access' | 'refresh';
   // JWT standard claims
   iat?: number;
   exp?: number;
@@ -25,6 +28,7 @@ export interface AuthUser {
   role?: string;
   groupName?: string;
   groupReduction?: number;
+  jti?: string;
 }
 
 // Customer types
@@ -51,4 +55,5 @@ export interface EmployeeInfo {
 // Auth response from login/register
 export interface AuthResponse {
   accessToken: string;
+  refreshToken?: string;
 }

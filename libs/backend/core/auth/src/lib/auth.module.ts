@@ -5,6 +5,7 @@ import { PassportModule } from '@nestjs/passport';
 import { DataAccessPrismaModule } from '@dima-new/data-access-prisma';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
+import { RedisService } from './redis.service';
 
 @Module({
   imports: [
@@ -15,11 +16,11 @@ import { JwtStrategy } from './jwt.strategy';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.getOrThrow<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '1d' },
+        signOptions: { expiresIn: '15m' }, // Short lived access token
       }),
     }),
   ],
-  providers: [AuthService, JwtStrategy],
-  exports: [AuthService, JwtModule],
+  providers: [AuthService, JwtStrategy, RedisService],
+  exports: [AuthService, JwtModule, RedisService],
 })
 export class AuthModule {}
