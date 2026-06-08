@@ -162,7 +162,7 @@ export class AuthService {
   async refreshToken(token: string) {
     const payload = this.verifyToken(token);
     
-    if (!payload || payload.tokenType !== 'refresh' || !payload.jti) {
+    if (!payload || payload.tokenType !== 'refresh' || !payload.jti || !payload.sub) {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
