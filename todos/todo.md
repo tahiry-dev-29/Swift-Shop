@@ -52,9 +52,9 @@
 ### 🔐 Auth & ACL — Advanced Robustness
 
 - [x] **Refresh Tokens** with rotation + Blacklisting via Redis
-- [x] **2FA (TOTP)** for `Employee` accounts (`otplib`, QR Code generation via `qrcode`)
-- [x] **Rate Limiting** on login/register routes (`@nestjs/throttler` + Redis store)
-- [x] **Magic Link** — Passwordless login for customers (signed email token, TTL 15min)
+- [ ] **2FA (TOTP)** for `Employee` accounts (`otplib`, QR Code generation via `qrcode`) and can use app authenticator
+- [ ] **Rate Limiting** on login/register routes (`@nestjs/throttler` + Redis store) normal for e-commerce
+- [ ] **Magic Link** — Passwordless login for customers (signed email token, TTL 15min)
 - [ ] **Session Fingerprinting** — Anomaly detection (IP change, User-Agent mismatch)
 - [x] **Audit Log** — Full traceability of logins and sensitive actions (`AuditLog` Prisma model)
 - [x] **OAuth2 PKCE** — Social login (Google, Facebook) via `passport-google-oauth20`
