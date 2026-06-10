@@ -58,9 +58,6 @@ export class EmployeeAuthResponse {
 
   @Field({ nullable: true })
   refreshToken?: string;
-
-  @Field(() => EmployeeType)
-  employee!: EmployeeType;
 }
 
 @ObjectType()
