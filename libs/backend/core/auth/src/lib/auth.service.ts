@@ -1,11 +1,50 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
-import { createHash, randomBytes } from 'crypto';
+import { createHash, randomBytes, randomUUID } from 'crypto';
 import { PrismaService } from '@dima-new/data-access-prisma';
 import { JwtPayload } from '@dima-new/models';
+import { generateSecret, generateURI, verifySync } from 'otplib';
+import { toDataURL } from 'qrcode';
+import { AuthMailService } from './auth-mail.service';
 import { RedisService } from './redis.service';
-import { randomUUID } from 'crypto';
+import {
+  pwnedPasswordRangeIncludesSuffix,
+  sha1PasswordParts,
+  validateLocalPasswordPolicy,
+} from './password-policy';
+
+const LOCKOUT_THRESHOLD = 5;
+const LOCKOUT_MINUTES = 15;
+const MAGIC_LINK_TTL = '15m';
+const PASSWORD_RESET_TTL = '15m';
+const DEVICE_TRUST_DAYS = 30;
+const REFRESH_TOKEN_TTL_SECONDS = 7 * 24 * 60 * 60;
+
+type RequestMeta = {
+  ipAddress?: string;
+  userAgent?: string;
+};
+
+type AuditInput = RequestMeta & {
+  action: string;
+  actorType?: 'customer' | 'employee' | 'system';
+  actorId?: string;
+  customerId?: string;
+  employeeId?: string;
+  metadata?: Record<string, string | number | boolean | null>;
+};
+
+type OAuthProvider = 'google' | 'facebook';
+
+type OAuthProfile = {
+  provider: OAuthProvider;
+  providerAccountId: string;
+  email: string;
+  firstname: string;
+  lastname: string;
+};
 
 @Injectable()
 export class AuthService {
@@ -14,7 +53,9 @@ export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
-    private readonly redisService: RedisService
+    private readonly configService: ConfigService,
+    private readonly mailService: AuthMailService,
+    private readonly redisService: RedisService,
   ) {}
 
   async hashPassword(password: string): Promise<string> {
@@ -98,13 +139,16 @@ export class AuthService {
       ...payload,
       tokenType: 'refresh',
     };
-
     const accessToken = this.jwtService.sign(payload);
-    // Refresh token valid for 7 days
-    const refreshToken = this.jwtService.sign(refreshTokenPayload, { expiresIn: '7d' });
+    const refreshToken = this.jwtService.sign(refreshTokenPayload, {
+      expiresIn: '7d',
+    });
 
-    // Store the valid refresh token JTI for this user
-    await this.redisService.storeRefreshToken(customer.id, jti, 7 * 24 * 60 * 60);
+    await this.redisService.storeRefreshToken(
+      customer.id,
+      jti,
+      REFRESH_TOKEN_TTL_SECONDS,
+    );
 
     return {
       accessToken,
@@ -136,13 +180,16 @@ export class AuthService {
       ...payload,
       tokenType: 'refresh',
     };
-
     const accessToken = this.jwtService.sign(payload);
-    // Refresh token valid for 7 days
-    const refreshToken = this.jwtService.sign(refreshTokenPayload, { expiresIn: '7d' });
+    const refreshToken = this.jwtService.sign(refreshTokenPayload, {
+      expiresIn: '7d',
+    });
 
-    // Store the valid refresh token JTI for this user
-    await this.redisService.storeRefreshToken(employee.id, jti, 7 * 24 * 60 * 60);
+    await this.redisService.storeRefreshToken(
+      employee.id,
+      jti,
+      REFRESH_TOKEN_TTL_SECONDS,
+    );
 
     return {
       accessToken,
@@ -160,26 +207,31 @@ export class AuthService {
   }
 
   async refreshToken(token: string) {
-    const payload = this.verifyToken(token);
-    
-    if (!payload || payload.tokenType !== 'refresh' || !payload.jti || !payload.sub) {
+    const payload = this.jwtService.verify<JwtPayload>(token);
+
+    if (payload.tokenType !== 'refresh' || !payload.jti || !payload.sub) {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
-    const isBlacklisted = await this.redisService.isTokenBlacklisted(payload.jti);
+    const isBlacklisted = await this.redisService.isTokenBlacklisted(
+      payload.jti,
+    );
     if (isBlacklisted) {
       throw new UnauthorizedException('Token has been revoked');
     }
 
-    const storedJti = await this.redisService.getStoredRefreshTokenJti(payload.sub);
+    const storedJti = await this.redisService.getStoredRefreshTokenJti(
+      payload.sub,
+    );
     if (storedJti !== payload.jti) {
       throw new UnauthorizedException('Refresh token is no longer active');
     }
 
-    // Blacklist the old token to prevent reuse (rotation)
-    const exp = payload.exp ? payload.exp - Math.floor(Date.now() / 1000) : 7 * 24 * 60 * 60;
-    if (exp > 0) {
-      await this.redisService.setBlacklistToken(payload.jti, exp);
+    const expiresIn = payload.exp
+      ? payload.exp - Math.floor(Date.now() / 1000)
+      : REFRESH_TOKEN_TTL_SECONDS;
+    if (expiresIn > 0) {
+      await this.redisService.setBlacklistToken(payload.jti, expiresIn);
     }
 
     if (payload.type === 'customer') {
@@ -187,32 +239,36 @@ export class AuthService {
         where: { id: payload.sub },
         include: { group: true },
       });
-      if (!customer || !customer.active) throw new UnauthorizedException('User inactive');
+      if (!customer || !customer.active) {
+        throw new UnauthorizedException('User inactive');
+      }
       const tokens = await this.generateCustomerToken(customer);
       return { ...tokens, customer };
-    } else {
-      const employee = await this.prisma.employee.findUnique({
-        where: { id: payload.sub },
-        include: { role: true },
-      });
-      if (!employee || !employee.active) throw new UnauthorizedException('User inactive');
-      const tokens = await this.generateEmployeeToken(employee);
-      return { ...tokens, employee };
     }
+
+    const employee = await this.prisma.employee.findUnique({
+      where: { id: payload.sub },
+      include: { role: true },
+    });
+    if (!employee || !employee.active) {
+      throw new UnauthorizedException('User inactive');
+    }
+    const tokens = await this.generateEmployeeToken(employee);
+    return { ...tokens, employee };
   }
 
   async logout(userId: string, jti?: string, exp?: number) {
-    // Invalidate current refresh token
     await this.redisService.storeRefreshToken(userId, '', 1);
-    
-    if (jti && exp) {
-      const expiresIn = exp - Math.floor(Date.now() / 1000);
-      if (expiresIn > 0) {
-        await this.redisService.setBlacklistToken(jti, expiresIn);
-      }
+
+    if (!jti || !exp) {
+      return;
+    }
+
+    const expiresIn = exp - Math.floor(Date.now() / 1000);
+    if (expiresIn > 0) {
+      await this.redisService.setBlacklistToken(jti, expiresIn);
     }
   }
-}
 
   async assertPasswordPolicy(password: string): Promise<void> {
     this.assertLocalPasswordPolicy(password);

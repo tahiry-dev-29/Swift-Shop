@@ -39,3 +39,18 @@ export class CustomerAuthResponse {
   @Field(() => CustomerType)
   customer!: CustomerType;
 }
+
+@ObjectType()
+export class MagicLinkResponse {
+  @Field()
+  success!: boolean;
+}
+
+@ObjectType()
+export class OAuthAuthorizationResponse {
+  @Field()
+  authorizationUrl!: string;
+
+  @Field()
+  state!: string;
+}

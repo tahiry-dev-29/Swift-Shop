@@ -8,6 +8,11 @@ import { AuthMailService } from './auth-mail.service';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
 import { RedisService } from './redis.service';
+import {
+  AUTH_RATE_LIMIT_IP_ATTEMPTS,
+  AUTH_RATE_LIMIT_TTL_MS,
+} from './rate-limiting/rate-limit.constants';
+import { RedisThrottlerStorage } from './rate-limiting/redis-throttler-storage';
 
 @Module({
   imports: [
@@ -36,7 +41,7 @@ import { RedisService } from './redis.service';
       }),
     }),
   ],
-  providers: [AuthService, JwtStrategy, RedisService],
+  providers: [AuthService, AuthMailService, JwtStrategy, RedisService],
   exports: [AuthService, JwtModule, RedisService],
 })
 export class AuthModule {}
