@@ -18,34 +18,33 @@ runtimes:
 # TS/Dart focused linters only
 lint:
   enabled:
-    - eslint@9.27.0 # TypeScript linter (ESLint flat config)
-    - prettier@3.6.2 # TS/JS/JSON/YAML formatter
-    - dart@3.10.8 # Dart/Flutter analyzer & formatter
-    - git-diff-check # Git whitespace check
-    - markdownlint@0.48.0 # Markdown quality
+    - actionlint@1.7.12
+    - checkov@3.2.533
+    - dotenv-linter@4.0.0
+    - git-diff-check
+    - grype@0.114.0
+    - hadolint@2.14.0
+    - markdownlint@0.48.0
+    - osv-scanner@2.3.8
+    - pinact@4.0.0
+    - prettier@3.8.3
+    - shellcheck@0.11.0
+    - shfmt@3.6.0
+    - eslint@9.28.0
+    - taplo@0.10.0
+    - trufflehog@3.95.5
+    - yamllint@1.38.0
   disabled:
     # Python ecosystem
     - bandit
     - black
-    - flake8
     - isort
     - pylint
     - ruff
     - autopep8
-    # Infrastructure / Security
-    - actionlint
-    - checkov
-    - hadolint
-    - grype
-    - osv-scanner
-    - trufflehog
-    - gitleaks
-    - dustilock
-    - pinact
+    # Infrastructure / Security (we want these, so removing from disabled)
     # Other languages
     - clippy # Rust
-    - shellcheck # Shell
-    - shfmt # Shell
     - buf # Protobuf
     - buildifier # Bazel
     - detekt # Kotlin
@@ -55,9 +54,6 @@ lint:
     - codespell # Spelling
     - cfnlint # CloudFormation
     # Config formats
-    - dotenv-linter
-    - taplo # TOML
-    - yamllint # YAML (prettier covers it)
 
   # ESLint respects project eslint.config.mjs / .eslintrc
   definitions: []
