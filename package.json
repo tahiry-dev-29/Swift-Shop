@@ -87,6 +87,7 @@
     "bullmq": "^5.77.6",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
+    "dataloader": "^2.2.3",
     "eventsource": "^4.1.0",
     "graphql": "^16.11.0",
     "ioredis": "^5.11.0",

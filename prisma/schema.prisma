@@ -17,65 +17,108 @@ datasource db {
 // ----------------------------------------------------------------------
 
 model Role {
-  id          String     @id @default(uuid())
-  name        String     @unique // SUPER_ADMIN, ADMIN, etc.
+  id          String    @id @default(uuid())
+  name        String    @unique // SuperAdmin, Admin, etc.
+  slug        String    @unique // super_admin, admin, etc.
   description String?
-  isSystem    Boolean    @default(false) // If true, cannot be deleted/renamed
+  isSystem    Boolean   @default(false) // If true, cannot be deleted/renamed
+  dateAdd     DateTime  @default(now())
+  dateUpd     DateTime  @updatedAt
+  deletedAt   DateTime?
 
-  employees   Employee[]
+  employees       Employee[]
+  employeeRoles   EmployeeRole[]
+  rolePermissions RolePermission[]
 }
 
+model Permission {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  resource    String
+  action      String
+  description String?
+  dateAdd     DateTime @default(now())
+
+  rolePermissions RolePermission[]
+
+  @@unique([resource, action])
+  @@index([resource])
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  dateAdd      DateTime @default(now())
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@index([permissionId])
+}
+
+model EmployeeRole {
+  employeeId String
+  roleId     String
+  dateAdd    DateTime @default(now())
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  role     Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([employeeId, roleId])
+  @@index([roleId])
+}
 
 // ----------------------------------------------------------------------
 // CUSTOMERS (Front-Office Auth)
 // ----------------------------------------------------------------------
 
 model Customer {
-  id              String    @id @default(uuid())
-  
+  id String @id @default(uuid())
+
   // Auth Info
-  email           String    @unique
-  password        String    // Hashed (Argon2)
-  
+  email    String @unique
+  password String // Hashed (Argon2)
+
   // Personal Info
-  firstname       String
-  lastname        String
-  birthday        DateTime?
-  company         String?
-  siret           String?
-  ape             String?
-  
+  firstname String
+  lastname  String
+  birthday  DateTime?
+  company   String?
+  siret     String?
+  ape       String?
+
   // Status & Logic
-  active          Boolean   @default(true)
-  failedLoginAttempts Int    @default(0)
-  lockedUntil     DateTime?
-  isGuest         Boolean   @default(false)
-  optin           Boolean   @default(false)
-  dateAdd         DateTime  @default(now())
-  dateUpd         DateTime  @updatedAt
-  
+  active              Boolean   @default(true)
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+  isGuest             Boolean   @default(false)
+  optin               Boolean   @default(false)
+  dateAdd             DateTime  @default(now())
+  dateUpd             DateTime  @updatedAt
+
   // Relations
-  groupId         String
-  group           CustomerGroup @relation(fields: [groupId], references: [id])
-  
-  countryId       String?      // Pays du client pour le calcul de la TVA
-  country         Country?  @relation(fields: [countryId], references: [id])
-  
-  addresses       Address[]
-  orders          Order[]
-  cart            Cart?
-  specificPrices  SpecificPrice[]
-  auditLogs       AuditLog[]
-  oauthAccounts   OAuthAccount[]
-  trustedDevices  TrustedDevice[]
+  groupId String
+  group   CustomerGroup @relation(fields: [groupId], references: [id])
+
+  countryId String? // Pays du client pour le calcul de la TVA
+  country   Country? @relation(fields: [countryId], references: [id])
+
+  addresses      Address[]
+  orders         Order[]
+  cart           Cart?
+  specificPrices SpecificPrice[]
+  auditLogs      AuditLog[]
+  oauthAccounts  OAuthAccount[]
+  trustedDevices TrustedDevice[]
 }
 
 model CustomerGroup {
-  id            String     @id @default(uuid())
-  name          String
-  reduction     Decimal    @default(0.00)
-  showPrices    Boolean    @default(true)
-  
+  id         String  @id @default(uuid())
+  name       String
+  reduction  Decimal @default(0.00)
+  showPrices Boolean @default(true)
+
   customers      Customer[]
   specificPrices SpecificPrice[]
 }
@@ -85,50 +128,51 @@ model CustomerGroup {
 // ----------------------------------------------------------------------
 
 model Employee {
-  id            String   @id @default(uuid())
-  
+  id String @id @default(uuid())
+
   // Auth Info
-  email         String   @unique
-  password      String   // Hashed (Argon2)
-  
+  email    String @unique
+  password String // Hashed (Argon2)
+
   // Personal Info
-  firstname     String
-  lastname      String
-  
+  firstname String
+  lastname  String
+
   // Permissions & Access
-  roleId        String
-  role          Role     @relation(fields: [roleId], references: [id])
-  
+  roleId String
+  role   Role           @relation(fields: [roleId], references: [id])
+  roles  EmployeeRole[]
+
   // 2FA TOTP
-  twoFactorEnabled Boolean  @default(false)
+  twoFactorEnabled Boolean @default(false)
   twoFactorSecret  String?
-  
-  active        Boolean  @default(true)
-  failedLoginAttempts Int @default(0)
-  lockedUntil   DateTime?
-  forcePasswordReset Boolean @default(false)
-  lastConnectionDate DateTime?
-  dateAdd       DateTime @default(now())
-  dateUpd       DateTime @updatedAt
+
+  active              Boolean   @default(true)
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+  forcePasswordReset  Boolean   @default(false)
+  lastConnectionDate  DateTime?
+  dateAdd             DateTime  @default(now())
+  dateUpd             DateTime  @updatedAt
 
   auditLogs      AuditLog[]
   trustedDevices TrustedDevice[]
 }
 
 model AuditLog {
-  id          String   @id @default(uuid())
-  action      String
-  actorType   String?
-  actorId     String?
-  customerId  String?
-  employeeId  String?
-  ipAddress   String?
-  userAgent   String?
-  metadata    Json?
-  dateAdd     DateTime @default(now())
+  id         String   @id @default(uuid())
+  action     String
+  actorType  String?
+  actorId    String?
+  customerId String?
+  employeeId String?
+  ipAddress  String?
+  userAgent  String?
+  metadata   Json?
+  dateAdd    DateTime @default(now())
 
-  customer    Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  employee    Employee? @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  employee Employee? @relation(fields: [employeeId], references: [id], onDelete: SetNull)
 
   @@index([action, dateAdd])
   @@index([actorType, actorId])
@@ -143,24 +187,24 @@ model OAuthAccount {
   dateAdd           DateTime @default(now())
   dateUpd           DateTime @updatedAt
 
-  customer          Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@index([customerId])
 }
 
 model TrustedDevice {
-  id          String   @id @default(uuid())
-  tokenHash   String   @unique
-  label       String?
-  expiresAt   DateTime
-  customerId  String?
-  employeeId  String?
-  dateAdd     DateTime @default(now())
-  lastUsedAt  DateTime?
+  id         String    @id @default(uuid())
+  tokenHash  String    @unique
+  label      String?
+  expiresAt  DateTime
+  customerId String?
+  employeeId String?
+  dateAdd    DateTime  @default(now())
+  lastUsedAt DateTime?
 
-  customer    Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  employee    Employee? @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  employee Employee? @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
   @@index([customerId])
   @@index([employeeId])
@@ -172,27 +216,27 @@ model TrustedDevice {
 // ----------------------------------------------------------------------
 
 model Address {
-  id              String   @id @default(uuid())
-  customerId      String?
-  alias           String
-  company         String?
-  lastname        String
-  firstname       String
-  address1        String
-  address2        String?
-  postcode        String
-  city            String
-  countryId       String
-  phone           String?
-  phoneMobile     String?
-  vatNumber       String?
-  
-  active          Boolean  @default(true)
-  deleted         Boolean  @default(false)
+  id          String  @id @default(uuid())
+  customerId  String?
+  alias       String
+  company     String?
+  lastname    String
+  firstname   String
+  address1    String
+  address2    String?
+  postcode    String
+  city        String
+  countryId   String
+  phone       String?
+  phoneMobile String?
+  vatNumber   String?
+
+  active  Boolean @default(true)
+  deleted Boolean @default(false)
 
   // Relations
-  customer        Customer? @relation(fields: [customerId], references: [id])
-  country         Country   @relation(fields: [countryId], references: [id])
+  customer Customer? @relation(fields: [customerId], references: [id])
+  country  Country   @relation(fields: [countryId], references: [id])
 }
 
 // ----------------------------------------------------------------------
@@ -200,20 +244,30 @@ model Address {
 // ----------------------------------------------------------------------
 
 model Category {
-  id          String     @id @default(uuid())
+  id          String  @id @default(uuid())
   name        String
+  slug        String  @unique
   description String?
-  active      Boolean    @default(true)
-  position    Int        @default(0)
-  
-  parentId    String?
-  parent      Category?  @relation("CategoryTree", fields: [parentId], references: [id])
-  children    Category[] @relation("CategoryTree")
-  
-  products    Product[]
-  
-  dateAdd     DateTime   @default(now())
-  dateUpd     DateTime   @updatedAt
+  active      Boolean @default(true)
+  position    Int     @default(0)
+  deletedAt   DateTime?
+  path        String  @default("")
+
+  metaTitle       String?
+  metaDescription String?
+  metaKeywords    String?
+
+  banner      String?
+  thumbnail   String?
+
+  parentId String?
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryTree")
+
+  products Product[]
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
 }
 
 // ----------------------------------------------------------------------
@@ -221,25 +275,25 @@ model Category {
 // ----------------------------------------------------------------------
 
 model AttributeGroup {
-  id          String           @id @default(uuid())
-  name        String           @unique  // Internal name (e.g. "Size")
-  publicName  String           // Customer facing name (e.g. "Taille")
-  position    Int              @default(0)
-  type        String           @default("select") // select, radio, color
-  
-  values      AttributeValue[]
+  id         String @id @default(uuid())
+  name       String @unique // Internal name (e.g. "Size")
+  publicName String // Customer facing name (e.g. "Taille")
+  position   Int    @default(0)
+  type       String @default("select") // select, radio, color
+
+  values AttributeValue[]
 }
 
 model AttributeValue {
-  id              String         @id @default(uuid())
+  id               String  @id @default(uuid())
   attributeGroupId String
-  name            String         // e.g. "S", "Red"
-  color           String?        // For color type attributes
-  position        Int            @default(0)
-  
-  group           AttributeGroup @relation(fields: [attributeGroupId], references: [id], onDelete: Cascade)
+  name             String // e.g. "S", "Red"
+  color            String? // For color type attributes
+  position         Int     @default(0)
+
+  group                 AttributeGroup                @relation(fields: [attributeGroupId], references: [id], onDelete: Cascade)
   combinationAttributes ProductCombinationAttribute[]
-  
+
   @@unique([attributeGroupId, name])
 }
 
@@ -248,35 +302,35 @@ model AttributeValue {
 // ----------------------------------------------------------------------
 
 model Feature {
-  id          String         @id @default(uuid())
-  name        String         @unique  // Internal name (e.g. "Material")
-  publicName  String         // Customer facing name (e.g. "Matière")
-  position    Int            @default(0)
-  
-  values      FeatureValue[]
+  id         String @id @default(uuid())
+  name       String @unique // Internal name (e.g. "Material")
+  publicName String // Customer facing name (e.g. "Matière")
+  position   Int    @default(0)
+
+  values FeatureValue[]
 }
 
 model FeatureValue {
-  id          String         @id @default(uuid())
-  featureId   String
-  value       String         // e.g. "Cotton", "Leather"
-  position    Int            @default(0)
-  custom      Boolean        @default(false) // If true, it's a custom value
-  
-  feature     Feature        @relation(fields: [featureId], references: [id], onDelete: Cascade)
+  id        String  @id @default(uuid())
+  featureId String
+  value     String // e.g. "Cotton", "Leather"
+  position  Int     @default(0)
+  custom    Boolean @default(false) // If true, it's a custom value
+
+  feature         Feature          @relation(fields: [featureId], references: [id], onDelete: Cascade)
   productFeatures ProductFeature[]
-  
+
   @@unique([featureId, value])
 }
 
 model ProductFeature {
-  id             String       @id @default(uuid())
+  id             String @id @default(uuid())
   productId      String
   featureValueId String
-  
-  product        Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
-  featureValue   FeatureValue @relation(fields: [featureValueId], references: [id], onDelete: Cascade)
-  
+
+  product      Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  featureValue FeatureValue @relation(fields: [featureValueId], references: [id], onDelete: Cascade)
+
   @@unique([productId, featureValueId])
 }
 
@@ -285,113 +339,113 @@ model ProductFeature {
 // ----------------------------------------------------------------------
 
 model Product {
-  id               String    @id @default(uuid())
-  reference        String    @unique  // SKU (ex: "TSHIRT-001")
-  
+  id        String @id @default(uuid())
+  reference String @unique // SKU (ex: "TSHIRT-001")
+
   // Basic Info
   name             String
   description      String?
   descriptionShort String?
-  
+
   // Pricing (base price HT)
-  price            Decimal   @default(0.00)
-  wholesalePrice   Decimal   @default(0.00)  // Prix d'achat
-  
+  price          Decimal @default(0.00)
+  wholesalePrice Decimal @default(0.00) // Prix d'achat
+
   // Status & Visibility
-  active           Boolean   @default(true)
-  availableForOrder Boolean  @default(true)
-  showPrice        Boolean   @default(true)
-  
+  active            Boolean @default(true)
+  availableForOrder Boolean @default(true)
+  showPrice         Boolean @default(true)
+
   // SEO
-  metaTitle        String?
-  metaDescription  String?
-  linkRewrite      String?   // URL slug
-  
+  metaTitle       String?
+  metaDescription String?
+  slug            String  @unique
+
   // Physical
-  weight           Decimal   @default(0.00)
-  width            Decimal?
-  height           Decimal?
-  depth            Decimal?
-  
+  weight Decimal  @default(0.00)
+  width  Decimal?
+  height Decimal?
+  depth  Decimal?
+
   // Relations
-  categoryId       String?
-  category         Category? @relation(fields: [categoryId], references: [id])
-  
-  images           ProductImage[]
-  combinations     ProductCombination[]
-  features         ProductFeature[]
-  stock            Stock?     // For products without combinations
-  specificPrices   SpecificPrice[]
-  cartItems        CartItem[]
-  
-  dateAdd          DateTime  @default(now())
-  dateUpd          DateTime  @updatedAt
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  images         ProductImage[]
+  combinations   ProductCombination[]
+  features       ProductFeature[]
+  stock          Stock? // For products without combinations
+  specificPrices SpecificPrice[]
+  cartItems      CartItem[]
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
 }
 
 model ProductImage {
-  id          String   @id @default(uuid())
-  productId   String
-  position    Int      @default(0)
-  cover       Boolean  @default(false)  // Image principale
-  
+  id        String  @id @default(uuid())
+  productId String
+  position  Int     @default(0)
+  cover     Boolean @default(false) // Image principale
+
   // Image stored: uploads/products/{productId}/{originalName}_{date}_{randomId}.{ext}
-  filename    String   // e.g. "tshirt-blue_20251209_abc123.jpg"
-  originalName String  // Original uploaded filename
-  path        String   // Full path: "uploads/products/1/tshirt-blue_20251209_abc123.jpg"
-  mimeType    String   // e.g. "image/jpeg"
-  size        Int      // File size in bytes
-  alt         String?
-  
-  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
-  dateAdd     DateTime @default(now())
+  filename     String // e.g. "tshirt-blue_20251209_abc123.jpg"
+  originalName String // Original uploaded filename
+  path         String // Full path: "uploads/products/1/tshirt-blue_20251209_abc123.jpg"
+  mimeType     String // e.g. "image/jpeg"
+  size         Int // File size in bytes
+  alt          String?
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  dateAdd DateTime @default(now())
 }
 
 model ProductCombination {
-  id              String    @id @default(uuid())
-  productId       String
-  reference       String?   // Ref spécifique combinaison
-  
+  id        String  @id @default(uuid())
+  productId String
+  reference String? // Ref spécifique combinaison
+
   // Price Impact
-  priceImpact     Decimal   @default(0.00)  // +/- sur le prix de base
-  weightImpact    Decimal   @default(0.00)
-  
+  priceImpact  Decimal @default(0.00) // +/- sur le prix de base
+  weightImpact Decimal @default(0.00)
+
   // Status
-  active          Boolean   @default(true)
-  isDefault       Boolean   @default(false)
-  
+  active    Boolean @default(true)
+  isDefault Boolean @default(false)
+
   // Relations
-  product         Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
-  attributes      ProductCombinationAttribute[]
-  stock           Stock?
-  specificPrices  SpecificPrice[]
-  cartItems       CartItem[]
+  product        Product                       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  attributes     ProductCombinationAttribute[]
+  stock          Stock?
+  specificPrices SpecificPrice[]
+  cartItems      CartItem[]
 }
 
 model ProductCombinationAttribute {
-  id               String             @id @default(uuid())
+  id               String @id @default(uuid())
   combinationId    String
   attributeValueId String
-  
-  combination      ProductCombination @relation(fields: [combinationId], references: [id], onDelete: Cascade)
-  attributeValue   AttributeValue     @relation(fields: [attributeValueId], references: [id])
-  
+
+  combination    ProductCombination @relation(fields: [combinationId], references: [id], onDelete: Cascade)
+  attributeValue AttributeValue     @relation(fields: [attributeValueId], references: [id])
+
   @@unique([combinationId, attributeValueId])
 }
 
 model Stock {
-  id                  String    @id @default(uuid())
-  
+  id String @id @default(uuid())
+
   // Peut être lié à un produit OU une combinaison
-  productId           String?      @unique
-  combinationId       String?      @unique
-  
-  quantity            Int       @default(0)
-  minQuantity         Int       @default(1)   // Alerte stock bas
-  outOfStockBehavior  String    @default("deny") // deny, allow, default
-  
-  product             Product?           @relation(fields: [productId], references: [id], onDelete: Cascade)
-  combination         ProductCombination? @relation(fields: [combinationId], references: [id], onDelete: Cascade)
+  productId     String? @unique
+  combinationId String? @unique
+
+  quantity           Int    @default(0)
+  minQuantity        Int    @default(1) // Alerte stock bas
+  outOfStockBehavior String @default("deny") // deny, allow, default
+
+  product     Product?            @relation(fields: [productId], references: [id], onDelete: Cascade)
+  combination ProductCombination? @relation(fields: [combinationId], references: [id], onDelete: Cascade)
 }
 
 // ----------------------------------------------------------------------
@@ -399,31 +453,31 @@ model Stock {
 // ----------------------------------------------------------------------
 
 model Cart {
-  id          String     @id @default(uuid())
-  customerId  String?    @unique  // Null for guest carts
-  sessionId   String?    @unique  // For guest users
-  
-  items       CartItem[]
-  
-  dateAdd     DateTime   @default(now())
-  dateUpd     DateTime   @updatedAt
-  
-  customer    Customer?  @relation(fields: [customerId], references: [id])
+  id         String  @id @default(uuid())
+  customerId String? @unique // Null for guest carts
+  sessionId  String? @unique // For guest users
+
+  items CartItem[]
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
+
+  customer Customer? @relation(fields: [customerId], references: [id])
 }
 
 model CartItem {
-  id            String    @id @default(uuid())
+  id            String  @id @default(uuid())
   cartId        String
   productId     String
   combinationId String?
-  quantity      Int       @default(1)
-  
-  cart          Cart      @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  product       Product   @relation(fields: [productId], references: [id])
-  combination   ProductCombination? @relation(fields: [combinationId], references: [id])
-  
-  dateAdd       DateTime  @default(now())
-  
+  quantity      Int     @default(1)
+
+  cart        Cart                @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product     Product             @relation(fields: [productId], references: [id])
+  combination ProductCombination? @relation(fields: [combinationId], references: [id])
+
+  dateAdd DateTime @default(now())
+
   @@unique([cartId, productId, combinationId])
 }
 
@@ -432,70 +486,69 @@ model CartItem {
 // ----------------------------------------------------------------------
 
 model OrderState {
-  id        String   @id @default(uuid())
-  name      String   @unique  // PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED
-  color     String   @default("#6b7280")
-  position  Int      @default(0)
-  
-  orders    Order[]
+  id       String @id @default(uuid())
+  name     String @unique // PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED
+  color    String @default("#6b7280")
+  position Int    @default(0)
+
+  orders Order[]
 }
 
 model Order {
-  id           String       @id @default(uuid())
-  reference    String       @unique  // Format: DO-20251210-XXXXX
-  customerId   String
-  stateId      String
-  
-  totalHT      Decimal      @default(0)
-  totalTax     Decimal      @default(0)
-  totalTTC     Decimal      @default(0)
-  
-  items        OrderItem[]
-  addresses    OrderAddress[]
-  
-  dateAdd      DateTime     @default(now())
-  dateUpd      DateTime     @updatedAt
-  
-  customer     Customer     @relation(fields: [customerId], references: [id])
-  state        OrderState   @relation(fields: [stateId], references: [id])
+  id         String @id @default(uuid())
+  reference  String @unique // Format: DO-20251210-XXXXX
+  customerId String
+  stateId    String
+
+  totalHT  Decimal @default(0)
+  totalTax Decimal @default(0)
+  totalTTC Decimal @default(0)
+
+  items     OrderItem[]
+  addresses OrderAddress[]
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
+
+  customer Customer   @relation(fields: [customerId], references: [id])
+  state    OrderState @relation(fields: [stateId], references: [id])
 }
 
 model OrderItem {
-  id            String   @id @default(uuid())
+  id            String  @id @default(uuid())
   orderId       String
   productId     String
   combinationId String?
-  
+
   // Snapshot data (prix au moment de la commande)
-  productName   String
-  productRef    String
-  quantity      Int
-  unitPriceHT   Decimal
-  taxRate       Decimal
-  totalHT       Decimal
-  totalTTC      Decimal
-  
-  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productName String
+  productRef  String
+  quantity    Int
+  unitPriceHT Decimal
+  taxRate     Decimal
+  totalHT     Decimal
+  totalTTC    Decimal
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 model OrderAddress {
-  id          String   @id @default(uuid())
-  orderId     String
-  type        String   // "delivery" ou "billing"
-  
-  firstname   String
-  lastname    String
-  company     String?
-  address1    String
-  address2    String?
-  postcode    String
-  city        String
-  country     String
-  phone       String?
-  
-  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-}
+  id      String @id @default(uuid())
+  orderId String
+  type    String // "delivery" ou "billing"
 
+  firstname String
+  lastname  String
+  company   String?
+  address1  String
+  address2  String?
+  postcode  String
+  city      String
+  country   String
+  phone     String?
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
 
 // ----------------------------------------------------------------------
 // PRICING ENGINE
@@ -503,61 +556,61 @@ model OrderAddress {
 
 // Country (pour les taxes et adresses)
 model Country {
-  id          String   @id @default(uuid())
-  isoCode     String   @unique  // FR, US, DE, etc.
-  name        String
-  active      Boolean  @default(true)
-  
+  id      String  @id @default(uuid())
+  isoCode String  @unique // FR, US, DE, etc.
+  name    String
+  active  Boolean @default(true)
+
   // Tax configuration
-  taxRate     Decimal  @default(20.00)  // TVA par défaut (ex: 20% pour FR)
-  
-  customers   Customer[]
-  addresses   Address[]
-  taxRules    TaxRule[]
+  taxRate Decimal @default(20.00) // TVA par défaut (ex: 20% pour FR)
+
+  customers      Customer[]
+  addresses      Address[]
+  taxRules       TaxRule[]
   specificPrices SpecificPrice[]
 }
 
 // Tax Rules (Règles de TVA avancées)
 model TaxRule {
-  id          String   @id @default(uuid())
-  name        String   // Ex: "TVA FR Standard"
-  countryId   String
-  rate        Decimal  // 20.00 pour 20%
-  active      Boolean  @default(true)
-  
-  country     Country  @relation(fields: [countryId], references: [id])
+  id        String  @id @default(uuid())
+  name      String // Ex: "TVA FR Standard"
+  countryId String
+  rate      Decimal // 20.00 pour 20%
+  active    Boolean @default(true)
+
+  country Country @relation(fields: [countryId], references: [id])
 }
 
 // Specific Prices (Prix spécifiques / Promotions)
 model SpecificPrice {
-  id              String    @id @default(uuid())
-  
+  id String @id @default(uuid())
+
   // Cibles (au moins une doit être définie)
   productId       String?
   combinationId   String?
   customerId      String?
   customerGroupId String?
   countryId       String?
-  
+
   // Réduction
-  reductionType   String    // "percentage" ou "amount"
-  reduction       Decimal   // 10.00 pour 10% ou 10€
-  
+  reductionType String // "percentage" ou "amount"
+  reduction     Decimal // 10.00 pour 10% ou 10€
+
   // Conditions
-  fromQuantity    Int       @default(1)  // À partir de X unités
-  dateFrom        DateTime?
-  dateTo          DateTime?
-  
+  fromQuantity Int       @default(1) // À partir de X unités
+  dateFrom     DateTime?
+  dateTo       DateTime?
+
   // Priorité (plus haut = prioritaire)
-  priority        Int       @default(1)
-  
-  active          Boolean   @default(true)
-  dateAdd         DateTime  @default(now())
-  
+  priority Int @default(1)
+
+  active  Boolean  @default(true)
+  dateAdd DateTime @default(now())
+
   // Relations
-  product         Product?         @relation(fields: [productId], references: [id], onDelete: Cascade)
-  combination     ProductCombination? @relation(fields: [combinationId], references: [id], onDelete: Cascade)
-  customer        Customer?        @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  customerGroup   CustomerGroup?   @relation(fields: [customerGroupId], references: [id])
-  country         Country?         @relation(fields: [countryId], references: [id])
+  product       Product?            @relation(fields: [productId], references: [id], onDelete: Cascade)
+  combination   ProductCombination? @relation(fields: [combinationId], references: [id], onDelete: Cascade)
+  customer      Customer?           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerGroup CustomerGroup?      @relation(fields: [customerGroupId], references: [id])
+  country       Country?            @relation(fields: [countryId], references: [id])
 }
