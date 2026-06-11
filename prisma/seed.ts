@@ -16,31 +16,169 @@ const pool = new Pool({
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
+const permissionActions = [
+  'create',
+  'read',
+  'update',
+  'delete',
+  'export',
+  'impersonate',
+];
+
+const permissionResources = [
+  'products',
+  'orders',
+  'customers',
+  'catalog',
+  'pricing',
+  'settings',
+  'reports',
+  'roles',
+];
+
+const systemRoles = [
+  {
+    name: 'SuperAdmin',
+    slug: 'super_admin',
+    description: 'Full access to all back-office permissions',
+    permissions: '*',
+  },
+  {
+    name: 'Admin',
+    slug: 'admin',
+    description: 'All permissions except role management',
+    permissions: permissionResources
+      .filter((resource) => resource !== 'roles')
+      .flatMap((resource) =>
+        permissionActions.map((action) => `${resource}:${action}`),
+      ),
+  },
+  {
+    name: 'StoreManager',
+    slug: 'store_manager',
+    description: 'Products, catalog, orders, and customers management',
+    permissions: ['products', 'catalog', 'orders', 'customers'].flatMap(
+      (resource) =>
+        ['create', 'read', 'update', 'delete', 'export'].map(
+          (action) => `${resource}:${action}`,
+        ),
+    ),
+  },
+  {
+    name: 'OrderManager',
+    slug: 'order_manager',
+    description: 'Orders and shipment operations',
+    permissions: [
+      'orders:create',
+      'orders:read',
+      'orders:update',
+      'orders:export',
+    ],
+  },
+  {
+    name: 'ContentManager',
+    slug: 'content_manager',
+    description: 'Catalog and product content management',
+    permissions: ['catalog', 'products'].flatMap((resource) =>
+      ['create', 'read', 'update', 'delete'].map(
+        (action) => `${resource}:${action}`,
+      ),
+    ),
+  },
+  {
+    name: 'SupportAgent',
+    slug: 'support_agent',
+    description: 'Read-only access to customers and orders',
+    permissions: ['customers:read', 'orders:read'],
+  },
+  {
+    name: 'Analyst',
+    slug: 'analyst',
+    description: 'Read-only reports and dashboard access',
+    permissions: ['reports:read', 'reports:export'],
+  },
+];
+
 async function main() {
   console.log('🌱 Seeding database...\n');
   const adminPassword = await argon2.hash('admin123');
   const employeePassword = await argon2.hash('employee123');
-  const roles = [
-    { name: 'SUPER_ADMIN', description: 'Full access', isSystem: true },
-    { name: 'ADMIN', description: 'Management', isSystem: true },
-    { name: 'SALES', description: 'Sales access', isSystem: true },
-    { name: 'WAREHOUSE', description: 'Warehouse access', isSystem: true },
-  ];
 
-  for (const r of roles) {
+  for (const resource of permissionResources) {
+    for (const action of permissionActions) {
+      await prisma.permission.upsert({
+        where: { slug: `${resource}:${action}` },
+        update: {
+          resource,
+          action,
+          description: `${action} ${resource}`,
+        },
+        create: {
+          slug: `${resource}:${action}`,
+          resource,
+          action,
+          description: `${action} ${resource}`,
+        },
+      });
+    }
+  }
+  console.log('✅ Permissions created');
+
+  const allPermissions = await prisma.permission.findMany();
+  const permissionBySlug = new Map(
+    allPermissions.map((permission) => [permission.slug, permission.id]),
+  );
+
+  for (const r of systemRoles) {
     await prisma.role.upsert({
-      where: { name: r.name },
-      update: {},
-      create: r,
+      where: { slug: r.slug },
+      update: {
+        name: r.name,
+        description: r.description,
+        isSystem: true,
+        deletedAt: null,
+      },
+      create: {
+        name: r.name,
+        slug: r.slug,
+        description: r.description,
+        isSystem: true,
+      },
     });
+
+    const role = await prisma.role.findUniqueOrThrow({
+      where: { slug: r.slug },
+    });
+    const permissionSlugs =
+      r.permissions === '*'
+        ? allPermissions.map((permission) => permission.slug)
+        : r.permissions;
+    for (const permissionSlug of permissionSlugs) {
+      const permissionId = permissionBySlug.get(permissionSlug);
+      if (permissionId) {
+        await prisma.rolePermission.upsert({
+          where: {
+            roleId_permissionId: {
+              roleId: role.id,
+              permissionId,
+            },
+          },
+          update: {},
+          create: {
+            roleId: role.id,
+            permissionId,
+          },
+        });
+      }
+    }
   }
   console.log('✅ Roles created');
 
   const superAdminRole = await prisma.role.findUniqueOrThrow({
-    where: { name: 'SUPER_ADMIN' },
+    where: { slug: 'super_admin' },
   });
-  const salesRole = await prisma.role.findUniqueOrThrow({
-    where: { name: 'SALES' },
+  const supportAgentRole = await prisma.role.findUniqueOrThrow({
+    where: { slug: 'support_agent' },
   });
 
   const superAdmin = await prisma.employee.upsert({
@@ -52,7 +190,25 @@ async function main() {
       firstname: 'Super',
       lastname: 'Admin',
       role: { connect: { id: superAdminRole.id } },
+      roles: {
+        create: {
+          role: { connect: { id: superAdminRole.id } },
+        },
+      },
       active: true,
+    },
+  });
+  await prisma.employeeRole.upsert({
+    where: {
+      employeeId_roleId: {
+        employeeId: superAdmin.id,
+        roleId: superAdminRole.id,
+      },
+    },
+    update: {},
+    create: {
+      employeeId: superAdmin.id,
+      roleId: superAdminRole.id,
     },
   });
   console.log('✅ SuperAdmin created:', superAdmin.email);
@@ -65,8 +221,26 @@ async function main() {
       password: employeePassword,
       firstname: 'John',
       lastname: 'Staff',
-      role: { connect: { id: salesRole.id } },
+      role: { connect: { id: supportAgentRole.id } },
+      roles: {
+        create: {
+          role: { connect: { id: supportAgentRole.id } },
+        },
+      },
       active: true,
+    },
+  });
+  await prisma.employeeRole.upsert({
+    where: {
+      employeeId_roleId: {
+        employeeId: employee.id,
+        roleId: supportAgentRole.id,
+      },
+    },
+    update: {},
+    create: {
+      employeeId: employee.id,
+      roleId: supportAgentRole.id,
     },
   });
   console.log('✅ Employee created:', employee.email);
