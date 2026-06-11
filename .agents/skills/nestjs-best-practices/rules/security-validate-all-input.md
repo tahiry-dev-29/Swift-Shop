@@ -30,9 +30,9 @@ export class UsersController {
 
 // DTOs without validation decorators
 export class CreateUserDto {
-  name: string;    // No validation
-  email: string;   // Could be "not-an-email"
-  age: number;     // Could be "abc" or -999
+  name: string; // No validation
+  email: string; // Could be "not-an-email"
+  age: number; // Could be "abc" or -999
 }
 ```
 
@@ -45,9 +45,9 @@ async function bootstrap() {
 
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,              // Strip unknown properties
-      forbidNonWhitelisted: true,   // Throw on unknown properties
-      transform: true,              // Auto-transform to DTO types
+      whitelist: true, // Strip unknown properties
+      forbidNonWhitelisted: true, // Throw on unknown properties
+      transform: true, // Auto-transform to DTO types
       transformOptions: {
         enableImplicitConversion: true,
       },
@@ -58,18 +58,7 @@ async function bootstrap() {
 }
 
 // Create well-validated DTOs
-import {
-  IsString,
-  IsEmail,
-  IsInt,
-  Min,
-  Max,
-  IsOptional,
-  MinLength,
-  MaxLength,
-  Matches,
-  IsNotEmpty,
-} from 'class-validator';
+import { IsString, IsEmail, IsInt, Min, Max, IsOptional, MinLength, MaxLength, Matches, IsNotEmpty } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 
 export class CreateUserDto {

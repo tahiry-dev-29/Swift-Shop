@@ -2,13 +2,13 @@ import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard, EmployeeGuard } from '@dima-new/backend/auth';
 import { FeatureService } from './feature.service';
-import { 
-  FeatureType, 
-  FeatureValueType, 
-  CreateFeatureInput, 
+import {
+  FeatureType,
+  FeatureValueType,
+  CreateFeatureInput,
   UpdateFeatureInput,
   CreateFeatureValueInput,
-  UpdateFeatureValueInput
+  UpdateFeatureValueInput,
 } from './dto';
 
 @Resolver(() => FeatureType)

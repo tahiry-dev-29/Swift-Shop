@@ -9,29 +9,81 @@ export interface CustomerData {
   birthday?: Date;
 }
 
-
 const customersList: CustomerData[] = [
-  { email: 'marie.dupont@gmail.com', firstname: 'Marie', lastname: 'Dupont', birthday: new Date('1990-03-15') },
-  { email: 'jean.martin@yahoo.fr', firstname: 'Jean', lastname: 'Martin', company: 'Tech Solutions' },
-  { email: 'sophie.bernard@outlook.com', firstname: 'Sophie', lastname: 'Bernard', birthday: new Date('1985-07-22') },
+  {
+    email: 'marie.dupont@gmail.com',
+    firstname: 'Marie',
+    lastname: 'Dupont',
+    birthday: new Date('1990-03-15'),
+  },
+  {
+    email: 'jean.martin@yahoo.fr',
+    firstname: 'Jean',
+    lastname: 'Martin',
+    company: 'Tech Solutions',
+  },
+  {
+    email: 'sophie.bernard@outlook.com',
+    firstname: 'Sophie',
+    lastname: 'Bernard',
+    birthday: new Date('1985-07-22'),
+  },
   { email: 'pierre.durand@gmail.com', firstname: 'Pierre', lastname: 'Durand' },
-  { email: 'emma.leroy@hotmail.com', firstname: 'Emma', lastname: 'Leroy', birthday: new Date('1995-11-08') },
-  { email: 'lucas.moreau@gmail.com', firstname: 'Lucas', lastname: 'Moreau', company: 'StartupXYZ' },
+  {
+    email: 'emma.leroy@hotmail.com',
+    firstname: 'Emma',
+    lastname: 'Leroy',
+    birthday: new Date('1995-11-08'),
+  },
+  {
+    email: 'lucas.moreau@gmail.com',
+    firstname: 'Lucas',
+    lastname: 'Moreau',
+    company: 'StartupXYZ',
+  },
   { email: 'chloe.petit@yahoo.fr', firstname: 'Chloé', lastname: 'Petit' },
-  { email: 'hugo.roux@outlook.com', firstname: 'Hugo', lastname: 'Roux', birthday: new Date('1988-04-30') },
-  { email: 'lea.fontaine@gmail.com', firstname: 'Léa', lastname: 'Fontaine', company: 'Design Co.' },
-  { email: 'thomas.girard@hotmail.com', firstname: 'Thomas', lastname: 'Girard' },
-  { email: 'camille.lambert@gmail.com', firstname: 'Camille', lastname: 'Lambert', birthday: new Date('1992-09-12') },
+  {
+    email: 'hugo.roux@outlook.com',
+    firstname: 'Hugo',
+    lastname: 'Roux',
+    birthday: new Date('1988-04-30'),
+  },
+  {
+    email: 'lea.fontaine@gmail.com',
+    firstname: 'Léa',
+    lastname: 'Fontaine',
+    company: 'Design Co.',
+  },
+  {
+    email: 'thomas.girard@hotmail.com',
+    firstname: 'Thomas',
+    lastname: 'Girard',
+  },
+  {
+    email: 'camille.lambert@gmail.com',
+    firstname: 'Camille',
+    lastname: 'Lambert',
+    birthday: new Date('1992-09-12'),
+  },
   { email: 'maxime.bonnet@yahoo.fr', firstname: 'Maxime', lastname: 'Bonnet' },
-  { email: 'clara.dubois@outlook.com', firstname: 'Clara', lastname: 'Dubois', company: 'Media France' },
-  { email: 'antoine.mercier@gmail.com', firstname: 'Antoine', lastname: 'Mercier', birthday: new Date('1980-12-25') },
+  {
+    email: 'clara.dubois@outlook.com',
+    firstname: 'Clara',
+    lastname: 'Dubois',
+    company: 'Media France',
+  },
+  {
+    email: 'antoine.mercier@gmail.com',
+    firstname: 'Antoine',
+    lastname: 'Mercier',
+    birthday: new Date('1980-12-25'),
+  },
   { email: 'julie.robert@hotmail.com', firstname: 'Julie', lastname: 'Robert' },
 ];
 
 export const seedCustomers = async (prisma: PrismaClient) => {
   console.log('👥 Seeding Customers...');
 
-  
   const groups = [
     { name: 'Default', reduction: 0, showPrices: true },
     { name: 'VIP', reduction: 10, showPrices: true },
@@ -42,7 +94,9 @@ export const seedCustomers = async (prisma: PrismaClient) => {
   const createdGroups: { id: string; name: string }[] = [];
 
   for (const group of groups) {
-    let existing = await prisma.customerGroup.findFirst({ where: { name: group.name } });
+    let existing = await prisma.customerGroup.findFirst({
+      where: { name: group.name },
+    });
     if (!existing) {
       existing = await prisma.customerGroup.create({
         data: {
@@ -58,19 +112,18 @@ export const seedCustomers = async (prisma: PrismaClient) => {
     createdGroups.push(existing);
   }
 
-  
   const password = await argon2.hash('customer123');
 
-  
   let created = 0;
   for (let i = 0; i < customersList.length; i++) {
     const customer = customersList[i];
-    const existing = await prisma.customer.findUnique({ where: { email: customer.email } });
+    const existing = await prisma.customer.findUnique({
+      where: { email: customer.email },
+    });
 
     if (!existing) {
-      
       const groupIndex = i < 10 ? 0 : i < 13 ? 1 : i < 14 ? 2 : 3;
-      
+
       await prisma.customer.create({
         data: {
           email: customer.email,
@@ -87,7 +140,11 @@ export const seedCustomers = async (prisma: PrismaClient) => {
     }
   }
 
-  console.log(`  ✅ Created ${created} new customers (${customersList.length - created} already existed)`);
+  console.log(
+    `  ✅ Created ${created} new customers (${
+      customersList.length - created
+    } already existed)`,
+  );
   console.log('  📋 All customers use password: customer123');
 
   return createdGroups;

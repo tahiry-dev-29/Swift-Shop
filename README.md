@@ -24,12 +24,15 @@ This workspace is managed with **Nx** and uses a modular architecture:
 ## 🚀 Getting Started
 
 ### 1. Install Dependencies
+
 ```bash
 bun install
 ```
 
 ### 2. Database Setup
+
 Make sure your `.env` is configured with your PostgreSQL credentials.
+
 ```bash
 bun run prisma:generate
 bun run prisma:seed
@@ -37,12 +40,12 @@ bun run prisma:seed
 
 ### 3. Run Applications
 
-| Application | Command | URL |
-|-------------|---------|-----|
-| **All (Parallel)** | `bun run start:all` | - |
-| **Store** | `bun run start:store` | `http://localhost:4200` |
-| **Admin** | `bun run start:admin` | `http://localhost:4201` |
-| **API** | `bun run start:api` | `http://localhost:3000/graphql` |
+| Application        | Command               | URL                             |
+| ------------------ | --------------------- | ------------------------------- |
+| **All (Parallel)** | `bun run start:all`   | -                               |
+| **Store**          | `bun run start:store` | `http://localhost:4200`         |
+| **Admin**          | `bun run start:admin` | `http://localhost:4201`         |
+| **API**            | `bun run start:api`   | `http://localhost:3000/graphql` |
 
 ## 📘 Documentation
 
@@ -60,4 +63,5 @@ bun run prisma:seed
   ```
 
 ---
+
 Built with ❤️ by Senior Architects. English code, human spirit. 🚀

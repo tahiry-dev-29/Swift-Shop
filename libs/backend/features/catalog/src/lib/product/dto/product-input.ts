@@ -1,6 +1,5 @@
 import { InputType, Field, Int, Float, ID } from '@nestjs/graphql';
 
-
 @InputType()
 export class CreateProductInput {
   @Field()
@@ -109,7 +108,6 @@ export class UpdateProductInput {
   categoryId?: string;
 }
 
-
 @InputType()
 export class CreateProductImageInput {
   @Field()
@@ -136,7 +134,6 @@ export class CreateProductImageInput {
   @Field(() => Int, { nullable: true })
   position?: number;
 }
-
 
 @InputType()
 export class CreateProductCombinationInput {
@@ -177,7 +174,6 @@ export class UpdateProductCombinationInput {
   isDefault?: boolean;
 }
 
-
 @InputType()
 export class UpdateStockInput {
   @Field(() => ID, { nullable: true })
@@ -196,7 +192,6 @@ export class UpdateStockInput {
   outOfStockBehavior?: string;
 }
 
-
 @InputType()
 export class ProductFilterInput {
   @Field(() => ID, { nullable: true })
@@ -214,4 +209,3 @@ export class ProductFilterInput {
   @Field(() => Int, { nullable: true, defaultValue: 20 })
   take?: number;
 }
-

@@ -38,4 +38,3 @@ export class AttributeGroupType {
   @Field(() => [AttributeValueType], { nullable: true })
   values?: AttributeValueType[];
 }
-

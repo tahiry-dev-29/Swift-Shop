@@ -1,7 +1,16 @@
 import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
-import { UseGuards, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  UseGuards,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { AddressService } from './address.service';
-import { CustomerGuard, EmployeeGuard, CurrentUser, AuthUser } from '@dima-new/backend/auth';
+import {
+  CustomerGuard,
+  EmployeeGuard,
+  CurrentUser,
+  AuthUser,
+} from '@dima-new/backend/auth';
 import { AddressType, CreateAddressInput, UpdateAddressInput } from './dto';
 
 @Resolver()
@@ -18,7 +27,7 @@ export class AddressResolver {
   @UseGuards(CustomerGuard)
   async address(
     @Args('id', { type: () => ID }) id: string,
-    @CurrentUser() user: AuthUser
+    @CurrentUser() user: AuthUser,
   ) {
     const address = await this.addressService.findById(id);
     if (!address) {
@@ -40,7 +49,7 @@ export class AddressResolver {
   @UseGuards(CustomerGuard)
   async createAddress(
     @Args('input') input: CreateAddressInput,
-    @CurrentUser() user: AuthUser
+    @CurrentUser() user: AuthUser,
   ) {
     return this.addressService.create(user.id, input);
   }
@@ -50,7 +59,7 @@ export class AddressResolver {
   async updateAddress(
     @Args('id', { type: () => ID }) id: string,
     @Args('input') input: UpdateAddressInput,
-    @CurrentUser() user: AuthUser
+    @CurrentUser() user: AuthUser,
   ) {
     const address = await this.addressService.findById(id);
     if (!address) {
@@ -66,7 +75,7 @@ export class AddressResolver {
   @UseGuards(CustomerGuard)
   async deleteAddress(
     @Args('id', { type: () => ID }) id: string,
-    @CurrentUser() user: AuthUser
+    @CurrentUser() user: AuthUser,
   ) {
     const address = await this.addressService.findById(id);
     if (!address) {
@@ -78,4 +87,3 @@ export class AddressResolver {
     return this.addressService.delete(id);
   }
 }
-

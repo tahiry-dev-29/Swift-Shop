@@ -16,6 +16,24 @@ export class CreateCategoryInput {
 
   @Field(() => ID, { nullable: true })
   parentId?: string;
+
+  @Field({ nullable: true })
+  slug?: string;
+
+  @Field({ nullable: true })
+  metaTitle?: string;
+
+  @Field({ nullable: true })
+  metaDescription?: string;
+
+  @Field({ nullable: true })
+  metaKeywords?: string;
+
+  @Field({ nullable: true })
+  banner?: string;
+
+  @Field({ nullable: true })
+  thumbnail?: string;
 }
 
 @InputType()
@@ -31,6 +49,45 @@ export class UpdateCategoryInput {
 
   @Field(() => Int, { nullable: true })
   position?: number;
+
+  @Field(() => ID, { nullable: true })
+  parentId?: string;
+
+  @Field({ nullable: true })
+  slug?: string;
+
+  @Field({ nullable: true })
+  metaTitle?: string;
+
+  @Field({ nullable: true })
+  metaDescription?: string;
+
+  @Field({ nullable: true })
+  metaKeywords?: string;
+
+  @Field({ nullable: true })
+  banner?: string;
+
+  @Field({ nullable: true })
+  thumbnail?: string;
+}
+
+@InputType()
+export class UpdateCategoryPositionInput {
+  @Field(() => ID)
+  id!: string;
+
+  @Field(() => Int)
+  position!: number;
+}
+
+@InputType()
+export class CategoryConnectionArgs {
+  @Field(() => Int, { nullable: true })
+  first?: number;
+
+  @Field({ nullable: true })
+  after?: string;
 
   @Field(() => ID, { nullable: true })
   parentId?: string;

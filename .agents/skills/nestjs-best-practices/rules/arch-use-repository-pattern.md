@@ -15,21 +15,11 @@ Create custom repositories to encapsulate complex queries and database logic. Th
 // Complex queries in services
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User) private repo: Repository<User>,
-  ) {}
+  constructor(@InjectRepository(User) private repo: Repository<User>) {}
 
   async findActiveWithOrders(minOrders: number): Promise<User[]> {
     // Complex query logic mixed with business logic
-    return this.repo
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.orders', 'order')
-      .where('user.isActive = :active', { active: true })
-      .andWhere('user.deletedAt IS NULL')
-      .groupBy('user.id')
-      .having('COUNT(order.id) >= :min', { min: minOrders })
-      .orderBy('user.createdAt', 'DESC')
-      .getMany();
+    return this.repo.createQueryBuilder('user').leftJoinAndSelect('user.orders', 'order').where('user.isActive = :active', { active: true }).andWhere('user.deletedAt IS NULL').groupBy('user.id').having('COUNT(order.id) >= :min', { min: minOrders }).orderBy('user.createdAt', 'DESC').getMany();
   }
 
   // Service becomes bloated with query logic
@@ -42,9 +32,7 @@ export class UsersService {
 // Custom repository with encapsulated queries
 @Injectable()
 export class UsersRepository {
-  constructor(
-    @InjectRepository(User) private repo: Repository<User>,
-  ) {}
+  constructor(@InjectRepository(User) private repo: Repository<User>) {}
 
   async findById(id: string): Promise<User | null> {
     return this.repo.findOne({ where: { id } });
@@ -55,15 +43,7 @@ export class UsersRepository {
   }
 
   async findActiveWithMinOrders(minOrders: number): Promise<User[]> {
-    return this.repo
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.orders', 'order')
-      .where('user.isActive = :active', { active: true })
-      .andWhere('user.deletedAt IS NULL')
-      .groupBy('user.id')
-      .having('COUNT(order.id) >= :min', { min: minOrders })
-      .orderBy('user.createdAt', 'DESC')
-      .getMany();
+    return this.repo.createQueryBuilder('user').leftJoinAndSelect('user.orders', 'order').where('user.isActive = :active', { active: true }).andWhere('user.deletedAt IS NULL').groupBy('user.id').having('COUNT(order.id) >= :min', { min: minOrders }).orderBy('user.createdAt', 'DESC').getMany();
   }
 
   async save(user: User): Promise<User> {

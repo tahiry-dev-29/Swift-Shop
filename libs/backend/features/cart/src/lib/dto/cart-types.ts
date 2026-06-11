@@ -30,7 +30,7 @@ export class CartItemType {
   priceDetail?: PriceDetailType;
 
   @Field(() => Float)
-  lineTotal!: number; 
+  lineTotal!: number;
 
   @Field()
   dateAdd!: Date;

@@ -21,28 +21,28 @@ export class OrderResolver {
   @Query(() => OrderType)
   @UseGuards(CustomerGuard)
   async order(
-      @Args('id', { type: () => ID }) id: string,
-      @CurrentUser() user: CurrentUserType
+    @Args('id', { type: () => ID }) id: string,
+    @CurrentUser() user: CurrentUserType,
   ) {
     return this.orderService.getOrder(id, user.id);
   }
 
   @Query(() => [OrderStateType])
   async orderStates() {
-      return this.orderService.getOrderStates();
+    return this.orderService.getOrderStates();
   }
 
   @Mutation(() => OrderType)
-  @UseGuards(CustomerGuard) 
+  @UseGuards(CustomerGuard)
   async createOrder(
     @CurrentUser() user: CurrentUserType,
-    @Args('input') input: CreateOrderInput
+    @Args('input') input: CreateOrderInput,
   ) {
     return this.orderService.createOrderFromCart(
-        input.cartId,
-        user.id,
-        input.deliveryAddressId,
-        input.billingAddressId
+      input.cartId,
+      user.id,
+      input.deliveryAddressId,
+      input.billingAddressId,
     );
   }
 }

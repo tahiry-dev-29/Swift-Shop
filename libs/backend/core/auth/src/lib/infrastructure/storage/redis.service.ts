@@ -9,7 +9,10 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   constructor(private readonly configService: ConfigService) {}
 
   onModuleInit() {
-    const redisUrl = this.configService.get<string>('REDIS_URL', 'redis://localhost:6379');
+    const redisUrl = this.configService.get<string>(
+      'REDIS_URL',
+      'redis://localhost:6379',
+    );
     this.client = new Redis(redisUrl);
   }
 
@@ -26,7 +29,11 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     return result === '1';
   }
 
-  async storeRefreshToken(userId: string, jti: string, expiresIn: number): Promise<void> {
+  async storeRefreshToken(
+    userId: string,
+    jti: string,
+    expiresIn: number,
+  ): Promise<void> {
     await this.client.set(`rt_${userId}`, jti, 'EX', expiresIn);
   }
 

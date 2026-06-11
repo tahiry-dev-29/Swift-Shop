@@ -2,8 +2,9 @@ import { gql, log } from './test-utils.mjs';
 
 export const testAddressModule = async (customerToken) => {
   console.log('\n=== 📍 Address Module ===');
-  
-  const createRes = await gql(`
+
+  const createRes = await gql(
+    `
     mutation {
       createAddress(input: {
         alias: "Home"
@@ -18,35 +19,66 @@ export const testAddressModule = async (customerToken) => {
         id alias firstname lastname address1 city
       }
     }
-  `, customerToken);
-  log('➕', 'Create Address', !createRes.errors, createRes.data?.createAddress || createRes.errors);
-  
+  `,
+    customerToken,
+  );
+  log(
+    '➕',
+    'Create Address',
+    !createRes.errors,
+    createRes.data?.createAddress || createRes.errors,
+  );
+
   const addressId = createRes.data?.createAddress?.id;
-  
+
   if (addressId) {
-    const myAddressesRes = await gql(`
+    const myAddressesRes = await gql(
+      `
       query {
         myAddresses {
           id alias address1 city
         }
       }
-    `, customerToken);
-    log('📋', 'My Addresses', !myAddressesRes.errors, myAddressesRes.data?.myAddresses || myAddressesRes.errors);
-    
-    const updateRes = await gql(`
+    `,
+      customerToken,
+    );
+    log(
+      '📋',
+      'My Addresses',
+      !myAddressesRes.errors,
+      myAddressesRes.data?.myAddresses || myAddressesRes.errors,
+    );
+
+    const updateRes = await gql(
+      `
       mutation {
         updateAddress(id: ${addressId}, input: { alias: "Work" }) {
           id alias
         }
       }
-    `, customerToken);
-    log('✏️', 'Update Address', !updateRes.errors, updateRes.data?.updateAddress || updateRes.errors);
-    
-    const deleteRes = await gql(`
+    `,
+      customerToken,
+    );
+    log(
+      '✏️',
+      'Update Address',
+      !updateRes.errors,
+      updateRes.data?.updateAddress || updateRes.errors,
+    );
+
+    const deleteRes = await gql(
+      `
       mutation {
         deleteAddress(id: ${addressId}) { id deleted }
       }
-    `, customerToken);
-    log('🗑️', 'Delete Address', !deleteRes.errors, deleteRes.data?.deleteAddress || deleteRes.errors);
+    `,
+      customerToken,
+    );
+    log(
+      '🗑️',
+      'Delete Address',
+      !deleteRes.errors,
+      deleteRes.data?.deleteAddress || deleteRes.errors,
+    );
   }
 };

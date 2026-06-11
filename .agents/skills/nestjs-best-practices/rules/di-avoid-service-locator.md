@@ -71,12 +71,7 @@ describe('OrdersService', () => {
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
-      providers: [
-        OrdersService,
-        { provide: UsersService, useValue: mockUsersService },
-        { provide: InventoryService, useValue: mockInventoryService },
-        { provide: PaymentService, useValue: mockPaymentService },
-      ],
+      providers: [OrdersService, { provide: UsersService, useValue: mockUsersService }, { provide: InventoryService, useValue: mockInventoryService }, { provide: PaymentService, useValue: mockPaymentService }],
     }).compile();
 
     service = module.get(OrdersService);

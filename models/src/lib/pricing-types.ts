@@ -52,4 +52,3 @@ export interface CalculatePriceParams {
   countryId: string;
   quantity?: number;
 }
-

@@ -1,21 +1,28 @@
-import { Resolver, Query, Mutation, Args, Int, ResolveField, Parent, ID } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  Int,
+  ResolveField,
+  Parent,
+  ID,
+} from '@nestjs/graphql';
 import { UseGuards, NotFoundException } from '@nestjs/common';
 import { AttributeService } from './attribute.service';
 import { SuperAdminGuard } from '@dima-new/backend/auth';
-import { 
-  AttributeGroupType, 
+import {
+  AttributeGroupType,
   AttributeValueType,
-  CreateAttributeGroupInput, 
+  CreateAttributeGroupInput,
   UpdateAttributeGroupInput,
   CreateAttributeValueInput,
-  UpdateAttributeValueInput 
+  UpdateAttributeValueInput,
 } from './dto';
 
 @Resolver(() => AttributeGroupType)
 export class AttributeResolver {
   constructor(private readonly attributeService: AttributeService) {}
-
-  
 
   @Query(() => [AttributeGroupType])
   async attributeGroups() {
@@ -41,7 +48,7 @@ export class AttributeResolver {
   @UseGuards(SuperAdminGuard)
   async updateAttributeGroup(
     @Args('id', { type: () => ID }) id: string,
-    @Args('input') input: UpdateAttributeGroupInput
+    @Args('input') input: UpdateAttributeGroupInput,
   ) {
     const group = await this.attributeService.findGroupById(id);
     if (!group) {
@@ -60,13 +67,11 @@ export class AttributeResolver {
     return this.attributeService.deleteGroup(id);
   }
 
-  
-
   @Mutation(() => AttributeValueType)
   @UseGuards(SuperAdminGuard)
   async createAttributeValue(
     @Args('groupId', { type: () => ID }) groupId: string,
-    @Args('input') input: CreateAttributeValueInput
+    @Args('input') input: CreateAttributeValueInput,
   ) {
     const group = await this.attributeService.findGroupById(groupId);
     if (!group) {
@@ -79,7 +84,7 @@ export class AttributeResolver {
   @UseGuards(SuperAdminGuard)
   async updateAttributeValue(
     @Args('id', { type: () => ID }) id: string,
-    @Args('input') input: UpdateAttributeValueInput
+    @Args('input') input: UpdateAttributeValueInput,
   ) {
     const value = await this.attributeService.findValueById(id);
     if (!value) {
@@ -98,4 +103,3 @@ export class AttributeResolver {
     return this.attributeService.deleteValue(id);
   }
 }
-

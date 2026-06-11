@@ -46,9 +46,7 @@ Use `[lazy]="true"` with `(onLazyLoad)` for server-side pagination, sorting, and
 **Correct:**
 
 ```html
-<p-table [value]="data" [lazy]="true" [totalRecords]="total"
-         (onLazyLoad)="load($event)" [paginator]="true" [rows]="20">
-</p-table>
+<p-table [value]="data" [lazy]="true" [totalRecords]="total" (onLazyLoad)="load($event)" [paginator]="true" [rows]="20"> </p-table>
 ```
 
 ### 1.3 Use PrimeNG Theme System
@@ -60,15 +58,17 @@ Use PrimeNG's styled mode with Aura or Lara presets. Customize via design tokens
 **Incorrect:**
 
 ```css
-.p-button { background: #1976d2 !important; } /* Breaks theming */
+.p-button {
+  background: #1976d2 !important;
+} /* Breaks theming */
 ```
 
 **Correct:**
 
 ```typescript
 providePrimeNG({
-  theme: { preset: Aura, options: { darkModeSelector: '.dark' } }
-})
+  theme: { preset: Aura, options: { darkModeSelector: '.dark' } },
+});
 ```
 
 ---

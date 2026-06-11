@@ -1,0 +1,83 @@
+# Trunk config — TypeScript & Dart only
+# https://docs.trunk.io/reference/trunk-yaml
+version: 0.1
+cli:
+  version: 1.25.0
+
+plugins:
+  sources:
+    - id: trunk
+      ref: v1.10.2
+      uri: https://github.com/trunk-io/plugins
+
+# Only Node runtime for TypeScript — Dart is managed as a download by trunk plugin
+runtimes:
+  enabled:
+    - node@22.16.0
+
+# TS/Dart focused linters only
+lint:
+  enabled:
+    - eslint@9.27.0 # TypeScript linter (ESLint flat config)
+    - prettier@3.6.2 # TS/JS/JSON/YAML formatter
+    - dart@3.10.8 # Dart/Flutter analyzer & formatter
+    - git-diff-check # Git whitespace check
+    - markdownlint@0.48.0 # Markdown quality
+  disabled:
+    # Python ecosystem
+    - bandit
+    - black
+    - flake8
+    - isort
+    - pylint
+    - ruff
+    - autopep8
+    # Infrastructure / Security
+    - actionlint
+    - checkov
+    - hadolint
+    - grype
+    - osv-scanner
+    - trufflehog
+    - gitleaks
+    - dustilock
+    - pinact
+    # Other languages
+    - clippy # Rust
+    - shellcheck # Shell
+    - shfmt # Shell
+    - buf # Protobuf
+    - buildifier # Bazel
+    - detekt # Kotlin
+    - brakeman # Ruby
+    - ansible-lint # Ansible
+    - cspell # Spelling (heavy)
+    - codespell # Spelling
+    - cfnlint # CloudFormation
+    # Config formats
+    - dotenv-linter
+    - taplo # TOML
+    - yamllint # YAML (prettier covers it)
+
+  # ESLint respects project eslint.config.mjs / .eslintrc
+  definitions: []
+
+  # Ignore generated/vendor directories
+  # Note: Trunk automatically respects your project's .gitignore files.
+  # Any file ignored by git will NOT be linted by Trunk.
+  # Use this ignore section ONLY for files you track in git but don't want to lint.
+  ignore:
+    - linters: [ALL]
+      paths:
+        - '**/*.min.js'
+        - '**/*.generated.ts'
+        - '**/generated/**'
+        - '**/*.g.dart'
+        - '**/*.freezed.dart'
+
+actions:
+  enabled:
+    - trunk-announce
+    - trunk-check-pre-push # Lint on git push
+    - trunk-fmt-pre-commit # Format on git commit
+    - trunk-upgrade-available # Notify when updates available

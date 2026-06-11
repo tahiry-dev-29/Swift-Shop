@@ -25,7 +25,7 @@ FROM oven/bun:1-alpine AS frontend-dev
 
 WORKDIR /app
 
-RUN apk add --no-cache nodejs
+# Node removed - Bun runtime provides node compatibility
 
 ENV NODE_ENV=development
 
@@ -51,7 +51,7 @@ FROM oven/bun:1-alpine AS api
 
 WORKDIR /app
 
-RUN apk add --no-cache nodejs
+# Node removed - Bun runtime provides node compatibility
 
 ENV NODE_ENV=production
 ENV PORT=3000
