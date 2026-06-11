@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SmtpService } from './infrastructure/smtp/smtp.service';
+import { SmtpService } from '../infrastructure/smtp/smtp.service';
 
 type EmailPayload = {
   to: string;
