@@ -97,9 +97,7 @@ describe('UsersController (e2e)', () => {
 
   describe('/users/:id (GET)', () => {
     it('should return 404 for non-existent user', () => {
-      return request(app.getHttpServer())
-        .get('/users/non-existent-id')
-        .expect(404);
+      return request(app.getHttpServer()).get('/users/non-existent-id').expect(404);
     });
   });
 });
@@ -119,17 +117,13 @@ describe('Protected Routes (e2e)', () => {
     await app.init();
 
     // Get auth token
-    const loginResponse = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({ email: 'test@test.com', password: 'password' });
+    const loginResponse = await request(app.getHttpServer()).post('/auth/login').send({ email: 'test@test.com', password: 'password' });
 
     authToken = loginResponse.body.accessToken;
   });
 
   it('should return 401 without token', () => {
-    return request(app.getHttpServer())
-      .get('/users/me')
-      .expect(401);
+    return request(app.getHttpServer()).get('/users/me').expect(401);
   });
 
   it('should return user profile with valid token', () => {

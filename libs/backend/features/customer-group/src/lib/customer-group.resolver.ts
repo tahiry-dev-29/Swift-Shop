@@ -1,5 +1,9 @@
 import { Resolver, Query, Mutation, Args, Int, ID } from '@nestjs/graphql';
-import { UseGuards, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  UseGuards,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { EmployeeGuard } from '@dima-new/backend/auth';
 import { CustomerGroupService } from './customer-group.service';
 import {
@@ -9,7 +13,7 @@ import {
 } from './dto';
 
 @Resolver()
-@UseGuards(EmployeeGuard) 
+@UseGuards(EmployeeGuard)
 export class CustomerGroupResolver {
   constructor(private readonly service: CustomerGroupService) {}
 
@@ -39,7 +43,7 @@ export class CustomerGroupResolver {
   @Mutation(() => CustomerGroupType)
   async updateCustomerGroup(
     @Args('id', { type: () => ID }) id: string,
-    @Args('input') input: UpdateCustomerGroupInput
+    @Args('input') input: UpdateCustomerGroupInput,
   ) {
     return this.service.update(id, input);
   }
@@ -49,4 +53,3 @@ export class CustomerGroupResolver {
     return this.service.delete(id);
   }
 }
-

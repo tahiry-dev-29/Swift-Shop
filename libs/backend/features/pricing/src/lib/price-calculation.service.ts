@@ -6,10 +6,15 @@ import { PriceResult, CalculatePriceParams } from '@dima-new/models';
 export class PriceCalculationService {
   constructor(private prisma: PrismaService) {}
 
-    async calculatePrice(params: CalculatePriceParams): Promise<PriceResult> {
-    const { productId, combinationId, customerId, countryId, quantity = 1 } = params;
+  async calculatePrice(params: CalculatePriceParams): Promise<PriceResult> {
+    const {
+      productId,
+      combinationId,
+      customerId,
+      countryId,
+      quantity = 1,
+    } = params;
 
-    
     const product = await this.prisma.product.findUnique({
       where: { id: productId },
     });
@@ -18,11 +23,9 @@ export class PriceCalculationService {
       throw new Error(`Product #${productId} not found`);
     }
 
-    
     let price = Number(product.price);
     const basePrice = price;
 
-    
     let combinationImpact = 0;
     if (combinationId) {
       const combination = await this.prisma.productCombination.findUnique({
@@ -35,7 +38,6 @@ export class PriceCalculationService {
       }
     }
 
-    
     let customerGroupReduction = 0;
     if (customerId) {
       const customer = await this.prisma.customer.findUnique({
@@ -50,7 +52,6 @@ export class PriceCalculationService {
       }
     }
 
-    
     const specificPrice = await this.findBestSpecificPrice({
       productId,
       combinationId,
@@ -62,18 +63,16 @@ export class PriceCalculationService {
     let specificPriceReduction = 0;
     if (specificPrice) {
       if (specificPrice.reductionType === 'percentage') {
-        specificPriceReduction = (price * Number(specificPrice.reduction)) / 100;
+        specificPriceReduction =
+          (price * Number(specificPrice.reduction)) / 100;
       } else {
-        
         specificPriceReduction = Number(specificPrice.reduction);
       }
       price -= specificPriceReduction;
     }
 
-    
-    const priceHT = Math.max(0, price); 
+    const priceHT = Math.max(0, price);
 
-    
     const taxRate = await this.getTaxRate(countryId);
     const taxAmount = (priceHT * taxRate) / 100;
     const priceTTC = priceHT + taxAmount;
@@ -90,17 +89,17 @@ export class PriceCalculationService {
     };
   }
 
-    async findBestSpecificPrice(params: {
+  async findBestSpecificPrice(params: {
     productId: string;
     combinationId?: string;
     customerId?: string;
     countryId: string;
     quantity: number;
   }): Promise<any | null> {
-    const { productId, combinationId, customerId, countryId, quantity } = params;
+    const { productId, combinationId, customerId, countryId, quantity } =
+      params;
     const now = new Date();
 
-    
     let customerGroupId: string | undefined;
     if (customerId) {
       const customer = await this.prisma.customer.findUnique({
@@ -110,52 +109,37 @@ export class PriceCalculationService {
       customerGroupId = customer?.groupId;
     }
 
-    
     const conditions: any[] = [
       { active: true },
       { fromQuantity: { lte: quantity } },
     ];
 
-    
     conditions.push({
-      OR: [
-        { dateFrom: null },
-        { dateFrom: { lte: now } },
-      ],
+      OR: [{ dateFrom: null }, { dateFrom: { lte: now } }],
     });
 
     conditions.push({
-      OR: [
-        { dateTo: null },
-        { dateTo: { gte: now } },
-      ],
+      OR: [{ dateTo: null }, { dateTo: { gte: now } }],
     });
 
-    
     const targetConditions: any[] = [];
 
-    
     if (combinationId) {
       targetConditions.push({ combinationId });
     }
 
-    
     targetConditions.push({ productId, combinationId: null });
 
-    
     if (customerId) {
       targetConditions.push({ customerId });
     }
 
-    
     if (customerGroupId) {
       targetConditions.push({ customerGroupId });
     }
 
-    
     targetConditions.push({ countryId });
 
-    
     targetConditions.push({
       productId: null,
       combinationId: null,
@@ -168,36 +152,29 @@ export class PriceCalculationService {
       OR: targetConditions,
     });
 
-    
     const specificPrices = await this.prisma.specificPrice.findMany({
       where: {
         AND: conditions,
       },
-      orderBy: [
-        { priority: 'desc' }, 
-        { id: 'asc' }, 
-      ],
+      orderBy: [{ priority: 'desc' }, { id: 'asc' }],
     });
 
-    
     return specificPrices[0] || null;
   }
 
-    async getTaxRate(countryId: string): Promise<number> {
-    
+  async getTaxRate(countryId: string): Promise<number> {
     const taxRule = await this.prisma.taxRule.findFirst({
       where: {
         countryId,
         active: true,
       },
-      orderBy: { id: 'desc' }, 
+      orderBy: { id: 'desc' },
     });
 
     if (taxRule) {
       return Number(taxRule.rate);
     }
 
-    
     const country = await this.prisma.country.findUnique({
       where: { id: countryId },
     });

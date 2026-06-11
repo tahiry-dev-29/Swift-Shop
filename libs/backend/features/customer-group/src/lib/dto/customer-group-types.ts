@@ -38,4 +38,3 @@ export class UpdateCustomerGroupInput {
   @Field({ nullable: true })
   showPrices?: boolean;
 }
-

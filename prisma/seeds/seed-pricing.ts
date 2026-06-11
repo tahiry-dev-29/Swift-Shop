@@ -1,18 +1,19 @@
 import { PrismaClient } from '@prisma/client';
 
 export const seedPricing = async (prisma: PrismaClient) => {
-  console.log('💰 Seeding Pricing Data (Countries, TaxRules, SpecificPrices)...');
+  console.log(
+    '💰 Seeding Pricing Data (Countries, TaxRules, SpecificPrices)...',
+  );
 
-  
   const countries = [
-    { isoCode: 'FR', name: 'France', taxRate: 20.00 },
-    { isoCode: 'DE', name: 'Germany', taxRate: 19.00 },
-    { isoCode: 'ES', name: 'Spain', taxRate: 21.00 },
-    { isoCode: 'IT', name: 'Italy', taxRate: 22.00 },
-    { isoCode: 'BE', name: 'Belgium', taxRate: 21.00 },
-    { isoCode: 'US', name: 'United States', taxRate: 0.00 }, 
-    { isoCode: 'GB', name: 'United Kingdom', taxRate: 20.00 },
-    { isoCode: 'MG', name: 'Madagascar', taxRate: 20.00 },
+    { isoCode: 'FR', name: 'France', taxRate: 20.0 },
+    { isoCode: 'DE', name: 'Germany', taxRate: 19.0 },
+    { isoCode: 'ES', name: 'Spain', taxRate: 21.0 },
+    { isoCode: 'IT', name: 'Italy', taxRate: 22.0 },
+    { isoCode: 'BE', name: 'Belgium', taxRate: 21.0 },
+    { isoCode: 'US', name: 'United States', taxRate: 0.0 },
+    { isoCode: 'GB', name: 'United Kingdom', taxRate: 20.0 },
+    { isoCode: 'MG', name: 'Madagascar', taxRate: 20.0 },
   ];
 
   for (const country of countries) {
@@ -30,14 +31,15 @@ export const seedPricing = async (prisma: PrismaClient) => {
     }
   }
 
-  
-  const frCountry = await prisma.country.findUnique({ where: { isoCode: 'FR' } });
+  const frCountry = await prisma.country.findUnique({
+    where: { isoCode: 'FR' },
+  });
   if (frCountry) {
     const taxRules = [
-      { name: 'TVA FR Standard (20%)', rate: 20.00 },
-      { name: 'TVA FR Reduced (5.5%)', rate: 5.50 },
-      { name: 'TVA FR Super Reduced (2.1%)', rate: 2.10 },
-      { name: 'TVA FR Intermediate (10%)', rate: 10.00 },
+      { name: 'TVA FR Standard (20%)', rate: 20.0 },
+      { name: 'TVA FR Reduced (5.5%)', rate: 5.5 },
+      { name: 'TVA FR Super Reduced (2.1%)', rate: 2.1 },
+      { name: 'TVA FR Intermediate (10%)', rate: 10.0 },
     ];
 
     for (const rule of taxRules) {
@@ -61,20 +63,26 @@ export const seedPricing = async (prisma: PrismaClient) => {
     }
   }
 
-  
   console.log('  📊 Creating Specific Prices...');
-  
-  
-  const vipGroup = await prisma.customerGroup.findFirst({ where: { name: 'VIP' } });
-  const wholesaleGroup = await prisma.customerGroup.findFirst({ where: { name: 'Wholesale' } });
-  
-  
+
+  const vipGroup = await prisma.customerGroup.findFirst({
+    where: { name: 'VIP' },
+  });
+  const wholesaleGroup = await prisma.customerGroup.findFirst({
+    where: { name: 'Wholesale' },
+  });
+
   const products = await prisma.product.findMany({ take: 10 });
 
   if (products.length > 0) {
-    
     const promo10 = await prisma.specificPrice.findFirst({
-      where: { productId: products[0].id, reductionType: 'percentage', reduction: 10, customerId: null, customerGroupId: null },
+      where: {
+        productId: products[0].id,
+        reductionType: 'percentage',
+        reduction: 10,
+        customerId: null,
+        customerGroupId: null,
+      },
     });
 
     if (!promo10) {
@@ -82,14 +90,13 @@ export const seedPricing = async (prisma: PrismaClient) => {
         data: {
           productId: products[0].id,
           reductionType: 'percentage',
-          reduction: 10.00,
+          reduction: 10.0,
           priority: 1,
         },
       });
       console.log(`    ✅ 10% off on ${products[0].name}`);
     }
 
-    
     if (vipGroup && products.length > 1) {
       const vipPromo = await prisma.specificPrice.findFirst({
         where: { productId: products[1].id, customerGroupId: vipGroup.id },
@@ -101,7 +108,7 @@ export const seedPricing = async (prisma: PrismaClient) => {
             productId: products[1].id,
             customerGroupId: vipGroup.id,
             reductionType: 'percentage',
-            reduction: 15.00,
+            reduction: 15.0,
             priority: 5,
           },
         });
@@ -109,7 +116,6 @@ export const seedPricing = async (prisma: PrismaClient) => {
       }
     }
 
-    
     if (products.length > 2) {
       const qtyPromo = await prisma.specificPrice.findFirst({
         where: { productId: products[2].id, fromQuantity: 3 },
@@ -120,7 +126,7 @@ export const seedPricing = async (prisma: PrismaClient) => {
           data: {
             productId: products[2].id,
             reductionType: 'amount',
-            reduction: 5.00,
+            reduction: 5.0,
             fromQuantity: 3,
             priority: 2,
           },
@@ -129,11 +135,13 @@ export const seedPricing = async (prisma: PrismaClient) => {
       }
     }
 
-    
     if (wholesaleGroup && products.length > 4) {
       for (let i = 3; i < Math.min(6, products.length); i++) {
         const wsPromo = await prisma.specificPrice.findFirst({
-          where: { productId: products[i].id, customerGroupId: wholesaleGroup.id },
+          where: {
+            productId: products[i].id,
+            customerGroupId: wholesaleGroup.id,
+          },
         });
 
         if (!wsPromo) {
@@ -142,7 +150,7 @@ export const seedPricing = async (prisma: PrismaClient) => {
               productId: products[i].id,
               customerGroupId: wholesaleGroup.id,
               reductionType: 'percentage',
-              reduction: 20.00,
+              reduction: 20.0,
               priority: 10,
             },
           });
@@ -151,7 +159,6 @@ export const seedPricing = async (prisma: PrismaClient) => {
       }
     }
 
-    
     if (products.length > 6) {
       const flashPromo = await prisma.specificPrice.findFirst({
         where: { productId: products[6].id, dateTo: { not: null } },
@@ -159,21 +166,24 @@ export const seedPricing = async (prisma: PrismaClient) => {
 
       if (!flashPromo) {
         const now = new Date();
-        const thirtyDaysLater = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-        
+        const thirtyDaysLater = new Date(
+          now.getTime() + 30 * 24 * 60 * 60 * 1000,
+        );
+
         await prisma.specificPrice.create({
           data: {
             productId: products[6].id,
             reductionType: 'percentage',
-            reduction: 25.00,
+            reduction: 25.0,
             dateFrom: now,
             dateTo: thirtyDaysLater,
             priority: 100,
           },
         });
-        console.log(`    ✅ Flash sale 25% off on ${products[6].name} (30 days)`);
+        console.log(
+          `    ✅ Flash sale 25% off on ${products[6].name} (30 days)`,
+        );
       }
     }
   }
 };
-

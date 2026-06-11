@@ -12,7 +12,7 @@ import {
   AUTH_RATE_LIMIT_EMAIL_ATTEMPTS,
   AUTH_RATE_LIMIT_IP_ATTEMPTS,
   AUTH_RATE_LIMIT_TTL_MS,
-} from './rate-limit.constants';
+} from '../infrastructure/rate-limiting/rate-limit.constants';
 
 type AuthRateLimitInput = {
   email?: string;

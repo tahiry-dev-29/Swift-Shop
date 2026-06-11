@@ -50,4 +50,3 @@ export class AddressType {
   @Field()
   deleted!: boolean;
 }
-

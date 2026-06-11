@@ -179,4 +179,3 @@ export class ProductListType {
   @Field(() => Int)
   total!: number;
 }
-

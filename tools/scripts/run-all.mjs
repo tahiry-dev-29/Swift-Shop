@@ -5,7 +5,7 @@ import { testCatalogAttributes } from './attributes.test.mjs';
 
 (async () => {
   console.log('🚀 Testing All GraphQL APIs\n');
-  
+
   // 1. Employee Authentication
   console.log('=== 1. Employee Authentication ===');
   const loginRes = await gql(`
@@ -16,15 +16,15 @@ import { testCatalogAttributes } from './attributes.test.mjs';
       }
     }
   `);
-  
+
   if (loginRes.errors) {
     log('👔', 'Employee Login', false, loginRes.errors);
     process.exit(1);
   }
-  
+
   const superToken = loginRes.data.employeeLogin.accessToken;
   log('👔', 'Employee Login', true, loginRes.data.employeeLogin.employee);
-  
+
   // 2. Customer Authentication
   console.log('\n=== 2. Customer Authentication ===');
   const customerLoginRes = await gql(`
@@ -35,19 +35,24 @@ import { testCatalogAttributes } from './attributes.test.mjs';
       }
     }
   `);
-  log('👤', 'Customer Login', !customerLoginRes.errors, customerLoginRes.data?.customerLogin?.customer || customerLoginRes.errors);
-  
+  log(
+    '👤',
+    'Customer Login',
+    !customerLoginRes.errors,
+    customerLoginRes.data?.customerLogin?.customer || customerLoginRes.errors,
+  );
+
   const customerToken = customerLoginRes.data?.customerLogin?.accessToken;
-  
+
   // Run Modules Tests
   if (customerToken) {
     await testAddressModule(customerToken);
   }
-  
+
   if (superToken) {
     await testCatalogModule(superToken);
     await testCatalogAttributes(superToken);
   }
-  
+
   console.log('\n🎉 All tests completed!\n');
 })();

@@ -14,18 +14,23 @@ Goal: Create and manage clean, documented Pull Requests ready for review, maximi
 Once your commits are ready and pushed to the remote branch:
 
 ### Automatic Mode (Recommended)
+
 Fills the title and body from your commit messages:
+
 ```bash
 gh pr create --fill --label "enhancement" --assignee "@me"
 ```
 
 ### Manual / Interactive Mode
+
 ```bash
 gh pr create --title "feat(api): add new endpoint for orders" --body "This PR adds the POST /orders endpoint and its validation logic." --label "enhancement"
 ```
 
 ### Draft Mode
+
 If you want to share your progress without requesting an immediate review:
+
 ```bash
 gh pr create --draft --fill
 ```
@@ -33,18 +38,23 @@ gh pr create --draft --fill
 ## 🔍 Manage and Verify the PR
 
 ### Check status
+
 ```bash
 gh pr status
 ```
 
 ### Verify the diff
+
 Check what you are going to merge:
+
 ```bash
 gh pr diff
 ```
 
 ### View on Web
+
 Open the GitHub interface to see comments or checks:
+
 ```bash
 gh pr view --web
 ```

@@ -1,4 +1,5 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { PermissionType } from './permission-types';
 
 @ObjectType()
 export class RoleType {
@@ -8,11 +9,20 @@ export class RoleType {
   @Field()
   name!: string;
 
+  @Field()
+  slug!: string;
+
   @Field({ nullable: true })
   description?: string;
 
   @Field()
   isSystem!: boolean;
+
+  @Field()
+  dateAdd!: Date;
+
+  @Field(() => [PermissionType], { nullable: true })
+  permissions?: PermissionType[];
 }
 
 @ObjectType()
@@ -34,6 +44,9 @@ export class EmployeeType {
 
   @Field(() => RoleType)
   role!: RoleType;
+
+  @Field(() => [RoleType], { nullable: true })
+  roles?: RoleType[];
 
   @Field({ nullable: true })
   lastConnectionDate?: Date;
@@ -57,10 +70,10 @@ export class EmployeeAuthResponse {
   requires2FA?: boolean;
 
   @Field({ nullable: true })
-  refreshToken?: string;
+  requiresPasswordReset?: boolean;
 
-  @Field(() => EmployeeType)
-  employee!: EmployeeType;
+  @Field({ nullable: true })
+  refreshToken?: string;
 }
 
 @ObjectType()

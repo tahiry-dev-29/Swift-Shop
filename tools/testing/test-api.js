@@ -80,18 +80,18 @@ async function test(name, queryFn, token = null, validator = null) {
   try {
     const query = typeof queryFn === 'function' ? queryFn() : queryFn;
     const result = await gql(query, token);
-    
+
     if (result.errors) {
       logTest(name, false, result.errors[0].message);
       return null;
     }
-    
+
     if (validator) {
       const isValid = validator(result.data);
       logTest(name, isValid);
       return isValid ? result.data : null;
     }
-    
+
     logTest(name, true);
     return result.data;
   } catch (error) {
@@ -101,20 +101,20 @@ async function test(name, queryFn, token = null, validator = null) {
 }
 
 async function runTests() {
-  log('\n🚀 Démarrage des tests de l\'API GraphQL Dima\n', 'cyan');
+  log("\n🚀 Démarrage des tests de l'API GraphQL Dima\n", 'cyan');
 
   // ========================================
   // 1. AUTHENTICATION
   // ========================================
   log('📋 Section 1: Authentication', 'blue');
-  
+
   const adminLogin = await test(
     'Admin Login',
     `mutation { employeeLogin(email: "superadmin@dima.com", password: "admin123") { accessToken employee { id firstname } } }`,
     null,
-    (data) => !!data.employeeLogin?.accessToken
+    (data) => !!data.employeeLogin?.accessToken,
   );
-  
+
   if (adminLogin) {
     adminToken = adminLogin.employeeLogin.accessToken;
   }
@@ -123,9 +123,9 @@ async function runTests() {
     'Customer Login',
     `mutation { customerLogin(email: "customer@example.com", password: "customer123") { accessToken customer { id firstname } } }`,
     null,
-    (data) => !!data.customerLogin?.accessToken
+    (data) => !!data.customerLogin?.accessToken,
   );
-  
+
   if (customerLogin) {
     customerToken = customerLogin.customerLogin.accessToken;
   }
@@ -134,23 +134,27 @@ async function runTests() {
   // 2. CATEGORIES
   // ========================================
   log('\n📋 Section 2: Categories', 'blue');
-  
-  await test('List Category Tree', `query { categoryTree { id name active } }`, adminToken);
-  
+
+  await test(
+    'List Category Tree',
+    `query { categoryTree { id name active } }`,
+    adminToken,
+  );
+
   const createCat = await test(
     'Create Category',
     `mutation { createCategory(input: { name: "Test Category ${Date.now()}", active: true, position: 0 }) { id name } }`,
     adminToken,
-    (data) => !!data.createCategory?.id
+    (data) => !!data.createCategory?.id,
   );
-  
+
   if (createCat) {
     testData.categoryId = createCat.createCategory.id;
-    
+
     await test(
       'Update Category',
       `mutation { updateCategory(id: ${testData.categoryId}, input: { name: "Updated Category" }) { id name } }`,
-      adminToken
+      adminToken,
     );
   }
 
@@ -158,33 +162,37 @@ async function runTests() {
   // 3. ATTRIBUTES
   // ========================================
   log('\n📋 Section 3: Attributes', 'blue');
-  
-  await test('List Attribute Groups', `query { attributeGroups { id name publicName values { id name } } }`, adminToken);
-  
+
+  await test(
+    'List Attribute Groups',
+    `query { attributeGroups { id name publicName values { id name } } }`,
+    adminToken,
+  );
+
   const createAttrGroup = await test(
     'Create Attribute Group',
     `mutation { createAttributeGroup(input: { name: "test_size_${Date.now()}", publicName: "Taille Test", type: "select", position: 0 }) { id name } }`,
     adminToken,
-    (data) => !!data.createAttributeGroup?.id
+    (data) => !!data.createAttributeGroup?.id,
   );
-  
+
   if (createAttrGroup) {
     testData.attributeGroupId = createAttrGroup.createAttributeGroup.id;
-    
+
     const createAttrValue = await test(
       'Create Attribute Value',
       `mutation { createAttributeValue(groupId: ${testData.attributeGroupId}, input: { name: "M", position: 0 }) { id name } }`,
       adminToken,
-      (data) => !!data.createAttributeValue?.id
+      (data) => !!data.createAttributeValue?.id,
     );
-    
+
     if (createAttrValue) {
       testData.attributeValueId = createAttrValue.createAttributeValue.id;
-      
+
       await test(
         'Update Attribute Value',
         `mutation { updateAttributeValue(id: ${testData.attributeValueId}, input: { name: "L" }) { id name } }`,
-        adminToken
+        adminToken,
       );
     }
   }
@@ -193,108 +201,114 @@ async function runTests() {
   // 4. PRODUCTS
   // ========================================
   log('\n📋 Section 4: Products', 'blue');
-  
-  await test('List Products', `query { products(filter: { take: 5 }) { items { id name } total } }`, adminToken);
-  
+
+  await test(
+    'List Products',
+    `query { products(filter: { take: 5 }) { items { id name } total } }`,
+    adminToken,
+  );
+
   const createProduct = await test(
     'Create Product',
-    `mutation { createProduct(input: { reference: "TEST-${Date.now()}", name: "Test Product", price: 29.99, active: true ${testData.categoryId ? `, categoryId: ${testData.categoryId}` : ''} }) { id reference name } }`,
+    `mutation { createProduct(input: { reference: "TEST-${Date.now()}", name: "Test Product", price: 29.99, active: true ${
+      testData.categoryId ? `, categoryId: ${testData.categoryId}` : ''
+    } }) { id reference name } }`,
     adminToken,
-    (data) => !!data.createProduct?.id
+    (data) => !!data.createProduct?.id,
   );
-  
+
   if (createProduct) {
     testData.productId = createProduct.createProduct.id;
-    
+
     await test(
       'Get Product by ID',
       `query { product(id: ${testData.productId}) { id name price } }`,
-      adminToken
+      adminToken,
     );
-    
+
     await test(
       'Update Product',
       `mutation { updateProduct(id: ${testData.productId}, input: { name: "Updated Product" }) { id name } }`,
-      adminToken
+      adminToken,
     );
-    
+
     // ========================================
     // 5. PRODUCT IMAGES
     // ========================================
     log('\n📋 Section 5: Product Images', 'blue');
-    
+
     const addImage = await test(
       'Add Product Image',
       `mutation { addProductImage(productId: ${testData.productId}, input: { filename: "test.jpg", originalName: "test.jpg", path: "uploads/test.jpg", mimeType: "image/jpeg", size: 1000, cover: true }) { id path cover } }`,
       adminToken,
-      (data) => !!data.addProductImage?.id
+      (data) => !!data.addProductImage?.id,
     );
-    
+
     if (addImage) {
       testData.imageId = addImage.addProductImage.id;
-      
+
       await test(
         'Set Cover Image',
         `mutation { setProductCoverImage(imageId: ${testData.imageId}) { id cover } }`,
-        adminToken
+        adminToken,
       );
     }
-    
+
     // ========================================
     // 6. PRODUCT COMBINATIONS
     // ========================================
     log('\n📋 Section 6: Product Combinations', 'blue');
-    
+
     if (testData.attributeValueId) {
       const addCombo = await test(
         'Add Product Combination',
         `mutation { addProductCombination(productId: ${testData.productId}, input: { priceImpact: 5.00, attributeValueIds: [${testData.attributeValueId}] }) { id priceImpact } }`,
         adminToken,
-        (data) => !!data.addProductCombination?.id
+        (data) => !!data.addProductCombination?.id,
       );
-      
+
       if (addCombo) {
         testData.combinationId = addCombo.addProductCombination.id;
-        
+
         await test(
           'Update Product Combination',
           `mutation { updateProductCombination(id: ${testData.combinationId}, input: { priceImpact: 10.00 }) { id priceImpact } }`,
-          adminToken
+          adminToken,
         );
       }
     }
-    
+
     // ========================================
     // 7. STOCK MANAGEMENT
     // ========================================
     log('\n📋 Section 7: Stock Management', 'blue');
-    
+
     const updateStock = await test(
       'Update Stock',
       `mutation { updateStock(input: { productId: ${testData.productId}, quantity: 100 }) { id quantity } }`,
       adminToken,
-      (data) => !!data.updateStock?.id
+      (data) => !!data.updateStock?.id,
     );
-    
+
     if (updateStock) {
       testData.stockId = updateStock.updateStock.id;
-      
+
       await test(
         'Increment Stock',
         `mutation { incrementStock(stockId: ${testData.stockId}, quantity: 50) { id quantity } }`,
-        adminToken
+        adminToken,
       );
-      
+
       await test(
         'Decrement Stock',
         `mutation { decrementStock(stockId: ${testData.stockId}, quantity: 25) { id quantity } }`,
-        adminToken
+        adminToken,
       );
-      
+
       await test(
         'Check Product Availability',
         `query { checkProductAvailability(productId: ${testData.productId}, quantity: 10) }`,
-        adminToken
+        adminToken,
       );
     }
   }
@@ -303,25 +317,33 @@ async function runTests() {
   // 8. CUSTOMER OPERATIONS
   // ========================================
   log('\n📋 Section 8: Customer Operations', 'blue');
-  
-  await test('Customer Me', `query { customerMe { id firstname email } }`, customerToken);
-  
-  await test('List My Addresses', `query { myAddresses { id alias city } }`, customerToken);
-  
+
+  await test(
+    'Customer Me',
+    `query { customerMe { id firstname email } }`,
+    customerToken,
+  );
+
+  await test(
+    'List My Addresses',
+    `query { myAddresses { id alias city } }`,
+    customerToken,
+  );
+
   const createAddress = await test(
     'Create Address',
     `mutation { createAddress(input: { alias: "Test ${Date.now()}", firstname: "John", lastname: "Doe", address1: "123 Test St", postcode: "75000", city: "Paris", countryId: 1 }) { id alias } }`,
     customerToken,
-    (data) => !!data.createAddress?.id
+    (data) => !!data.createAddress?.id,
   );
-  
+
   if (createAddress) {
     testData.addressId = createAddress.createAddress.id;
-    
+
     await test(
       'Update Address',
       `mutation { updateAddress(id: ${testData.addressId}, input: { alias: "Updated Address" }) { id alias } }`,
-      customerToken
+      customerToken,
     );
   }
 
@@ -329,70 +351,86 @@ async function runTests() {
   // 9. ADMIN QUERIES
   // ========================================
   log('\n📋 Section 9: Admin Queries', 'blue');
-  
-  await test('List Customers', `query { customers { id firstname email } }`, adminToken);
-  await test('List Customer Groups', `query { customerGroups { id name } }`, adminToken);
-  await test('List Employees', `query { employees { id firstname email } }`, adminToken);
-  await test('Employee Me', `query { employeeMe { id firstname role { name } } }`, adminToken);
+
+  await test(
+    'List Customers',
+    `query { customers { id firstname email } }`,
+    adminToken,
+  );
+  await test(
+    'List Customer Groups',
+    `query { customerGroups { id name } }`,
+    adminToken,
+  );
+  await test(
+    'List Employees',
+    `query { employees { id firstname email } }`,
+    adminToken,
+  );
+  await test(
+    'Employee Me',
+    `query { employeeMe { id firstname role { name } } }`,
+    adminToken,
+  );
 
   // ========================================
   // CLEANUP (Optional - delete test data)
   // ========================================
   log('\n📋 Cleanup: Deleting Test Data', 'blue');
-  
+
   if (testData.addressId) {
     await test(
       'Delete Address',
       `mutation { deleteAddress(id: ${testData.addressId}) { id } }`,
-      customerToken
+      customerToken,
     );
   }
-  
+
   if (testData.combinationId) {
     await test(
       'Delete Product Combination',
       `mutation { deleteProductCombination(id: ${testData.combinationId}) { id } }`,
-      adminToken
+      adminToken,
     );
   }
-  
+
   if (testData.imageId) {
     await test(
       'Remove Product Image',
       `mutation { removeProductImage(id: ${testData.imageId}) { id } }`,
-      adminToken
+      adminToken,
     );
   }
-  
+
   if (testData.productId) {
     await test(
       'Delete Product',
       `mutation { deleteProduct(id: ${testData.productId}) { id } }`,
-      adminToken
+      adminToken,
     );
   }
-  
+
   if (testData.attributeValueId) {
     await test(
       'Delete Attribute Value',
       `mutation { deleteAttributeValue(id: ${testData.attributeValueId}) { id } }`,
-      adminToken
+      adminToken,
     );
   }
-  
+
   if (testData.attributeGroupId) {
     await test(
       'Delete Attribute Group',
       `mutation { deleteAttributeGroup(id: ${testData.attributeGroupId}) { id } }`,
-      adminToken
+      adminToken,
     );
   }
-  
+
   if (testData.categoryId) {
     await test(
       'Delete Category',
       `mutation { deleteCategory(id: ${testData.categoryId}) { id } }`,
-      adminToken
+      adminToken,
     );
   }
 
@@ -405,18 +443,27 @@ async function runTests() {
   log(`Total: ${testResults.total}`, 'blue');
   log(`✅ Réussis: ${testResults.passed}`, 'green');
   log(`❌ Échoués: ${testResults.failed}`, 'red');
-  log(`📈 Taux de réussite: ${((testResults.passed / testResults.total) * 100).toFixed(1)}%`, 'yellow');
+  log(
+    `📈 Taux de réussite: ${(
+      (testResults.passed / testResults.total) *
+      100
+    ).toFixed(1)}%`,
+    'yellow',
+  );
   log('='.repeat(50) + '\n', 'cyan');
 
   if (testResults.failed === 0) {
     log('🎉 Tous les tests sont passés avec succès !', 'green');
   } else {
-    log('⚠️  Certains tests ont échoué. Vérifiez les détails ci-dessus.', 'yellow');
+    log(
+      '⚠️  Certains tests ont échoué. Vérifiez les détails ci-dessus.',
+      'yellow',
+    );
   }
 }
 
 // Run tests
-runTests().catch(error => {
+runTests().catch((error) => {
   log(`\n❌ Erreur fatale: ${error.message}`, 'red');
   process.exit(1);
 });

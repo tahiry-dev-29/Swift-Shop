@@ -18,7 +18,7 @@ export class CreateSpecificPriceInput {
   countryId?: string;
 
   @Field()
-  reductionType!: string; 
+  reductionType!: string;
 
   @Field(() => Float)
   reduction!: number;

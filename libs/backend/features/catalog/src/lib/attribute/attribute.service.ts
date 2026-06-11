@@ -1,25 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@dima-new/data-access-prisma';
-import { 
-  CreateAttributeGroupInput, 
+import {
+  CreateAttributeGroupInput,
   UpdateAttributeGroupInput,
   CreateAttributeValueInput,
-  UpdateAttributeValueInput 
+  UpdateAttributeValueInput,
 } from './dto';
 
 @Injectable()
 export class AttributeService {
   constructor(private readonly prisma: PrismaService) {}
 
-  
-
   async findAllGroups() {
     return this.prisma.attributeGroup.findMany({
       orderBy: { position: 'asc' },
-      include: { 
+      include: {
         values: {
-          orderBy: { position: 'asc' }
-        }
+          orderBy: { position: 'asc' },
+        },
       },
     });
   }
@@ -27,10 +25,10 @@ export class AttributeService {
   async findGroupById(id: string) {
     return this.prisma.attributeGroup.findUnique({
       where: { id },
-      include: { 
+      include: {
         values: {
-          orderBy: { position: 'asc' }
-        }
+          orderBy: { position: 'asc' },
+        },
       },
     });
   }
@@ -54,8 +52,6 @@ export class AttributeService {
       where: { id },
     });
   }
-
-  
 
   async findValueById(id: string) {
     return this.prisma.attributeValue.findUnique({
@@ -85,4 +81,3 @@ export class AttributeService {
     });
   }
 }
-

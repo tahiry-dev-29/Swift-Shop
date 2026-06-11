@@ -3,9 +3,11 @@
 > ⚠️ **Toutes les routes requièrent un token Employee**
 
 ## 📍 GraphQL Playground
+
 `http://localhost:3000/graphql`
 
 **Header (toutes les requêtes):**
+
 ```json
 { "Authorization": "Bearer <employeeToken>" }
 ```
@@ -15,6 +17,7 @@
 ## List All Groups
 
 OK
+
 ```graphql
 query {
   customerGroups {
@@ -29,6 +32,7 @@ query {
 ---
 
 ## Get One Group
+
 Ok
 
 ```graphql
@@ -45,15 +49,12 @@ query {
 ---
 
 ## ## Create Group
+
 Implemented: Name must be unique (throws ConflictException if exists)
 
 ```graphql
 mutation {
-  createCustomerGroup(input: {
-    name: "VIP"
-    reduction: 15.0
-    showPrices: true
-  }) {
+  createCustomerGroup(input: { name: "VIP", reduction: 15.0, showPrices: true }) {
     id
     name
     reduction
@@ -64,12 +65,12 @@ mutation {
 ---
 
 ## Update Group
+
 Ok
+
 ```graphql
 mutation {
-  updateCustomerGroup(id: 2, input: {
-    reduction: 20.0
-  }) {
+  updateCustomerGroup(id: 2, input: { reduction: 20.0 }) {
     id
     name
     reduction
@@ -80,6 +81,7 @@ mutation {
 ---
 
 ## Delete Group
+
 Ok
 
 ```graphql

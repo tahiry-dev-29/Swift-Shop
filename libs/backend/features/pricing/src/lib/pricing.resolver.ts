@@ -14,16 +14,18 @@ import {
 export class PricingResolver {
   constructor(
     private priceCalculationService: PriceCalculationService,
-    private prisma: PrismaService
+    private prisma: PrismaService,
   ) {}
 
   @Query(() => PriceDetailType)
   async calculatePrice(
     @Args('productId', { type: () => ID }) productId: string,
     @Args('countryId', { type: () => ID }) countryId: string,
-    @Args('combinationId', { type: () => ID, nullable: true }) combinationId?: string,
+    @Args('combinationId', { type: () => ID, nullable: true })
+    combinationId?: string,
     @Args('customerId', { type: () => ID, nullable: true }) customerId?: string,
-    @Args('quantity', { type: () => Int, nullable: true, defaultValue: 1 }) quantity?: number
+    @Args('quantity', { type: () => Int, nullable: true, defaultValue: 1 })
+    quantity?: number,
   ) {
     return this.priceCalculationService.calculatePrice({
       productId,
@@ -38,7 +40,7 @@ export class PricingResolver {
   @UseGuards(JwtAuthGuard, SuperAdminGuard)
   async specificPrices(
     @Args('productId', { type: () => ID, nullable: true }) productId?: string,
-    @Args('customerId', { type: () => ID, nullable: true }) customerId?: string
+    @Args('customerId', { type: () => ID, nullable: true }) customerId?: string,
   ) {
     const where: any = { active: true };
     if (productId) where.productId = productId;
@@ -62,7 +64,7 @@ export class PricingResolver {
   @UseGuards(JwtAuthGuard, SuperAdminGuard)
   async updateSpecificPrice(
     @Args('id', { type: () => ID }) id: string,
-    @Args('input') input: UpdateSpecificPriceInput
+    @Args('input') input: UpdateSpecificPriceInput,
   ) {
     return this.prisma.specificPrice.update({
       where: { id },
