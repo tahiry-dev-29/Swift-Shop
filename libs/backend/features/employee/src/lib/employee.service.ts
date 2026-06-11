@@ -41,12 +41,16 @@ export class EmployeeService {
 
     let roleId = data.roleId;
     if (!roleId) {
-      const salesRole = await this.prisma.role.findFirst({
-        where: { name: 'SALES' },
+      const defaultRole = await this.prisma.role.findFirst({
+        where: {
+          OR: [{ slug: 'support_agent' }, { name: 'SALES' }],
+          deletedAt: null,
+        },
+        orderBy: { name: 'asc' },
       });
-      roleId = salesRole?.id;
+      roleId = defaultRole?.id;
     }
-    if (!roleId) throw new Error('Role ID required or SALES role missing');
+    if (!roleId) throw new Error('Role ID required or default role missing');
 
     return this.prisma.employee.create({
       data: {
@@ -55,6 +59,11 @@ export class EmployeeService {
         firstname: data.firstname,
         lastname: data.lastname,
         role: { connect: { id: roleId } },
+        roles: {
+          create: {
+            role: { connect: { id: roleId } },
+          },
+        },
       },
       include: { role: true },
     });
