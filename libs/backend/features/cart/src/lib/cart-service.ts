@@ -4,14 +4,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '@dima-new/data-access-prisma';
-import { PriceCalculationService } from '@dima-new/backend/pricing';
-import { CartType } from './dto/cart-types';
+import { CartMergeService } from './cart-merge.service';
+import { CartPricingService } from './cart-pricing.service';
 
 @Injectable()
 export class CartService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly priceService: PriceCalculationService,
+    private readonly cartMergeService: CartMergeService,
+    private readonly cartPricingService: CartPricingService,
   ) {}
 
   async getOrCreateCart(customerId?: string, sessionId?: string) {
@@ -145,154 +146,11 @@ export class CartService {
     });
   }
 
-  async getCartWithTotals(
-    cartId: string,
-    countryId?: string,
-  ): Promise<CartType> {
-    const cart = await this.prisma.cart.findUnique({
-      where: { id: cartId },
-      include: {
-        items: {
-          include: {
-            product: { include: { stock: true } },
-            combination: { include: { stock: true } },
-          },
-        },
-        customer: { include: { country: true, group: true } },
-      },
-    });
-
-    if (!cart) {
-      throw new NotFoundException('Cart not found');
-    }
-
-    const taxCountryId = countryId || cart.customer?.countryId;
-    const defaultCountry = await this.prisma.country.findFirst({
-      where: { isoCode: 'FR' },
-    });
-    const finalCountryId = taxCountryId || defaultCountry?.id;
-
-    const toNum = (val: unknown) => (val ? Number(val.toString()) : 0);
-
-    const itemsWithPrices = await Promise.all(
-      cart.items.map(async (item) => {
-        const priceDetail = finalCountryId
-          ? await this.priceService.calculatePrice({
-              productId: item.productId,
-              countryId: finalCountryId,
-              combinationId: item.combinationId || undefined,
-              customerId: cart.customerId || undefined,
-              quantity: item.quantity,
-            })
-          : null;
-
-        return {
-          ...item,
-          product: {
-            ...item.product,
-            price: toNum(item.product.price),
-            wholesalePrice: toNum(item.product.wholesalePrice),
-            weight: toNum(item.product.weight),
-            width: toNum(item.product.width),
-            height: toNum(item.product.height),
-            depth: toNum(item.product.depth),
-          },
-          combination: item.combination
-            ? {
-                ...item.combination,
-                priceImpact: toNum(item.combination.priceImpact),
-                weightImpact: toNum(item.combination.weightImpact),
-              }
-            : undefined,
-          priceDetail: priceDetail ?? undefined,
-          lineTotal: priceDetail
-            ? toNum(priceDetail.priceTTC) * item.quantity
-            : toNum(item.product.price) * item.quantity,
-        };
-      }),
-    );
-
-    return {
-      id: cart.id,
-      customerId: cart.customerId ?? undefined,
-      sessionId: cart.sessionId ?? undefined,
-      items: itemsWithPrices,
-      totalHT: itemsWithPrices.reduce(
-        (sum, item) =>
-          sum +
-          toNum(item.priceDetail?.priceHT ?? item.product.price) *
-            item.quantity,
-        0,
-      ),
-      totalTax: itemsWithPrices.reduce(
-        (sum, item) =>
-          sum + toNum(item.priceDetail?.taxAmount ?? 0) * item.quantity,
-        0,
-      ),
-      totalTTC: itemsWithPrices.reduce(
-        (sum, item) =>
-          sum +
-          toNum(item.priceDetail?.priceTTC ?? item.product.price) *
-            item.quantity,
-        0,
-      ),
-      itemCount: cart.items.reduce((sum, item) => sum + item.quantity, 0),
-      dateAdd: cart.dateAdd,
-      dateUpd: cart.dateUpd,
-    };
+  async getCartWithTotals(cartId: string, countryId?: string) {
+    return this.cartPricingService.getCartWithTotals(cartId, countryId);
   }
 
   async mergeGuestCart(sessionId: string, customerId: string) {
-    const guestCart = await this.prisma.cart.findUnique({
-      where: { sessionId },
-      include: { items: true },
-    });
-
-    if (!guestCart || guestCart.items.length === 0) {
-      return this.getOrCreateCart(customerId);
-    }
-
-    const customerCart = await this.prisma.cart.findUnique({
-      where: { customerId },
-    });
-    if (!customerCart) {
-      return this.prisma.cart.update({
-        where: { id: guestCart.id },
-        data: { customerId, sessionId: null },
-        include: { items: { include: { product: true, combination: true } } },
-      });
-    }
-
-    for (const item of guestCart.items) {
-      const existing = await this.prisma.cartItem.findFirst({
-        where: {
-          cartId: customerCart.id,
-          productId: item.productId,
-          combinationId: item.combinationId,
-        },
-      });
-
-      if (existing) {
-        await this.prisma.cartItem.update({
-          where: { id: existing.id },
-          data: { quantity: existing.quantity + item.quantity },
-        });
-      } else {
-        await this.prisma.cartItem.create({
-          data: {
-            cartId: customerCart.id,
-            productId: item.productId,
-            combinationId: item.combinationId,
-            quantity: item.quantity,
-          },
-        });
-      }
-    }
-
-    await this.prisma.cart.delete({ where: { id: guestCart.id } });
-    return this.prisma.cart.findUnique({
-      where: { id: customerCart.id },
-      include: { items: { include: { product: true, combination: true } } },
-    });
+    return this.cartMergeService.mergeGuestCart(sessionId, customerId);
   }
 }
