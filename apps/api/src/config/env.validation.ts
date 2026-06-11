@@ -45,9 +45,10 @@ function requireProductionValues(env: Environment, keys: string[]): void {
 export function validateEnvironment(env: Environment): ValidatedEnvironment {
   const { PORT, DATABASE_URL, JWT_SECRET, ...rest } = env;
   requireProductionValues(env, [
-    'EMAIL_PROVIDER_API_URL',
-    'EMAIL_PROVIDER_API_KEY',
-    'EMAIL_FROM',
+    'SMTP_HOST',
+    'SMTP_USER',
+    'SMTP_PASS',
+    'SMTP_FROM',
     'GOOGLE_CLIENT_ID',
     'GOOGLE_CLIENT_SECRET',
     'FACEBOOK_CLIENT_ID',

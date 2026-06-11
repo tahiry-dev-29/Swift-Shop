@@ -16,6 +16,7 @@ import { PasswordSecurityService } from './services/password-security.service';
 import { RedisService } from './infrastructure/storage/redis.service';
 import { TrustedDeviceService } from './services/trusted-device.service';
 import { TwoFactorService } from './services/two-factor.service';
+import { SmtpService } from './infrastructure/smtp/smtp.service';
 import {
   AUTH_RATE_LIMIT_IP_ATTEMPTS,
   AUTH_RATE_LIMIT_TTL_MS,
@@ -64,7 +65,8 @@ import { PermissionGuard } from './guards/permission-guard';
     TrustedDeviceService,
     TwoFactorService,
     PermissionGuard,
+    SmtpService,
   ],
-  exports: [AuthService, JwtModule, RedisService, PermissionGuard],
+  exports: [AuthService, JwtModule, RedisService, PermissionGuard, SmtpService],
 })
 export class AuthModule {}
