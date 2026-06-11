@@ -43,7 +43,7 @@ export class CustomerAuthResponse {
 @ObjectType()
 export class MagicLinkResponse {
   @Field()
-  success!: boolean;
+  sent!: boolean;
 }
 
 @ObjectType()

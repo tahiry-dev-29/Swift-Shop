@@ -4,15 +4,24 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { DataAccessPrismaModule } from '@dima-new/data-access-prisma';
-import { AuthMailService } from './auth-mail.service';
-import { AuthService } from './auth.service';
-import { JwtStrategy } from './jwt.strategy';
-import { RedisService } from './redis.service';
+import { AuthMailService } from './services/auth-mail.service';
+import { AuthService } from './services/auth.service';
+import { AuthAuditService } from './services/auth-audit.service';
+import { AuthCredentialsService } from './services/auth-credentials.service';
+import { AuthOAuthService } from './services/auth-oauth.service';
+import { AuthRecoveryService } from './services/auth-recovery.service';
+import { AuthTokenService } from './services/auth-token.service';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { PasswordSecurityService } from './services/password-security.service';
+import { RedisService } from './infrastructure/storage/redis.service';
+import { TrustedDeviceService } from './services/trusted-device.service';
+import { TwoFactorService } from './services/two-factor.service';
 import {
   AUTH_RATE_LIMIT_IP_ATTEMPTS,
   AUTH_RATE_LIMIT_TTL_MS,
-} from './rate-limiting/rate-limit.constants';
-import { RedisThrottlerStorage } from './rate-limiting/redis-throttler-storage';
+} from './infrastructure/rate-limiting/rate-limit.constants';
+import { RedisThrottlerStorage } from './infrastructure/rate-limiting/redis-throttler-storage';
+import { PermissionGuard } from './guards/permission-guard';
 
 @Module({
   imports: [
@@ -41,7 +50,21 @@ import { RedisThrottlerStorage } from './rate-limiting/redis-throttler-storage';
       }),
     }),
   ],
-  providers: [AuthService, AuthMailService, JwtStrategy, RedisService],
-  exports: [AuthService, JwtModule, RedisService],
+  providers: [
+    AuthService,
+    AuthAuditService,
+    AuthCredentialsService,
+    AuthMailService,
+    AuthOAuthService,
+    AuthRecoveryService,
+    AuthTokenService,
+    JwtStrategy,
+    PasswordSecurityService,
+    RedisService,
+    TrustedDeviceService,
+    TwoFactorService,
+    PermissionGuard,
+  ],
+  exports: [AuthService, JwtModule, RedisService, PermissionGuard],
 })
 export class AuthModule {}
