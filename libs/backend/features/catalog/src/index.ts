@@ -5,6 +5,7 @@ export * from './lib/attribute/attribute.service';
 export * from './lib/attribute/attribute.resolver';
 export * from './lib/product/product.service';
 export * from './lib/product/product.resolver';
+export * from './lib/product/product-combination.resolver';
 export * from './lib/product/dto';
 export * from './lib/feature/feature.service';
 export * from './lib/feature/feature.resolver';

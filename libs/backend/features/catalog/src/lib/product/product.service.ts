@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '@dima-new/data-access-prisma';
 import {
   CreateProductInput,
@@ -9,10 +10,18 @@ import {
   UpdateStockInput,
   ProductFilterInput,
 } from './dto';
+import { ProductCombinationService } from './product-combination.service';
+import { ProductImageService } from './product-image.service';
+import { ProductStockService } from './product-stock.service';
 
 @Injectable()
 export class ProductService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly imageService: ProductImageService,
+    private readonly combinationService: ProductCombinationService,
+    private readonly stockService: ProductStockService,
+  ) {}
 
   async findAll(filter?: ProductFilterInput) {
     const where: Record<string, unknown> = {};
@@ -31,268 +40,130 @@ export class ProductService {
         where,
         skip: filter?.skip ?? 0,
         take: filter?.take ?? 20,
-        include: {
-          images: { orderBy: { position: 'asc' } },
-          combinations: {
-            include: {
-              attributes: { include: { attributeValue: true } },
-              stock: true,
-            },
-          },
-          stock: true,
-          category: true,
-        },
+        include: this.productInclude(),
         orderBy: { dateAdd: 'desc' },
       }),
       this.prisma.product.count({ where }),
     ]);
-
     return { items, total };
   }
 
   async findById(id: string) {
     const product = await this.prisma.product.findUnique({
       where: { id },
-      include: {
-        images: { orderBy: { position: 'asc' } },
-        combinations: {
-          include: {
-            attributes: { include: { attributeValue: true } },
-            stock: true,
-          },
-        },
-        stock: true,
-        category: true,
-      },
+      include: this.productInclude(),
     });
-
     if (!product) {
       throw new NotFoundException(`Product #${id} not found`);
     }
-
     return product;
   }
 
-  async create(input: CreateProductInput) {
+  private generateSlug(name: string): string {
+    return (
+      name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '') +
+      '-' +
+      Math.random().toString(36).substring(2, 6)
+    );
+  }
+
+  async create({ categoryId, linkRewrite, ...input }: CreateProductInput) {
+    const slug = linkRewrite || this.generateSlug(input.name);
+    const data: Prisma.ProductUncheckedCreateInput = {
+      ...input,
+      slug,
+      categoryId: categoryId ?? null,
+    };
     return this.prisma.product.create({
-      data: input,
+      data,
       include: { category: true },
     });
   }
 
-  async update(id: string, input: UpdateProductInput) {
+  async update(
+    id: string,
+    { categoryId, linkRewrite, ...input }: UpdateProductInput,
+  ) {
     await this.findById(id);
+    const data: Prisma.ProductUpdateInput = {
+      ...input,
+      ...(linkRewrite ? { slug: linkRewrite } : {}),
+      ...(categoryId !== undefined ? { categoryId: categoryId ?? null } : {}),
+    };
     return this.prisma.product.update({
       where: { id },
-      data: input,
-      include: {
-        images: true,
-        combinations: true,
-        stock: true,
-        category: true,
-      },
+      data,
+      include: this.productInclude(),
     });
   }
 
   async delete(id: string) {
     await this.findById(id);
-    return this.prisma.product.delete({
-      where: { id },
-    });
+    return this.prisma.product.delete({ where: { id } });
   }
 
-  async addImage(productId: string, input: CreateProductImageInput) {
-    await this.findById(productId);
-
-    if (input.cover) {
-      await this.prisma.productImage.updateMany({
-        where: { productId },
-        data: { cover: false },
-      });
-    }
-
-    return this.prisma.productImage.create({
-      data: {
-        ...input,
-        productId,
-      },
-    });
+  addImage(productId: string, input: CreateProductImageInput) {
+    return this.imageService.addImage(productId, input);
   }
 
-  async removeImage(imageId: string) {
-    const image = await this.prisma.productImage.findUnique({
-      where: { id: imageId },
-    });
-
-    if (!image) {
-      throw new NotFoundException(`ProductImage #${imageId} not found`);
-    }
-
-    return this.prisma.productImage.delete({
-      where: { id: imageId },
-    });
+  removeImage(imageId: string) {
+    return this.imageService.removeImage(imageId);
   }
 
-  async setCoverImage(imageId: string) {
-    const image = await this.prisma.productImage.findUnique({
-      where: { id: imageId },
-    });
-
-    if (!image) {
-      throw new NotFoundException(`ProductImage #${imageId} not found`);
-    }
-
-    await this.prisma.productImage.updateMany({
-      where: { productId: image.productId },
-      data: { cover: false },
-    });
-
-    return this.prisma.productImage.update({
-      where: { id: imageId },
-      data: { cover: true },
-    });
+  setCoverImage(imageId: string) {
+    return this.imageService.setCoverImage(imageId);
   }
 
-  async addCombination(
-    productId: string,
-    input: CreateProductCombinationInput,
-  ) {
-    await this.findById(productId);
-
-    const { attributeValueIds, ...combinationData } = input;
-
-    if (input.isDefault) {
-      await this.prisma.productCombination.updateMany({
-        where: { productId },
-        data: { isDefault: false },
-      });
-    }
-
-    return this.prisma.productCombination.create({
-      data: {
-        ...combinationData,
-        productId,
-        attributes: {
-          create: attributeValueIds.map((attrId) => ({
-            attributeValueId: attrId,
-          })),
-        },
-      },
-      include: {
-        attributes: { include: { attributeValue: true } },
-        stock: true,
-      },
-    });
+  addCombination(productId: string, input: CreateProductCombinationInput) {
+    return this.combinationService.addCombination(productId, input);
   }
 
-  async updateCombination(id: string, input: UpdateProductCombinationInput) {
-    const combination = await this.prisma.productCombination.findUnique({
-      where: { id },
-    });
-
-    if (!combination) {
-      throw new NotFoundException(`ProductCombination #${id} not found`);
-    }
-
-    if (input.isDefault) {
-      await this.prisma.productCombination.updateMany({
-        where: { productId: combination.productId, NOT: { id } },
-        data: { isDefault: false },
-      });
-    }
-
-    return this.prisma.productCombination.update({
-      where: { id },
-      data: input,
-      include: {
-        attributes: { include: { attributeValue: true } },
-        stock: true,
-      },
-    });
+  updateCombination(id: string, input: UpdateProductCombinationInput) {
+    return this.combinationService.updateCombination(id, input);
   }
 
-  async deleteCombination(id: string) {
-    const combination = await this.prisma.productCombination.findUnique({
-      where: { id },
-    });
-
-    if (!combination) {
-      throw new NotFoundException(`ProductCombination #${id} not found`);
-    }
-
-    return this.prisma.productCombination.delete({
-      where: { id },
-    });
+  deleteCombination(id: string) {
+    return this.combinationService.deleteCombination(id);
   }
 
-  async updateStock(input: UpdateStockInput) {
-    const { productId, combinationId, ...stockData } = input;
-
-    const existingStock = await this.prisma.stock.findFirst({
-      where: {
-        OR: [
-          { productId: productId ?? undefined },
-          { combinationId: combinationId ?? undefined },
-        ],
-      },
-    });
-
-    if (existingStock) {
-      return this.prisma.stock.update({
-        where: { id: existingStock.id },
-        data: stockData,
-      });
-    }
-
-    return this.prisma.stock.create({
-      data: {
-        productId,
-        combinationId,
-        ...stockData,
-      },
-    });
+  updateStock(input: UpdateStockInput) {
+    return this.stockService.updateStock(input);
   }
 
-  async incrementStock(stockId: string, quantity: number) {
-    return this.prisma.stock.update({
-      where: { id: stockId },
-      data: { quantity: { increment: quantity } },
-    });
+  incrementStock(stockId: string, quantity: number) {
+    return this.stockService.incrementStock(stockId, quantity);
   }
 
-  async decrementStock(stockId: string, quantity: number) {
-    const stock = await this.prisma.stock.findUnique({
-      where: { id: stockId },
-    });
-
-    if (!stock) {
-      throw new NotFoundException(`Stock #${stockId} not found`);
-    }
-
-    const newQuantity = Math.max(0, stock.quantity - quantity);
-    return this.prisma.stock.update({
-      where: { id: stockId },
-      data: { quantity: newQuantity },
-    });
+  decrementStock(stockId: string, quantity: number) {
+    return this.stockService.decrementStock(stockId, quantity);
   }
 
-  async checkAvailability(
+  checkAvailability(
     productId?: string,
     combinationId?: string,
-    quantity: number = 1,
+    quantity?: number,
   ) {
-    const stock = await this.prisma.stock.findFirst({
-      where: {
-        OR: [
-          { productId: productId ?? undefined },
-          { combinationId: combinationId ?? undefined },
-        ],
+    return this.stockService.checkAvailability(
+      productId,
+      combinationId,
+      quantity,
+    );
+  }
+
+  private productInclude(): Prisma.ProductInclude {
+    return {
+      images: { orderBy: { position: 'asc' } },
+      combinations: {
+        include: {
+          attributes: { include: { attributeValue: true } },
+          stock: true,
+        },
       },
-    });
-
-    if (!stock) return false;
-
-    if (stock.outOfStockBehavior === 'allow') return true;
-    return stock.quantity >= quantity;
+      stock: true,
+      category: true,
+    };
   }
 }
