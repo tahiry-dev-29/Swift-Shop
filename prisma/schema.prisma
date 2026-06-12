@@ -111,6 +111,7 @@ model Customer {
   auditLogs      AuditLog[]
   oauthAccounts  OAuthAccount[]
   trustedDevices TrustedDevice[]
+  orderNotes     OrderNote[]
 }
 
 model CustomerGroup {
@@ -157,6 +158,8 @@ model Employee {
 
   auditLogs      AuditLog[]
   trustedDevices TrustedDevice[]
+  orderNotes     OrderNote[]
+  orderHistories OrderHistory[]
 }
 
 model AuditLog {
@@ -244,21 +247,21 @@ model Address {
 // ----------------------------------------------------------------------
 
 model Category {
-  id          String  @id @default(uuid())
+  id          String    @id @default(uuid())
   name        String
-  slug        String  @unique
+  slug        String    @unique
   description String?
-  active      Boolean @default(true)
-  position    Int     @default(0)
+  active      Boolean   @default(true)
+  position    Int       @default(0)
   deletedAt   DateTime?
-  path        String  @default("")
+  path        String    @default("")
 
   metaTitle       String?
   metaDescription String?
   metaKeywords    String?
 
-  banner      String?
-  thumbnail   String?
+  banner    String?
+  thumbnail String?
 
   parentId String?
   parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id])
@@ -491,7 +494,8 @@ model OrderState {
   color    String @default("#6b7280")
   position Int    @default(0)
 
-  orders Order[]
+  orders         Order[]
+  orderHistories OrderHistory[]
 }
 
 model Order {
@@ -506,6 +510,11 @@ model Order {
 
   items     OrderItem[]
   addresses OrderAddress[]
+  shipments Shipment[]
+  returns   Return[]
+  invoice   Invoice?
+  notes     OrderNote[]
+  history   OrderHistory[]
 
   dateAdd DateTime @default(now())
   dateUpd DateTime @updatedAt
@@ -529,7 +538,8 @@ model OrderItem {
   totalHT     Decimal
   totalTTC    Decimal
 
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order       Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  returnItems ReturnItem[]
 }
 
 model OrderAddress {
@@ -548,6 +558,85 @@ model OrderAddress {
   phone     String?
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Shipment {
+  id                    String    @id @default(uuid())
+  orderId               String
+  trackingNumber        String?
+  carrier               String?
+  estimatedDeliveryDate DateTime?
+  trackingEvents        Json?
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
+}
+
+model Return {
+  id            String  @id @default(uuid())
+  orderId       String
+  status        String  @default("PENDING") // PENDING, APPROVED, REJECTED, COMPLETED
+  customerNotes String?
+  adminNotes    String?
+
+  order Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  items ReturnItem[]
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
+}
+
+model ReturnItem {
+  id          String  @id @default(uuid())
+  returnId    String
+  orderItemId String
+  quantity    Int
+  reason      String?
+
+  return    Return    @relation(fields: [returnId], references: [id], onDelete: Cascade)
+  orderItem OrderItem @relation(fields: [orderItemId], references: [id])
+}
+
+model Invoice {
+  id            String  @id @default(uuid())
+  orderId       String  @unique
+  invoiceNumber String  @unique
+  pdfStorageRef String?
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  dateAdd DateTime @default(now())
+}
+
+model OrderNote {
+  id         String  @id @default(uuid())
+  orderId    String
+  employeeId String? // Null for system or customer notes
+  customerId String? // Null for employee or system notes
+  content    String
+  isInternal Boolean @default(false)
+
+  order    Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  employee Employee? @relation(fields: [employeeId], references: [id])
+  customer Customer? @relation(fields: [customerId], references: [id])
+
+  dateAdd DateTime @default(now())
+}
+
+model OrderHistory {
+  id         String  @id @default(uuid())
+  orderId    String
+  stateId    String
+  employeeId String?
+  message    String?
+
+  order    Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  state    OrderState @relation(fields: [stateId], references: [id])
+  employee Employee?  @relation(fields: [employeeId], references: [id])
+
+  dateAdd DateTime @default(now())
 }
 
 // ----------------------------------------------------------------------
