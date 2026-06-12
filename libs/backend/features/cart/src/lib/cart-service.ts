@@ -2,6 +2,7 @@ import {
   Injectable,
   BadRequestException,
   NotFoundException,
+  NotImplementedException,
 } from '@nestjs/common';
 import { PrismaService } from '@dima-new/data-access-prisma';
 import { CartMergeService } from './cart-merge.service';
@@ -152,5 +153,12 @@ export class CartService {
 
   async mergeGuestCart(sessionId: string, customerId: string) {
     return this.cartMergeService.mergeGuestCart(sessionId, customerId);
+  }
+  async applyCoupon(cartId: string, code: string) {
+    throw new NotImplementedException('Coupon system not implemented yet');
+  }
+
+  async removeCoupon(cartId: string) {
+    throw new NotImplementedException('Coupon system not implemented yet');
   }
 }

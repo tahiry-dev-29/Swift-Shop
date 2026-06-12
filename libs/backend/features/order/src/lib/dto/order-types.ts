@@ -135,3 +135,87 @@ export class CreateOrderInput {
   @Field(() => ID, { nullable: true })
   billingAddressId?: string;
 }
+
+@ObjectType()
+export class ReturnItemType {
+  @Field(() => ID)
+  id!: string;
+
+  @Field(() => ID)
+  orderItemId!: string;
+
+  @Field(() => Int)
+  quantity!: number;
+
+  @Field({ nullable: true })
+  reason?: string;
+}
+
+@ObjectType()
+export class ReturnType {
+  @Field(() => ID)
+  id!: string;
+
+  @Field(() => ID)
+  orderId!: string;
+
+  @Field()
+  status!: string;
+
+  @Field({ nullable: true })
+  customerNotes?: string;
+
+  @Field(() => [ReturnItemType])
+  items!: ReturnItemType[];
+
+  @Field()
+  dateAdd!: Date;
+}
+
+@InputType()
+export class RequestReturnInputItem {
+  @Field(() => ID)
+  orderItemId!: string;
+
+  @Field(() => Int)
+  quantity!: number;
+
+  @Field({ nullable: true })
+  reason?: string;
+}
+
+@InputType()
+export class RequestReturnInput {
+  @Field(() => ID)
+  orderId!: string;
+
+  @Field(() => [RequestReturnInputItem])
+  items!: RequestReturnInputItem[];
+
+  @Field({ nullable: true })
+  customerNotes?: string;
+}
+
+@ObjectType()
+export class OrderNoteType {
+  @Field(() => ID)
+  id!: string;
+
+  @Field(() => ID)
+  orderId!: string;
+
+  @Field()
+  content!: string;
+
+  @Field()
+  isInternal!: boolean;
+
+  @Field(() => ID, { nullable: true })
+  employeeId?: string;
+
+  @Field(() => ID, { nullable: true })
+  customerId?: string;
+
+  @Field()
+  dateAdd!: Date;
+}
