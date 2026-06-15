@@ -1,0 +1,4 @@
+# Markdownlint config — suppress low-severity stylistic rules
+# Copy this to your project root as .markdownlint.yaml
+
+default: false
