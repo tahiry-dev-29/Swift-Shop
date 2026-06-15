@@ -40,4 +40,26 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   async getStoredRefreshTokenJti(userId: string): Promise<string | null> {
     return this.client.get(`rt_${userId}`);
   }
+
+  async getJson<T>(key: string): Promise<T | null> {
+    const value = await this.client.get(key);
+    return value ? (JSON.parse(value) as T) : null;
+  }
+
+  async setJson<T>(key: string, value: T, expiresIn: number): Promise<void> {
+    await this.client.set(key, JSON.stringify(value), 'EX', expiresIn);
+  }
+
+  async delete(key: string): Promise<void> {
+    await this.client.del(key);
+  }
+
+  async deleteByPattern(pattern: string): Promise<void> {
+    const stream = this.client.scanStream({ match: pattern, count: 100 });
+    for await (const keys of stream) {
+      if (Array.isArray(keys) && keys.length > 0) {
+        await this.client.del(...keys);
+      }
+    }
+  }
 }
