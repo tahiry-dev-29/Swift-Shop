@@ -4,23 +4,15 @@ import { PrismaService } from '@dima-new/data-access-prisma';
 import {
   CreateProductInput,
   UpdateProductInput,
-  CreateProductImageInput,
-  CreateProductCombinationInput,
-  UpdateProductCombinationInput,
-  UpdateStockInput,
   ProductFilterInput,
 } from './dto';
-import { ProductCombinationService } from './product-combination.service';
-import { ProductImageService } from './product-image.service';
-import { ProductStockService } from './product-stock.service';
+import { ProductSearchService } from './product-search.service';
 
 @Injectable()
 export class ProductService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly imageService: ProductImageService,
-    private readonly combinationService: ProductCombinationService,
-    private readonly stockService: ProductStockService,
+    private readonly searchService: ProductSearchService,
   ) {}
 
   async findAll(filter?: ProductFilterInput) {
@@ -77,10 +69,14 @@ export class ProductService {
       slug,
       categoryId: categoryId ?? null,
     };
-    return this.prisma.product.create({
+    const product = await this.prisma.product.create({
       data,
       include: { category: true },
     });
+
+    await this.searchService.syncProduct(product);
+
+    return product;
   }
 
   async update(
@@ -93,87 +89,81 @@ export class ProductService {
       ...(linkRewrite ? { slug: linkRewrite } : {}),
       ...(categoryId !== undefined ? { categoryId: categoryId ?? null } : {}),
     };
-    return this.prisma.product.update({
+    const product = await this.prisma.product.update({
       where: { id },
       data,
       include: this.productInclude(),
     });
+
+    await this.searchService.syncProduct(product);
+
+    return product;
   }
 
   async delete(id: string) {
     await this.findById(id);
-    return this.prisma.product.delete({ where: { id } });
+    const result = await this.prisma.product.delete({ where: { id } });
+
+    await this.searchService.deleteProduct(id);
+
+    return result;
   }
 
   async duplicate(id: string) {
     const product = await this.findById(id);
     const {
-      name, description, descriptionShort, price, wholesalePrice,
-      availableForOrder, showPrice, metaTitle, metaDescription, canonicalUrl,
-      isVirtual, downloadableFileUrl, weight, width, height, depth, categoryId
+      name,
+      description,
+      descriptionShort,
+      price,
+      wholesalePrice,
+      availableForOrder,
+      showPrice,
+      metaTitle,
+      metaDescription,
+      canonicalUrl,
+      isVirtual,
+      downloadableFileUrl,
+      weight,
+      width,
+      height,
+      depth,
+      categoryId,
     } = product;
 
     const newName = `${name} (Copy)`;
     const newSlug = this.generateSlug(newName);
     const newReference = `${product.reference}-COPY-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
 
-    return this.prisma.product.create({
+    const duplicatedProduct = await this.prisma.product.create({
       data: {
-        name: newName, slug: newSlug, reference: newReference, active: false,
-        description, descriptionShort, price, wholesalePrice,
-        availableForOrder, showPrice, metaTitle, metaDescription, canonicalUrl,
-        isVirtual, downloadableFileUrl, weight, width, height, depth, categoryId
+        name: newName,
+        slug: newSlug,
+        reference: newReference,
+        active: false,
+        description,
+        descriptionShort,
+        price,
+        wholesalePrice,
+        availableForOrder,
+        showPrice,
+        metaTitle,
+        metaDescription,
+        canonicalUrl,
+        isVirtual,
+        downloadableFileUrl,
+        weight,
+        width,
+        height,
+        depth,
+        categoryId,
       },
       include: this.productInclude(),
     });
-  }
 
-  addImage(productId: string, input: CreateProductImageInput) {
-    return this.imageService.addImage(productId, input);
-  }
+    await this.searchService.syncProduct(duplicatedProduct);
 
-  removeImage(imageId: string) {
-    return this.imageService.removeImage(imageId);
-  }
-
-  setCoverImage(imageId: string) {
-    return this.imageService.setCoverImage(imageId);
-  }
-
-  addCombination(productId: string, input: CreateProductCombinationInput) {
-    return this.combinationService.addCombination(productId, input);
-  }
-
-  updateCombination(id: string, input: UpdateProductCombinationInput) {
-    return this.combinationService.updateCombination(id, input);
-  }
-
-  deleteCombination(id: string) {
-    return this.combinationService.deleteCombination(id);
-  }
-
-  updateStock(input: UpdateStockInput) {
-    return this.stockService.updateStock(input);
-  }
-
-  incrementStock(stockId: string, quantity: number) {
-    return this.stockService.incrementStock(stockId, quantity);
-  }
-
-  decrementStock(stockId: string, quantity: number) {
-    return this.stockService.decrementStock(stockId, quantity);
-  }
-
-  checkAvailability(
-    productId?: string,
-    combinationId?: string,
-    quantity?: number,
-  ) {
-    return this.stockService.checkAvailability(
-      productId,
-      combinationId,
-      quantity,
-    );
+    return duplicatedProduct;
   }
 
   private productInclude(): Prisma.ProductInclude {

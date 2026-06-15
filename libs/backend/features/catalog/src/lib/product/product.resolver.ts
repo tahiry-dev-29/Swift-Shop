@@ -17,9 +17,18 @@ import {
   ProductFilterInput,
 } from './dto';
 
+import { ProductCombinationService } from './product-combination.service';
+import { ProductImageService } from './product-image.service';
+import { ProductStockService } from './product-stock.service';
+
 @Resolver(() => ProductType)
 export class ProductResolver {
-  constructor(private readonly productService: ProductService) {}
+  constructor(
+    private readonly productService: ProductService,
+    private readonly imageService: ProductImageService,
+    private readonly combinationService: ProductCombinationService,
+    private readonly stockService: ProductStockService,
+  ) {}
 
   @Query(() => ProductListType)
   async products(
@@ -66,13 +75,13 @@ export class ProductResolver {
     @Args('productId', { type: () => ID }) productId: string,
     @Args('input') input: CreateProductImageInput,
   ) {
-    return this.productService.addImage(productId, input);
+    return this.imageService.addImage(productId, input);
   }
 
   @Mutation(() => ProductImageType)
   @UseGuards(SuperAdminGuard)
   async removeProductImage(@Args('id', { type: () => ID }) id: string) {
-    return this.productService.removeImage(id);
+    return this.imageService.removeImage(id);
   }
 
   @Mutation(() => ProductImageType)
@@ -80,7 +89,7 @@ export class ProductResolver {
   async setProductCoverImage(
     @Args('imageId', { type: () => ID }) imageId: string,
   ) {
-    return this.productService.setCoverImage(imageId);
+    return this.imageService.setCoverImage(imageId);
   }
 
   @Mutation(() => ProductCombinationType)
@@ -89,7 +98,7 @@ export class ProductResolver {
     @Args('productId', { type: () => ID }) productId: string,
     @Args('input') input: CreateProductCombinationInput,
   ) {
-    return this.productService.addCombination(productId, input);
+    return this.combinationService.addCombination(productId, input);
   }
 
   @Mutation(() => ProductCombinationType)
@@ -98,19 +107,19 @@ export class ProductResolver {
     @Args('id', { type: () => ID }) id: string,
     @Args('input') input: UpdateProductCombinationInput,
   ) {
-    return this.productService.updateCombination(id, input);
+    return this.combinationService.updateCombination(id, input);
   }
 
   @Mutation(() => ProductCombinationType)
   @UseGuards(SuperAdminGuard)
   async deleteProductCombination(@Args('id', { type: () => ID }) id: string) {
-    return this.productService.deleteCombination(id);
+    return this.combinationService.deleteCombination(id);
   }
 
   @Mutation(() => StockType)
   @UseGuards(SuperAdminGuard)
   async updateStock(@Args('input') input: UpdateStockInput) {
-    return this.productService.updateStock(input);
+    return this.stockService.updateStock(input);
   }
 
   @Mutation(() => StockType)
@@ -119,7 +128,7 @@ export class ProductResolver {
     @Args('stockId', { type: () => ID }) stockId: string,
     @Args('quantity', { type: () => Int }) quantity: number,
   ) {
-    return this.productService.incrementStock(stockId, quantity);
+    return this.stockService.incrementStock(stockId, quantity);
   }
 
   @Mutation(() => StockType)
@@ -128,7 +137,7 @@ export class ProductResolver {
     @Args('stockId', { type: () => ID }) stockId: string,
     @Args('quantity', { type: () => Int }) quantity: number,
   ) {
-    return this.productService.decrementStock(stockId, quantity);
+    return this.stockService.decrementStock(stockId, quantity);
   }
 
   @Query(() => Boolean)
@@ -138,7 +147,7 @@ export class ProductResolver {
     combinationId?: string,
     @Args('quantity', { type: () => Int, nullable: true }) quantity?: number,
   ) {
-    return this.productService.checkAvailability(
+    return this.stockService.checkAvailability(
       productId,
       combinationId,
       quantity,

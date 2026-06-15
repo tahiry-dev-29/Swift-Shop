@@ -10,12 +10,18 @@ import { ProductImageService } from './product/product-image.service';
 import { ProductResolver } from './product/product.resolver';
 import { ProductCombinationResolver } from './product/product-combination.resolver';
 import { ProductStockService } from './product/product-stock.service';
+import { ProductSearchService } from './product/product-search.service';
+import { ProductBulkService } from './product/product-bulk.service';
+import { StockAlertService } from './product/stock-alert.service';
+import { ProductBulkController } from './product/product-bulk.controller';
 import { FeatureService } from './feature/feature.service';
 import { FeatureResolver } from './feature/feature.resolver';
 import { CatalogDataLoader } from './catalog.dataloader';
+import { SearchModule } from '@dima-new/backend/search';
 
 @Module({
-  imports: [DataAccessPrismaModule],
+  imports: [DataAccessPrismaModule, SearchModule],
+  controllers: [ProductBulkController],
   providers: [
     CatalogDataLoader,
     CategoryService,
@@ -28,6 +34,9 @@ import { CatalogDataLoader } from './catalog.dataloader';
     ProductResolver,
     ProductCombinationResolver,
     ProductStockService,
+    ProductSearchService,
+    ProductBulkService,
+    StockAlertService,
     FeatureService,
     FeatureResolver,
   ],
@@ -43,6 +52,8 @@ import { CatalogDataLoader } from './catalog.dataloader';
     ProductResolver,
     ProductCombinationResolver,
     ProductStockService,
+    ProductSearchService,
+    ProductBulkService,
     FeatureService,
     FeatureResolver,
   ],

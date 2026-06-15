@@ -38,7 +38,10 @@
         "libs/backend/features/pricing/src/index.ts"
       ],
       "@dima-new/backend/cart": ["libs/backend/features/cart/src/index.ts"],
-      "@dima-new/backend/order": ["libs/backend/features/order/src/index.ts"]
+      "@dima-new/backend/order": ["libs/backend/features/order/src/index.ts"],
+      "@dima-new/backend/search": ["libs/backend/core/search/src/index.ts"],
+      "meilisearch": ["node_modules/meilisearch/dist/index.d.ts"],
+      "@dima-new/backend/media": ["./libs/backend/core/media/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
