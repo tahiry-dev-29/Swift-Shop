@@ -34,7 +34,7 @@ export function sha1PasswordParts(password: string): {
   suffix: string;
 } {
   // SHA-1 required by HIBP k-anonymity protocol — not used as a secure password hash
-  const sha1 = createHash('sha1').update(password).digest('hex').toUpperCase(); // codeql[js/insufficient-password-hash] codeql[js/weak-cryptographic-algorithm]
+  const sha1 = createHash('sha1').update(password).digest('hex').toUpperCase(); // codeql[js/weak-cryptographic-algorithm] // codeql[js/insufficient-password-hash] // lgtm[js/weak-cryptographic-algorithm] // lgtm[js/insufficient-password-hash]
 
   return {
     prefix: sha1.slice(0, 5),
