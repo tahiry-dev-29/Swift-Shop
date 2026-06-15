@@ -38,7 +38,10 @@
         "libs/backend/features/pricing/src/index.ts"
       ],
       "@dima-new/backend/cart": ["libs/backend/features/cart/src/index.ts"],
-      "@dima-new/backend/order": ["libs/backend/features/order/src/index.ts"]
+      "@dima-new/backend/order": ["libs/backend/features/order/src/index.ts"],
+      "@dima-new/backend/settings": [
+        "./libs/backend/features/settings/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

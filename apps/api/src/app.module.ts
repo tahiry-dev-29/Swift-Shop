@@ -16,6 +16,7 @@ import { CatalogModule } from '@dima-new/backend/catalog';
 import { PricingModule } from '@dima-new/backend/pricing';
 import { CartModule } from '@dima-new/backend/cart';
 import { OrderModule } from '@dima-new/backend/order';
+import { SettingsModule } from '@dima-new/backend/settings';
 import { validateEnvironment } from './config/env.validation';
 import { HealthModule } from './health/health.module';
 
@@ -55,6 +56,7 @@ import { HealthModule } from './health/health.module';
     PricingModule,
     CartModule,
     OrderModule,
+    SettingsModule,
     HealthModule,
   ],
   controllers: [AppController],

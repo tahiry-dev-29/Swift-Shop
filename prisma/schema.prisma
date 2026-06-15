@@ -26,9 +26,9 @@ model Role {
   dateUpd     DateTime  @updatedAt
   deletedAt   DateTime?
 
-  employees       Employee[]
-  employeeRoles   EmployeeRole[]
-  rolePermissions RolePermission[]
+  employees           Employee[]
+  employeeRoles       EmployeeRole[]
+  rolePermissions     RolePermission[]
   temporaryElevations TemporaryRoleElevation[]
 }
 
@@ -200,10 +200,10 @@ model Employee {
   lastname  String
 
   // Permissions & Access
-  roleId String
-  role   Role           @relation(fields: [roleId], references: [id])
-  roles  EmployeeRole[]
-  storeBranches EmployeeStoreBranch[]
+  roleId                  String
+  role                    Role                     @relation(fields: [roleId], references: [id])
+  roles                   EmployeeRole[]
+  storeBranches           EmployeeStoreBranch[]
   temporaryRoleElevations TemporaryRoleElevation[]
 
   // 2FA TOTP
@@ -764,4 +764,56 @@ model SpecificPrice {
   customer      Customer?           @relation(fields: [customerId], references: [id], onDelete: Cascade)
   customerGroup CustomerGroup?      @relation(fields: [customerGroupId], references: [id])
   country       Country?            @relation(fields: [countryId], references: [id])
+}
+
+// ----------------------------------------------------------------------
+// SETTINGS & CONFIGURATION
+// ----------------------------------------------------------------------
+
+model Setting {
+  id          String   @id @default(uuid())
+  key         String   @unique // e.g. "SHOP_NAME", "ALLOW_GUEST_CHECKOUT"
+  value       String // stored as string, parsed according to type
+  type        String   @default("string") // string, boolean, number, json
+  group       String   @default("general") // general, checkout, catalog, emails
+  isPublic    Boolean  @default(false) // accessible via front-office?
+  description String?
+  dateAdd     DateTime @default(now())
+  dateUpd     DateTime @updatedAt
+
+  @@index([group])
+}
+
+model Language {
+  id        String   @id @default(uuid())
+  name      String // English, Français
+  code      String   @unique // en, fr
+  locale    String // en-US, fr-FR
+  isDefault Boolean  @default(false)
+  active    Boolean  @default(true)
+  dateAdd   DateTime @default(now())
+  dateUpd   DateTime @updatedAt
+}
+
+model Currency {
+  id           String   @id @default(uuid())
+  name         String // US Dollar, Euro
+  code         String   @unique // USD, EUR
+  symbol       String // $, €
+  exchangeRate Decimal  @default(1.000000)
+  isDefault    Boolean  @default(false)
+  active       Boolean  @default(true)
+  dateAdd      DateTime @default(now())
+  dateUpd      DateTime @updatedAt
+}
+
+model Store {
+  id        String  @id @default(uuid())
+  name      String
+  url       String? // Store URL
+  active    Boolean @default(true)
+  isDefault Boolean @default(false)
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
 }
