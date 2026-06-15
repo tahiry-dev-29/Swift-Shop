@@ -105,6 +105,29 @@ export class ProductService {
     return this.prisma.product.delete({ where: { id } });
   }
 
+  async duplicate(id: string) {
+    const product = await this.findById(id);
+    const {
+      name, description, descriptionShort, price, wholesalePrice,
+      availableForOrder, showPrice, metaTitle, metaDescription, canonicalUrl,
+      isVirtual, downloadableFileUrl, weight, width, height, depth, categoryId
+    } = product;
+
+    const newName = `${name} (Copy)`;
+    const newSlug = this.generateSlug(newName);
+    const newReference = `${product.reference}-COPY-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+
+    return this.prisma.product.create({
+      data: {
+        name: newName, slug: newSlug, reference: newReference, active: false,
+        description, descriptionShort, price, wholesalePrice,
+        availableForOrder, showPrice, metaTitle, metaDescription, canonicalUrl,
+        isVirtual, downloadableFileUrl, weight, width, height, depth, categoryId
+      },
+      include: this.productInclude(),
+    });
+  }
+
   addImage(productId: string, input: CreateProductImageInput) {
     return this.imageService.addImage(productId, input);
   }
@@ -164,6 +187,11 @@ export class ProductService {
       },
       stock: true,
       category: true,
+      reviews: true,
+      labels: true,
+      relatedTo: { include: { relatedProduct: true } },
+      bundleItems: { include: { product: true } },
+      priceHistories: { orderBy: { dateAdd: 'desc' } },
     };
   }
 }

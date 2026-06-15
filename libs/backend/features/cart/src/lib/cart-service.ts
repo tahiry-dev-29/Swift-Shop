@@ -154,11 +154,11 @@ export class CartService {
   async mergeGuestCart(sessionId: string, customerId: string) {
     return this.cartMergeService.mergeGuestCart(sessionId, customerId);
   }
-  async applyCoupon(cartId: string, code: string) {
+  async applyCoupon(_cartId: string, _code: string) {
     throw new NotImplementedException('Coupon system not implemented yet');
   }
 
-  async removeCoupon(cartId: string) {
+  async removeCoupon(_cartId: string) {
     throw new NotImplementedException('Coupon system not implemented yet');
   }
 }
