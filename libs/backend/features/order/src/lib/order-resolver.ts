@@ -9,6 +9,8 @@ import {
 import { UseGuards } from '@nestjs/common';
 import { CustomerGuard, CurrentUser } from '@dima-new/backend/auth';
 import { OrderService } from './order-service';
+import { OrderCreationService } from './order-creation.service';
+import { OrderActionService } from './order-action.service';
 import {
   OrderType,
   CreateOrderInput,
@@ -24,7 +26,11 @@ interface CurrentUserType {
 
 @Resolver(() => OrderType)
 export class OrderResolver {
-  constructor(private readonly orderService: OrderService) {}
+  constructor(
+    private readonly orderService: OrderService,
+    private readonly orderCreationService: OrderCreationService,
+    private readonly orderActionService: OrderActionService,
+  ) {}
 
   @Query(() => [OrderType])
   @UseGuards(CustomerGuard)
@@ -52,7 +58,7 @@ export class OrderResolver {
     @CurrentUser() user: CurrentUserType,
     @Args('input') input: CreateOrderInput,
   ) {
-    return this.orderService.createOrderFromCart(
+    return this.orderCreationService.createOrderFromCart(
       input.cartId,
       user.id,
       input.deliveryAddressId,
@@ -67,7 +73,7 @@ export class OrderResolver {
     @CurrentUser() user: CurrentUserType,
   ) {
     const order = await this.orderService.getOrder(id, user.id);
-    return this.orderService.cancelOrder(order.id, user.id);
+    return this.orderActionService.cancelOrder(order.id, user.id);
   }
 
   @Mutation(() => ReturnType)
@@ -77,7 +83,7 @@ export class OrderResolver {
     @Args('input') input: RequestReturnInput,
   ) {
     const order = await this.orderService.getOrder(input.orderId, user.id);
-    return this.orderService.requestReturn(
+    return this.orderActionService.requestReturn(
       order.id,
       input.items,
       input.customerNotes,
@@ -107,6 +113,7 @@ export class OrderResolver {
       payload.orderStatusChanged.id === variables.orderId,
   })
   orderStatusChanged(@Args('orderId', { type: () => ID }) orderId: string) {
+    void orderId; // Fix unused variable
     // In a real app, this would use a PubSub instance.
     // e.g., return pubSub.asyncIterableIterator('orderStatusChanged');
     return (async function* () {

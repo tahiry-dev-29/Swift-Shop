@@ -62,7 +62,7 @@ vitest.config.*.timestamp*
 # tools
 
 # todos
-todos/
+#todos/
 
 .claude/worktrees
 .nx/polygraph
