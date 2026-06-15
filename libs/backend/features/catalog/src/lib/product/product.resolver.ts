@@ -59,6 +59,12 @@ export class ProductResolver {
 
   @Mutation(() => ProductType)
   @UseGuards(SuperAdminGuard)
+  async duplicateProduct(@Args('id', { type: () => ID }) id: string) {
+    return this.productService.duplicate(id);
+  }
+
+  @Mutation(() => ProductType)
+  @UseGuards(SuperAdminGuard)
   async deleteProduct(@Args('id', { type: () => ID }) id: string) {
     return this.productService.delete(id);
   }
