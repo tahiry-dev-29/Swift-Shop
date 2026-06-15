@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@dima-new/data-access-prisma';
+import { RedisService } from '@dima-new/backend/auth';
 import {
   mapPermission,
   permissionActions,
@@ -13,27 +14,60 @@ export class RolePermissionService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly roleService: RoleService,
+    private readonly redisService: RedisService,
   ) {}
 
-  async assignPermissionsToRole(roleId: string, permissionIds: string[]) {
+  async assignPermissionsToRole(
+    roleId: string,
+    permissionIds: string[],
+    actorId?: string,
+  ) {
     await this.ensureMutableRole(roleId);
-    await this.prisma.$transaction(
-      permissionIds.map((permissionId) =>
+    await this.prisma.$transaction([
+      ...permissionIds.map((permissionId) =>
         this.prisma.rolePermission.upsert({
           where: { roleId_permissionId: { roleId, permissionId } },
           update: {},
           create: { roleId, permissionId },
         }),
       ),
-    );
+      ...permissionIds.map((permissionId) =>
+        this.prisma.permissionAuditLog.create({
+          data: {
+            action: 'permission.grant',
+            actorId,
+            roleId,
+            permissionId,
+          },
+        }),
+      ),
+    ]);
+    await this.invalidateRolePermissionCache(roleId);
     return this.roleService.findByIdOrThrow(roleId);
   }
 
-  async revokePermissionsFromRole(roleId: string, permissionIds: string[]) {
+  async revokePermissionsFromRole(
+    roleId: string,
+    permissionIds: string[],
+    actorId?: string,
+  ) {
     await this.ensureMutableRole(roleId);
-    await this.prisma.rolePermission.deleteMany({
-      where: { roleId, permissionId: { in: permissionIds } },
-    });
+    await this.prisma.$transaction([
+      this.prisma.rolePermission.deleteMany({
+        where: { roleId, permissionId: { in: permissionIds } },
+      }),
+      ...permissionIds.map((permissionId) =>
+        this.prisma.permissionAuditLog.create({
+          data: {
+            action: 'permission.revoke',
+            actorId,
+            roleId,
+            permissionId,
+          },
+        }),
+      ),
+    ]);
+    await this.invalidateRolePermissionCache(roleId);
     return this.roleService.findByIdOrThrow(roleId);
   }
 
@@ -68,6 +102,14 @@ export class RolePermissionService {
             },
           },
         },
+        temporaryRoleElevations: {
+          where: { revokedAt: null, expiresAt: { gt: new Date() } },
+          include: {
+            role: {
+              include: { rolePermissions: { include: { permission: true } } },
+            },
+          },
+        },
       },
     });
     if (!employee) throw new Error('Employee not found');
@@ -80,6 +122,14 @@ export class RolePermissionService {
     );
     for (const employeeRole of employee.roles) {
       for (const item of employeeRole.role.rolePermissions) {
+        permissionsBySlug.set(
+          item.permission.slug,
+          mapPermission(item.permission),
+        );
+      }
+    }
+    for (const elevation of employee.temporaryRoleElevations) {
+      for (const item of elevation.role.rolePermissions) {
         permissionsBySlug.set(
           item.permission.slug,
           mapPermission(item.permission),
@@ -109,5 +159,28 @@ export class RolePermissionService {
     if (role.isSystem && role.slug === 'super_admin') {
       throw new Error('SuperAdmin permissions cannot be modified');
     }
+  }
+
+  private async invalidateRolePermissionCache(roleId: string) {
+    const now = new Date();
+    const employees = await this.prisma.employee.findMany({
+      where: {
+        OR: [
+          { roleId },
+          { roles: { some: { roleId } } },
+          {
+            temporaryRoleElevations: {
+              some: { roleId, revokedAt: null, expiresAt: { gt: now } },
+            },
+          },
+        ],
+      },
+      select: { id: true },
+    });
+    await Promise.all(
+      employees.map((employee) =>
+        this.redisService.delete(`permissions:employee:${employee.id}`),
+      ),
+    );
   }
 }

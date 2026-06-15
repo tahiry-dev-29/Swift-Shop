@@ -23,6 +23,7 @@ import {
 } from './infrastructure/rate-limiting/rate-limit.constants';
 import { RedisThrottlerStorage } from './infrastructure/rate-limiting/redis-throttler-storage';
 import { PermissionGuard } from './guards/permission-guard';
+import { StoreBranchScopeGuard } from './guards/store-branch-scope.guard';
 
 @Module({
   imports: [
@@ -65,8 +66,16 @@ import { PermissionGuard } from './guards/permission-guard';
     TrustedDeviceService,
     TwoFactorService,
     PermissionGuard,
+    StoreBranchScopeGuard,
     SmtpService,
   ],
-  exports: [AuthService, JwtModule, RedisService, PermissionGuard, SmtpService],
+  exports: [
+    AuthService,
+    JwtModule,
+    RedisService,
+    PermissionGuard,
+    StoreBranchScopeGuard,
+    SmtpService,
+  ],
 })
 export class AuthModule {}

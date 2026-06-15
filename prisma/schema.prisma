@@ -26,9 +26,10 @@ model Role {
   dateUpd     DateTime  @updatedAt
   deletedAt   DateTime?
 
-  employees       Employee[]
-  employeeRoles   EmployeeRole[]
-  rolePermissions RolePermission[]
+  employees           Employee[]
+  employeeRoles       EmployeeRole[]
+  rolePermissions     RolePermission[]
+  temporaryElevations TemporaryRoleElevation[]
 }
 
 model Permission {
@@ -57,6 +58,22 @@ model RolePermission {
   @@index([permissionId])
 }
 
+model PermissionAuditLog {
+  id           String   @id @default(uuid())
+  action       String
+  actorId      String?
+  employeeId   String?
+  roleId       String?
+  permissionId String?
+  metadata     Json?
+  dateAdd      DateTime @default(now())
+
+  @@index([action, dateAdd])
+  @@index([actorId])
+  @@index([employeeId])
+  @@index([roleId])
+}
+
 model EmployeeRole {
   employeeId String
   roleId     String
@@ -67,6 +84,49 @@ model EmployeeRole {
 
   @@id([employeeId, roleId])
   @@index([roleId])
+}
+
+model StoreBranch {
+  id          String    @id @default(uuid())
+  name        String
+  code        String    @unique
+  description String?
+  active      Boolean   @default(true)
+  dateAdd     DateTime  @default(now())
+  dateUpd     DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  employeeAssignments EmployeeStoreBranch[]
+}
+
+model EmployeeStoreBranch {
+  employeeId String
+  branchId   String
+  dateAdd    DateTime @default(now())
+
+  employee Employee    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  branch   StoreBranch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@id([employeeId, branchId])
+  @@index([branchId])
+}
+
+model TemporaryRoleElevation {
+  id         String    @id @default(uuid())
+  employeeId String
+  roleId     String
+  actorId    String?
+  reason     String?
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  dateAdd    DateTime  @default(now())
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  role     Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId, expiresAt])
+  @@index([roleId])
+  @@index([actorId])
 }
 
 // ----------------------------------------------------------------------
@@ -140,9 +200,11 @@ model Employee {
   lastname  String
 
   // Permissions & Access
-  roleId String
-  role   Role           @relation(fields: [roleId], references: [id])
-  roles  EmployeeRole[]
+  roleId                  String
+  role                    Role                     @relation(fields: [roleId], references: [id])
+  roles                   EmployeeRole[]
+  storeBranches           EmployeeStoreBranch[]
+  temporaryRoleElevations TemporaryRoleElevation[]
 
   // 2FA TOTP
   twoFactorEnabled Boolean @default(false)
@@ -702,4 +764,56 @@ model SpecificPrice {
   customer      Customer?           @relation(fields: [customerId], references: [id], onDelete: Cascade)
   customerGroup CustomerGroup?      @relation(fields: [customerGroupId], references: [id])
   country       Country?            @relation(fields: [countryId], references: [id])
+}
+
+// ----------------------------------------------------------------------
+// SETTINGS & CONFIGURATION
+// ----------------------------------------------------------------------
+
+model Setting {
+  id          String   @id @default(uuid())
+  key         String   @unique // e.g. "SHOP_NAME", "ALLOW_GUEST_CHECKOUT"
+  value       String // stored as string, parsed according to type
+  type        String   @default("string") // string, boolean, number, json
+  group       String   @default("general") // general, checkout, catalog, emails
+  isPublic    Boolean  @default(false) // accessible via front-office?
+  description String?
+  dateAdd     DateTime @default(now())
+  dateUpd     DateTime @updatedAt
+
+  @@index([group])
+}
+
+model Language {
+  id        String   @id @default(uuid())
+  name      String // English, Français
+  code      String   @unique // en, fr
+  locale    String // en-US, fr-FR
+  isDefault Boolean  @default(false)
+  active    Boolean  @default(true)
+  dateAdd   DateTime @default(now())
+  dateUpd   DateTime @updatedAt
+}
+
+model Currency {
+  id           String   @id @default(uuid())
+  name         String // US Dollar, Euro
+  code         String   @unique // USD, EUR
+  symbol       String // $, €
+  exchangeRate Decimal  @default(1.000000)
+  isDefault    Boolean  @default(false)
+  active       Boolean  @default(true)
+  dateAdd      DateTime @default(now())
+  dateUpd      DateTime @updatedAt
+}
+
+model Store {
+  id        String  @id @default(uuid())
+  name      String
+  url       String? // Store URL
+  active    Boolean @default(true)
+  isDefault Boolean @default(false)
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
 }
