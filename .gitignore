@@ -61,9 +61,6 @@ vitest.config.*.timestamp*
 
 # tools
 
-# todos
-#todos/
-
 .claude/worktrees
 .nx/polygraph
 .nx/self-healing

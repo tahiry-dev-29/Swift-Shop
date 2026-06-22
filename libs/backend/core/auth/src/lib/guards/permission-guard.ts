@@ -8,6 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { PrismaService } from '@dima-new/data-access-prisma';
 import { REQUIRED_PERMISSION_KEY } from '../decorators/require-permission.decorator';
+import { RedisService } from '../infrastructure/storage/redis.service';
 import { EmployeeGuard } from './employee-guard';
 
 type RequestWithUser = {
@@ -20,9 +21,12 @@ type RequestWithUser = {
 
 @Injectable()
 export class PermissionGuard extends EmployeeGuard implements CanActivate {
+  private readonly cacheTtlSeconds = 300;
+
   constructor(
     private readonly reflector: Reflector,
     private readonly prisma: PrismaService,
+    private readonly redisService: RedisService,
   ) {
     super();
   }
@@ -55,21 +59,54 @@ export class PermissionGuard extends EmployeeGuard implements CanActivate {
       return true;
     }
 
-    const permissionCount = await this.prisma.rolePermission.count({
-      where: {
-        permission: { slug: requiredPermission },
-        role: {
-          OR: [
-            { employees: { some: { id: user.id } } },
-            { employeeRoles: { some: { employeeId: user.id } } },
-          ],
-          deletedAt: null,
-        },
-      },
-    });
-    if (permissionCount === 0) {
+    const permissions = await this.getCachedPermissionSlugs(user.id);
+    if (!permissions.includes(requiredPermission)) {
       throw new ForbiddenException(`Missing permission: ${requiredPermission}`);
     }
     return true;
+  }
+
+  private async getCachedPermissionSlugs(employeeId: string) {
+    const cacheKey = this.permissionCacheKey(employeeId);
+    const cached = await this.redisService.getJson<string[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    const now = new Date();
+    const rolePermissions = await this.prisma.rolePermission.findMany({
+      where: {
+        role: {
+          deletedAt: null,
+          OR: [
+            { employees: { some: { id: employeeId } } },
+            { employeeRoles: { some: { employeeId } } },
+            {
+              temporaryElevations: {
+                some: {
+                  employeeId,
+                  revokedAt: null,
+                  expiresAt: { gt: now },
+                },
+              },
+            },
+          ],
+        },
+      },
+      select: { permission: { select: { slug: true } } },
+    });
+    const permissions = Array.from(
+      new Set(rolePermissions.map((item) => item.permission.slug)),
+    ).sort();
+    await this.redisService.setJson(
+      cacheKey,
+      permissions,
+      this.cacheTtlSeconds,
+    );
+    return permissions;
+  }
+
+  private permissionCacheKey(employeeId: string) {
+    return `permissions:employee:${employeeId}`;
   }
 }

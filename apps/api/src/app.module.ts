@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { LoggerModule } from 'nestjs-pino';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
@@ -19,13 +20,24 @@ import { CartModule } from '@dima-new/backend/cart';
 import { OrderModule } from '@dima-new/backend/order';
 import { SearchModule } from '@dima-new/backend/search';
 import { MediaModule } from '@dima-new/backend/media';
+import { SettingsModule } from '@dima-new/backend/settings';
 import { validateEnvironment } from './config/env.validation';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       validate: validateEnvironment,
+    }),
+
+    LoggerModule.forRoot({
+      pinoHttp: {
+        transport:
+          process.env['NODE_ENV'] !== 'production'
+            ? { target: 'pino-pretty' }
+            : undefined,
+      },
     }),
 
     GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -57,6 +69,8 @@ import { validateEnvironment } from './config/env.validation';
     OrderModule,
     SearchModule,
     MediaModule,
+    SettingsModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
