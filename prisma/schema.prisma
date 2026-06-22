@@ -172,6 +172,7 @@ model Customer {
   oauthAccounts  OAuthAccount[]
   trustedDevices TrustedDevice[]
   orderNotes     OrderNote[]
+  productReviews ProductReview[]
 }
 
 model CustomerGroup {
@@ -222,6 +223,7 @@ model Employee {
   trustedDevices TrustedDevice[]
   orderNotes     OrderNote[]
   orderHistories OrderHistory[]
+  priceHistories PriceHistory[]
 }
 
 model AuditLog {
@@ -424,13 +426,16 @@ model Product {
   // SEO
   metaTitle       String?
   metaDescription String?
+  canonicalUrl    String?
   slug            String  @unique
 
-  // Physical
-  weight Decimal  @default(0.00)
-  width  Decimal?
-  height Decimal?
-  depth  Decimal?
+  // Physical & Virtual
+  isVirtual           Boolean  @default(false)
+  downloadableFileUrl String?
+  weight              Decimal  @default(0.00)
+  width               Decimal?
+  height              Decimal?
+  depth               Decimal?
 
   // Relations
   categoryId String?
@@ -443,8 +448,73 @@ model Product {
   specificPrices SpecificPrice[]
   cartItems      CartItem[]
 
+  reviews        ProductReview[]
+  labels         ProductLabel[]
+  relatedTo      RelatedProduct[] @relation("ProductToRelated")
+  relatedFrom    RelatedProduct[] @relation("RelatedToProduct")
+  bundleItems    BundleItem[]     @relation("BundleToItems")
+  partOfBundles  BundleItem[]     @relation("ItemToBundle")
+  priceHistories PriceHistory[]
+
   dateAdd DateTime @default(now())
   dateUpd DateTime @updatedAt
+}
+
+model ProductReview {
+  id         String  @id @default(uuid())
+  productId  String
+  customerId String
+  rating     Int     @default(5)
+  comment    String?
+  active     Boolean @default(false) // Wait for moderation
+
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
+}
+
+model ProductLabel {
+  id       String    @id @default(uuid())
+  name     String
+  color    String    @default("#000000")
+  products Product[]
+}
+
+model RelatedProduct {
+  id               String @id @default(uuid())
+  productId        String
+  relatedProductId String
+
+  product        Product @relation("ProductToRelated", fields: [productId], references: [id], onDelete: Cascade)
+  relatedProduct Product @relation("RelatedToProduct", fields: [relatedProductId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, relatedProductId])
+}
+
+model BundleItem {
+  id        String @id @default(uuid())
+  bundleId  String
+  productId String
+  quantity  Int    @default(1)
+
+  bundle  Product @relation("BundleToItems", fields: [bundleId], references: [id], onDelete: Cascade)
+  product Product @relation("ItemToBundle", fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([bundleId, productId])
+}
+
+model PriceHistory {
+  id         String   @id @default(uuid())
+  productId  String
+  employeeId String?
+  oldPrice   Decimal
+  newPrice   Decimal
+  dateAdd    DateTime @default(now())
+
+  product  Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  employee Employee? @relation(fields: [employeeId], references: [id], onDelete: SetNull)
 }
 
 model ProductImage {

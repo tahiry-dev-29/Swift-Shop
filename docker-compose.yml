@@ -72,12 +72,16 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-tahiry}:${POSTGRES_PASSWORD:-tahiry4534}@postgres:5432/${POSTGRES_DB:-dima_new}?schema=public
       JWT_SECRET: ${JWT_SECRET}
       REDIS_URL: redis://redis:6379
+      MEILISEARCH_HOST: ${MEILISEARCH_HOST:-http://meilisearch:7700}
+      MEILISEARCH_API_KEY: ${MEILISEARCH_API_KEY:-masterKey}
     ports:
       - '${DOCKER_PORT_API:-3010}:${PORT_API:-3000}'
     depends_on:
       postgres:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      meilisearch:
         condition: service_healthy
     networks:
       - dima-new-network
@@ -117,9 +121,31 @@ services:
     networks:
       - dima-new-network
 
+  meilisearch:
+    image: getmeili/meilisearch:v1.7
+    container_name: dima-new-meilisearch
+    restart: unless-stopped
+    environment:
+      MEILI_MASTER_KEY: ${MEILISEARCH_API_KEY:-masterKey}
+      MEILI_NO_ANALYTICS: true
+      MEILI_ENV: development
+    ports:
+      - '${DOCKER_PORT_MEILISEARCH:-7710}:7700'
+    volumes:
+      - dima-new-meilisearch-data:/meili_data
+    healthcheck:
+      test: [CMD, wget, -q, -O, -, http://localhost:7700/health]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - dima-new-network
+
 volumes:
   dima-new-postgres-data:
     name: dima-new-postgres-data
+  dima-new-meilisearch-data:
+    name: dima-new-meilisearch-data
 
 networks:
   dima-new-network:

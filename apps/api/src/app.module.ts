@@ -4,6 +4,8 @@ import { LoggerModule } from 'nestjs-pino';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DataAccessPrismaModule } from '@dima-new/data-access-prisma';
@@ -16,6 +18,8 @@ import { CatalogModule } from '@dima-new/backend/catalog';
 import { PricingModule } from '@dima-new/backend/pricing';
 import { CartModule } from '@dima-new/backend/cart';
 import { OrderModule } from '@dima-new/backend/order';
+import { SearchModule } from '@dima-new/backend/search';
+import { MediaModule } from '@dima-new/backend/media';
 import { SettingsModule } from '@dima-new/backend/settings';
 import { validateEnvironment } from './config/env.validation';
 import { HealthModule } from './health/health.module';
@@ -45,6 +49,13 @@ import { HealthModule } from './health/health.module';
       context: ({ req, res }) => ({ req, res }),
     }),
 
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'public'),
+      serveRoot: '/',
+    }),
+
+    ScheduleModule.forRoot(),
+
     DataAccessPrismaModule,
 
     AuthModule,
@@ -56,6 +67,8 @@ import { HealthModule } from './health/health.module';
     PricingModule,
     CartModule,
     OrderModule,
+    SearchModule,
+    MediaModule,
     SettingsModule,
     HealthModule,
   ],
