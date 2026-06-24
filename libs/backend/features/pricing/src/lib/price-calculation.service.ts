@@ -101,7 +101,7 @@ export class PriceCalculationService {
     const factor = Math.pow(10, roundingDecimals);
     priceHT = Math.round(priceHT * factor) / factor;
     taxAmount = Math.round(taxAmount * factor) / factor;
-    priceTTC = Math.round(priceTTC * factor) / factor;
+    priceTTC = Math.round((priceHT + taxAmount) * factor) / factor;
 
     return {
       basePrice,
