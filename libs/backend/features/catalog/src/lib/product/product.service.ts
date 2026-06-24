@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@dima-new/prisma-client';
 import { PrismaService } from '@dima-new/data-access-prisma';
 import {
   CreateProductInput,

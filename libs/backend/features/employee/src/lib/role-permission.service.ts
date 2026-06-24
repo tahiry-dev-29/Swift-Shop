@@ -114,7 +114,7 @@ export class RolePermissionService {
     });
     if (!employee) throw new Error('Employee not found');
 
-    const permissionsBySlug = new Map(
+    const permissionsBySlug = new Map<string, ReturnType<typeof mapPermission>>(
       employee.role.rolePermissions.map((item) => [
         item.permission.slug,
         mapPermission(item.permission),

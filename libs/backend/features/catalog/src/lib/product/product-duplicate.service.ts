@@ -54,31 +54,20 @@ export class ProductDuplicateService {
     // 2. Duplicate Images
     if (source.images.length > 0) {
       await this.prisma.productImage.createMany({
-        data: source.images.map((imgItem) => {
-          const img = { ...imgItem } as Record<string, unknown>;
-          delete img['id'];
-          delete img['productId'];
-          delete img['dateAdd'];
-          return {
-            ...img,
-            productId: duplicatedProduct.id,
-          } as import('@prisma/client').Prisma.ProductImageCreateManyInput;
-        }),
+        data: source.images.map(({ id, productId, dateAdd, ...img }) => ({
+          ...img,
+          productId: duplicatedProduct.id,
+        })),
       });
     }
 
     // 3. Duplicate Features
     if (source.features.length > 0) {
       await this.prisma.productFeature.createMany({
-        data: source.features.map((featItem) => {
-          const feat = { ...featItem } as Record<string, unknown>;
-          delete feat['id'];
-          delete feat['productId'];
-          return {
-            ...feat,
-            productId: duplicatedProduct.id,
-          } as import('@prisma/client').Prisma.ProductFeatureCreateManyInput;
-        }),
+        data: source.features.map(({ id, productId, ...feat }) => ({
+          ...feat,
+          productId: duplicatedProduct.id,
+        })),
       });
     }
 
@@ -110,15 +99,10 @@ export class ProductDuplicateService {
       // Duplicate Combination Attributes
       if (combo.attributes.length > 0) {
         await this.prisma.productCombinationAttribute.createMany({
-          data: combo.attributes.map((attrItem) => {
-            const attr = { ...attrItem } as Record<string, unknown>;
-            delete attr['id'];
-            delete attr['combinationId'];
-            return {
-              ...attr,
-              combinationId: duplicatedCombo.id,
-            } as import('@prisma/client').Prisma.ProductCombinationAttributeCreateManyInput;
-          }),
+          data: combo.attributes.map(({ id, combinationId, ...attr }) => ({
+            ...attr,
+            combinationId: duplicatedCombo.id,
+          })),
         });
       }
 

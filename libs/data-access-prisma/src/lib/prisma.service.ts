@@ -1,11 +1,16 @@
 import { INestApplication, Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@dima-new/prisma-client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 
+/** PrismaClient is an interface in v7 — use a castable constructor type to allow extends. */
+const PrismaBase = PrismaClient as unknown as new (options: {
+  adapter: PrismaPg;
+}) => PrismaClient;
+
 @Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit {
+export class PrismaService extends PrismaBase implements OnModuleInit {
   constructor(configService: ConfigService) {
     const pool = new Pool({
       connectionString: configService.getOrThrow<string>('DATABASE_URL'),

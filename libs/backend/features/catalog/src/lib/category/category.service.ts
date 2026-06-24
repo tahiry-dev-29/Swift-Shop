@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@dima-new/data-access-prisma';
+import { Prisma } from '@dima-new/prisma-client';
 import {
   CreateCategoryInput,
   UpdateCategoryInput,
@@ -75,12 +76,12 @@ export class CategoryService {
 
   async getConnection(args: CategoryConnectionArgs) {
     const take = args.first || 20;
-    const where: import('@prisma/client').Prisma.CategoryWhereInput = {
+    const where: Prisma.CategoryWhereInput = {
       deletedAt: null,
     };
     if (args.parentId) where.parentId = args.parentId;
 
-    const query: import('@prisma/client').Prisma.CategoryFindManyArgs = {
+    const query: Prisma.CategoryFindManyArgs = {
       where,
       take: take + 1,
       orderBy: { position: 'asc' },
@@ -161,7 +162,7 @@ export class CategoryService {
   }
 
   async update(id: string, input: UpdateCategoryInput) {
-    const data: import('@prisma/client').Prisma.CategoryUpdateInput = {
+    const data: Prisma.CategoryUpdateInput = {
       ...input,
     };
     if (input.name && !input.slug) {

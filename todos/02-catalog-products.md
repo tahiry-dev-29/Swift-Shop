@@ -69,7 +69,7 @@
 - [x] GraphQL Query `calculatePrice` (returns `priceHT`, `taxAmount`, `priceTTC`)
 - [x] CRUD SpecificPrice (Create, Update, Delete)
 
-### 💰 Pricing Engine — Advanced Robustness
+### 💰 Pricing Engine — Advanced Robustnes
 
 - [ ] **Tiered pricing** — price breaks by quantity
 - [ ] **Coupon / Voucher system** — discount codes
