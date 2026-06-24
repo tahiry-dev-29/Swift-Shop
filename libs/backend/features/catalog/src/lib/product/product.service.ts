@@ -7,12 +7,14 @@ import {
   ProductFilterInput,
 } from './dto';
 import { ProductSearchService } from './product-search.service';
+import { ProductRepository } from './product.repository';
 
 @Injectable()
 export class ProductService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly searchService: ProductSearchService,
+    private readonly productRepo: ProductRepository,
   ) {}
 
   async findAll(filter?: ProductFilterInput) {
@@ -28,20 +30,20 @@ export class ProductService {
     }
 
     const [items, total] = await Promise.all([
-      this.prisma.product.findMany({
+      this.productRepo.findMany({
         where,
         skip: filter?.skip ?? 0,
         take: filter?.take ?? 20,
         include: this.productInclude(),
         orderBy: { dateAdd: 'desc' },
       }),
-      this.prisma.product.count({ where }),
+      this.productRepo.count({ where }),
     ]);
     return { items, total };
   }
 
   async findById(id: string) {
-    const product = await this.prisma.product.findUnique({
+    const product = await this.productRepo.findUnique({
       where: { id },
       include: this.productInclude(),
     });
@@ -69,7 +71,7 @@ export class ProductService {
       slug,
       categoryId: categoryId ?? null,
     };
-    const product = await this.prisma.product.create({
+    const product = await this.productRepo.create({
       data,
       include: { category: true },
     });
@@ -108,7 +110,7 @@ export class ProductService {
       ...(linkRewrite ? { slug: linkRewrite } : {}),
       ...(categoryId !== undefined ? { categoryId: categoryId ?? null } : {}),
     };
-    const product = await this.prisma.product.update({
+    const product = await this.productRepo.update({
       where: { id },
       data,
       include: this.productInclude(),
@@ -121,7 +123,7 @@ export class ProductService {
 
   async delete(id: string) {
     await this.findById(id);
-    const result = await this.prisma.product.delete({ where: { id } });
+    const result = await this.productRepo.delete({ where: { id } });
 
     await this.searchService.deleteProduct(id);
 

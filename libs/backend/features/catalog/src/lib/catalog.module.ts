@@ -17,6 +17,7 @@ import { StockAlertService } from './product/stock-alert.service';
 import { StockAlertRepository } from './product/stock-alert.repository';
 import { StockAlertFormatter } from './product/stock-alert.formatter';
 import { ProductBulkController } from './product/product-bulk.controller';
+import { ProductRepository } from './product/product.repository';
 import { FeatureService } from './feature/feature.service';
 import { FeatureResolver } from './feature/feature.resolver';
 import { CatalogDataLoader } from './catalog.dataloader';
@@ -43,6 +44,7 @@ import { SearchModule } from '@dima-new/backend/search';
     StockAlertService,
     StockAlertRepository,
     StockAlertFormatter,
+    ProductRepository,
     FeatureService,
     FeatureResolver,
   ],
@@ -61,6 +63,7 @@ import { SearchModule } from '@dima-new/backend/search';
     ProductStockService,
     ProductSearchService,
     ProductBulkService,
+    ProductRepository,
     FeatureService,
     FeatureResolver,
   ],

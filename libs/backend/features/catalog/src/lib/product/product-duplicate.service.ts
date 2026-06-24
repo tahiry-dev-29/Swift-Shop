@@ -1,16 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '@dima-new/data-access-prisma';
+import { ProductRepository } from './product.repository';
 import { ProductService } from './product.service';
 
 @Injectable()
 export class ProductDuplicateService {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly productRepo: ProductRepository,
     private readonly productService: ProductService,
   ) {}
 
   async duplicate(id: string) {
-    const source = await this.prisma.product.findUnique({
+    const source = await this.productRepo.findUnique({
       where: { id },
       include: {
         images: true,
@@ -33,7 +33,7 @@ export class ProductDuplicateService {
     const newSlug = `${source.slug}-copy-${Math.random().toString(36).substring(2, 6)}`;
 
     // 1. Create Product
-    const duplicatedProduct = await this.prisma.product.create({
+    const duplicatedProduct = await this.productRepo.create({
       data: {
         name: `${source.name} (Copy)`,
         reference: newReference,
@@ -53,27 +53,33 @@ export class ProductDuplicateService {
 
     // 2. Duplicate Images
     if (source.images.length > 0) {
-      await this.prisma.productImage.createMany({
-        data: source.images.map(({ id, productId, dateAdd, ...img }) => ({
-          ...img,
-          productId: duplicatedProduct.id,
-        })),
+      await this.productRepo.createManyImages({
+        data: source.images.map(
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          ({ id, productId, dateAdd, ...img }) => ({
+            ...img,
+            productId: duplicatedProduct.id,
+          }),
+        ),
       });
     }
 
     // 3. Duplicate Features
     if (source.features.length > 0) {
-      await this.prisma.productFeature.createMany({
-        data: source.features.map(({ id, productId, ...feat }) => ({
-          ...feat,
-          productId: duplicatedProduct.id,
-        })),
+      await this.productRepo.createManyFeatures({
+        data: source.features.map(
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          ({ id, productId, ...feat }) => ({
+            ...feat,
+            productId: duplicatedProduct.id,
+          }),
+        ),
       });
     }
 
     // 4. Duplicate Stock (if simple product)
     if (source.stock) {
-      await this.prisma.stock.create({
+      await this.productRepo.createStock({
         data: {
           productId: duplicatedProduct.id,
           quantity: source.stock.quantity,
@@ -85,7 +91,7 @@ export class ProductDuplicateService {
 
     // 5. Duplicate Combinations
     for (const combo of source.combinations) {
-      const duplicatedCombo = await this.prisma.productCombination.create({
+      const duplicatedCombo = await this.productRepo.createCombination({
         data: {
           productId: duplicatedProduct.id,
           reference: combo.reference ? `${combo.reference}-DUP` : null,
@@ -98,17 +104,20 @@ export class ProductDuplicateService {
 
       // Duplicate Combination Attributes
       if (combo.attributes.length > 0) {
-        await this.prisma.productCombinationAttribute.createMany({
-          data: combo.attributes.map(({ id, combinationId, ...attr }) => ({
-            ...attr,
-            combinationId: duplicatedCombo.id,
-          })),
+        await this.productRepo.createManyCombinationAttributes({
+          data: combo.attributes.map(
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            ({ id, combinationId, ...attr }) => ({
+              ...attr,
+              combinationId: duplicatedCombo.id,
+            }),
+          ),
         });
       }
 
       // Duplicate Combination Stock
       if (combo.stock) {
-        await this.prisma.stock.create({
+        await this.productRepo.createStock({
           data: {
             combinationId: duplicatedCombo.id,
             quantity: combo.stock.quantity,
