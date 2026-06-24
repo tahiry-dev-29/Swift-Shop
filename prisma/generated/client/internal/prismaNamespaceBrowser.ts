@@ -100,7 +100,12 @@ export const ModelName = {
   Setting: 'Setting',
   Language: 'Language',
   Currency: 'Currency',
-  Store: 'Store'
+  Store: 'Store',
+  Voucher: 'Voucher',
+  OrderVoucher: 'OrderVoucher',
+  FlashSale: 'FlashSale',
+  LoyaltyAccount: 'LoyaltyAccount',
+  LoyaltyHistory: 'LoyaltyHistory'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -735,7 +740,8 @@ export const SpecificPriceScalarFieldEnum = {
   dateTo: 'dateTo',
   priority: 'priority',
   active: 'active',
-  dateAdd: 'dateAdd'
+  dateAdd: 'dateAdd',
+  flashSaleId: 'flashSaleId'
 } as const
 
 export type SpecificPriceScalarFieldEnum = (typeof SpecificPriceScalarFieldEnum)[keyof typeof SpecificPriceScalarFieldEnum]
@@ -778,6 +784,8 @@ export const CurrencyScalarFieldEnum = {
   exchangeRate: 'exchangeRate',
   isDefault: 'isDefault',
   active: 'active',
+  roundingRule: 'roundingRule',
+  roundingDecimals: 'roundingDecimals',
   dateAdd: 'dateAdd',
   dateUpd: 'dateUpd'
 } as const
@@ -796,6 +804,70 @@ export const StoreScalarFieldEnum = {
 } as const
 
 export type StoreScalarFieldEnum = (typeof StoreScalarFieldEnum)[keyof typeof StoreScalarFieldEnum]
+
+
+export const VoucherScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  description: 'description',
+  reductionType: 'reductionType',
+  reduction: 'reduction',
+  minOrderAmount: 'minOrderAmount',
+  maxUses: 'maxUses',
+  usedCount: 'usedCount',
+  dateFrom: 'dateFrom',
+  dateTo: 'dateTo',
+  active: 'active',
+  customerId: 'customerId',
+  dateAdd: 'dateAdd',
+  dateUpd: 'dateUpd'
+} as const
+
+export type VoucherScalarFieldEnum = (typeof VoucherScalarFieldEnum)[keyof typeof VoucherScalarFieldEnum]
+
+
+export const OrderVoucherScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  voucherId: 'voucherId'
+} as const
+
+export type OrderVoucherScalarFieldEnum = (typeof OrderVoucherScalarFieldEnum)[keyof typeof OrderVoucherScalarFieldEnum]
+
+
+export const FlashSaleScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  dateFrom: 'dateFrom',
+  dateTo: 'dateTo',
+  active: 'active',
+  dateAdd: 'dateAdd',
+  dateUpd: 'dateUpd'
+} as const
+
+export type FlashSaleScalarFieldEnum = (typeof FlashSaleScalarFieldEnum)[keyof typeof FlashSaleScalarFieldEnum]
+
+
+export const LoyaltyAccountScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  points: 'points'
+} as const
+
+export type LoyaltyAccountScalarFieldEnum = (typeof LoyaltyAccountScalarFieldEnum)[keyof typeof LoyaltyAccountScalarFieldEnum]
+
+
+export const LoyaltyHistoryScalarFieldEnum = {
+  id: 'id',
+  loyaltyAccountId: 'loyaltyAccountId',
+  orderId: 'orderId',
+  points: 'points',
+  reason: 'reason',
+  dateAdd: 'dateAdd'
+} as const
+
+export type LoyaltyHistoryScalarFieldEnum = (typeof LoyaltyHistoryScalarFieldEnum)[keyof typeof LoyaltyHistoryScalarFieldEnum]
 
 
 export const SortOrder = {

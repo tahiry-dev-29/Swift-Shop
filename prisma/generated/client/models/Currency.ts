@@ -28,10 +28,12 @@ export type AggregateCurrency = {
 
 export type CurrencyAvgAggregateOutputType = {
   exchangeRate: runtime.Decimal | null
+  roundingDecimals: number | null
 }
 
 export type CurrencySumAggregateOutputType = {
   exchangeRate: runtime.Decimal | null
+  roundingDecimals: number | null
 }
 
 export type CurrencyMinAggregateOutputType = {
@@ -42,6 +44,8 @@ export type CurrencyMinAggregateOutputType = {
   exchangeRate: runtime.Decimal | null
   isDefault: boolean | null
   active: boolean | null
+  roundingRule: string | null
+  roundingDecimals: number | null
   dateAdd: Date | null
   dateUpd: Date | null
 }
@@ -54,6 +58,8 @@ export type CurrencyMaxAggregateOutputType = {
   exchangeRate: runtime.Decimal | null
   isDefault: boolean | null
   active: boolean | null
+  roundingRule: string | null
+  roundingDecimals: number | null
   dateAdd: Date | null
   dateUpd: Date | null
 }
@@ -66,6 +72,8 @@ export type CurrencyCountAggregateOutputType = {
   exchangeRate: number
   isDefault: number
   active: number
+  roundingRule: number
+  roundingDecimals: number
   dateAdd: number
   dateUpd: number
   _all: number
@@ -74,10 +82,12 @@ export type CurrencyCountAggregateOutputType = {
 
 export type CurrencyAvgAggregateInputType = {
   exchangeRate?: true
+  roundingDecimals?: true
 }
 
 export type CurrencySumAggregateInputType = {
   exchangeRate?: true
+  roundingDecimals?: true
 }
 
 export type CurrencyMinAggregateInputType = {
@@ -88,6 +98,8 @@ export type CurrencyMinAggregateInputType = {
   exchangeRate?: true
   isDefault?: true
   active?: true
+  roundingRule?: true
+  roundingDecimals?: true
   dateAdd?: true
   dateUpd?: true
 }
@@ -100,6 +112,8 @@ export type CurrencyMaxAggregateInputType = {
   exchangeRate?: true
   isDefault?: true
   active?: true
+  roundingRule?: true
+  roundingDecimals?: true
   dateAdd?: true
   dateUpd?: true
 }
@@ -112,6 +126,8 @@ export type CurrencyCountAggregateInputType = {
   exchangeRate?: true
   isDefault?: true
   active?: true
+  roundingRule?: true
+  roundingDecimals?: true
   dateAdd?: true
   dateUpd?: true
   _all?: true
@@ -211,6 +227,8 @@ export type CurrencyGroupByOutputType = {
   exchangeRate: runtime.Decimal
   isDefault: boolean
   active: boolean
+  roundingRule: string
+  roundingDecimals: number
   dateAdd: Date
   dateUpd: Date
   _count: CurrencyCountAggregateOutputType | null
@@ -246,6 +264,8 @@ export type CurrencyWhereInput = {
   exchangeRate?: Prisma.DecimalFilter<"Currency"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDefault?: Prisma.BoolFilter<"Currency"> | boolean
   active?: Prisma.BoolFilter<"Currency"> | boolean
+  roundingRule?: Prisma.StringFilter<"Currency"> | string
+  roundingDecimals?: Prisma.IntFilter<"Currency"> | number
   dateAdd?: Prisma.DateTimeFilter<"Currency"> | Date | string
   dateUpd?: Prisma.DateTimeFilter<"Currency"> | Date | string
 }
@@ -258,6 +278,8 @@ export type CurrencyOrderByWithRelationInput = {
   exchangeRate?: Prisma.SortOrder
   isDefault?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  roundingRule?: Prisma.SortOrder
+  roundingDecimals?: Prisma.SortOrder
   dateAdd?: Prisma.SortOrder
   dateUpd?: Prisma.SortOrder
 }
@@ -273,6 +295,8 @@ export type CurrencyWhereUniqueInput = Prisma.AtLeast<{
   exchangeRate?: Prisma.DecimalFilter<"Currency"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDefault?: Prisma.BoolFilter<"Currency"> | boolean
   active?: Prisma.BoolFilter<"Currency"> | boolean
+  roundingRule?: Prisma.StringFilter<"Currency"> | string
+  roundingDecimals?: Prisma.IntFilter<"Currency"> | number
   dateAdd?: Prisma.DateTimeFilter<"Currency"> | Date | string
   dateUpd?: Prisma.DateTimeFilter<"Currency"> | Date | string
 }, "id" | "code">
@@ -285,6 +309,8 @@ export type CurrencyOrderByWithAggregationInput = {
   exchangeRate?: Prisma.SortOrder
   isDefault?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  roundingRule?: Prisma.SortOrder
+  roundingDecimals?: Prisma.SortOrder
   dateAdd?: Prisma.SortOrder
   dateUpd?: Prisma.SortOrder
   _count?: Prisma.CurrencyCountOrderByAggregateInput
@@ -305,6 +331,8 @@ export type CurrencyScalarWhereWithAggregatesInput = {
   exchangeRate?: Prisma.DecimalWithAggregatesFilter<"Currency"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDefault?: Prisma.BoolWithAggregatesFilter<"Currency"> | boolean
   active?: Prisma.BoolWithAggregatesFilter<"Currency"> | boolean
+  roundingRule?: Prisma.StringWithAggregatesFilter<"Currency"> | string
+  roundingDecimals?: Prisma.IntWithAggregatesFilter<"Currency"> | number
   dateAdd?: Prisma.DateTimeWithAggregatesFilter<"Currency"> | Date | string
   dateUpd?: Prisma.DateTimeWithAggregatesFilter<"Currency"> | Date | string
 }
@@ -317,6 +345,8 @@ export type CurrencyCreateInput = {
   exchangeRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDefault?: boolean
   active?: boolean
+  roundingRule?: string
+  roundingDecimals?: number
   dateAdd?: Date | string
   dateUpd?: Date | string
 }
@@ -329,6 +359,8 @@ export type CurrencyUncheckedCreateInput = {
   exchangeRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDefault?: boolean
   active?: boolean
+  roundingRule?: string
+  roundingDecimals?: number
   dateAdd?: Date | string
   dateUpd?: Date | string
 }
@@ -341,6 +373,8 @@ export type CurrencyUpdateInput = {
   exchangeRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  roundingRule?: Prisma.StringFieldUpdateOperationsInput | string
+  roundingDecimals?: Prisma.IntFieldUpdateOperationsInput | number
   dateAdd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dateUpd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -353,6 +387,8 @@ export type CurrencyUncheckedUpdateInput = {
   exchangeRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  roundingRule?: Prisma.StringFieldUpdateOperationsInput | string
+  roundingDecimals?: Prisma.IntFieldUpdateOperationsInput | number
   dateAdd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dateUpd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -365,6 +401,8 @@ export type CurrencyCreateManyInput = {
   exchangeRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDefault?: boolean
   active?: boolean
+  roundingRule?: string
+  roundingDecimals?: number
   dateAdd?: Date | string
   dateUpd?: Date | string
 }
@@ -377,6 +415,8 @@ export type CurrencyUpdateManyMutationInput = {
   exchangeRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  roundingRule?: Prisma.StringFieldUpdateOperationsInput | string
+  roundingDecimals?: Prisma.IntFieldUpdateOperationsInput | number
   dateAdd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dateUpd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -389,6 +429,8 @@ export type CurrencyUncheckedUpdateManyInput = {
   exchangeRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  roundingRule?: Prisma.StringFieldUpdateOperationsInput | string
+  roundingDecimals?: Prisma.IntFieldUpdateOperationsInput | number
   dateAdd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dateUpd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -401,12 +443,15 @@ export type CurrencyCountOrderByAggregateInput = {
   exchangeRate?: Prisma.SortOrder
   isDefault?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  roundingRule?: Prisma.SortOrder
+  roundingDecimals?: Prisma.SortOrder
   dateAdd?: Prisma.SortOrder
   dateUpd?: Prisma.SortOrder
 }
 
 export type CurrencyAvgOrderByAggregateInput = {
   exchangeRate?: Prisma.SortOrder
+  roundingDecimals?: Prisma.SortOrder
 }
 
 export type CurrencyMaxOrderByAggregateInput = {
@@ -417,6 +462,8 @@ export type CurrencyMaxOrderByAggregateInput = {
   exchangeRate?: Prisma.SortOrder
   isDefault?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  roundingRule?: Prisma.SortOrder
+  roundingDecimals?: Prisma.SortOrder
   dateAdd?: Prisma.SortOrder
   dateUpd?: Prisma.SortOrder
 }
@@ -429,12 +476,15 @@ export type CurrencyMinOrderByAggregateInput = {
   exchangeRate?: Prisma.SortOrder
   isDefault?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  roundingRule?: Prisma.SortOrder
+  roundingDecimals?: Prisma.SortOrder
   dateAdd?: Prisma.SortOrder
   dateUpd?: Prisma.SortOrder
 }
 
 export type CurrencySumOrderByAggregateInput = {
   exchangeRate?: Prisma.SortOrder
+  roundingDecimals?: Prisma.SortOrder
 }
 
 
@@ -447,6 +497,8 @@ export type CurrencySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   exchangeRate?: boolean
   isDefault?: boolean
   active?: boolean
+  roundingRule?: boolean
+  roundingDecimals?: boolean
   dateAdd?: boolean
   dateUpd?: boolean
 }, ExtArgs["result"]["currency"]>
@@ -459,6 +511,8 @@ export type CurrencySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   exchangeRate?: boolean
   isDefault?: boolean
   active?: boolean
+  roundingRule?: boolean
+  roundingDecimals?: boolean
   dateAdd?: boolean
   dateUpd?: boolean
 }, ExtArgs["result"]["currency"]>
@@ -471,6 +525,8 @@ export type CurrencySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   exchangeRate?: boolean
   isDefault?: boolean
   active?: boolean
+  roundingRule?: boolean
+  roundingDecimals?: boolean
   dateAdd?: boolean
   dateUpd?: boolean
 }, ExtArgs["result"]["currency"]>
@@ -483,11 +539,13 @@ export type CurrencySelectScalar = {
   exchangeRate?: boolean
   isDefault?: boolean
   active?: boolean
+  roundingRule?: boolean
+  roundingDecimals?: boolean
   dateAdd?: boolean
   dateUpd?: boolean
 }
 
-export type CurrencyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "code" | "symbol" | "exchangeRate" | "isDefault" | "active" | "dateAdd" | "dateUpd", ExtArgs["result"]["currency"]>
+export type CurrencyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "code" | "symbol" | "exchangeRate" | "isDefault" | "active" | "roundingRule" | "roundingDecimals" | "dateAdd" | "dateUpd", ExtArgs["result"]["currency"]>
 
 export type $CurrencyPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Currency"
@@ -500,6 +558,8 @@ export type $CurrencyPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     exchangeRate: runtime.Decimal
     isDefault: boolean
     active: boolean
+    roundingRule: string
+    roundingDecimals: number
     dateAdd: Date
     dateUpd: Date
   }, ExtArgs["result"]["currency"]>
@@ -932,6 +992,8 @@ export interface CurrencyFieldRefs {
   readonly exchangeRate: Prisma.FieldRef<"Currency", 'Decimal'>
   readonly isDefault: Prisma.FieldRef<"Currency", 'Boolean'>
   readonly active: Prisma.FieldRef<"Currency", 'Boolean'>
+  readonly roundingRule: Prisma.FieldRef<"Currency", 'String'>
+  readonly roundingDecimals: Prisma.FieldRef<"Currency", 'Int'>
   readonly dateAdd: Prisma.FieldRef<"Currency", 'DateTime'>
   readonly dateUpd: Prisma.FieldRef<"Currency", 'DateTime'>
 }

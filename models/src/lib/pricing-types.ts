@@ -42,6 +42,8 @@ export interface PriceResult {
   taxRate: number;
   taxAmount: number;
   priceTTC: number;
+  currencyId?: string;
+  exchangeRate?: number;
 }
 
 // Price calculation input params
@@ -50,5 +52,6 @@ export interface CalculatePriceParams {
   combinationId?: string;
   customerId?: string;
   countryId: string;
+  currencyId?: string;
   quantity?: number;
 }

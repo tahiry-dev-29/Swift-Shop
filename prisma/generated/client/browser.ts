@@ -267,3 +267,28 @@ export type Currency = Prisma.CurrencyModel
  * 
  */
 export type Store = Prisma.StoreModel
+/**
+ * Model Voucher
+ * 
+ */
+export type Voucher = Prisma.VoucherModel
+/**
+ * Model OrderVoucher
+ * 
+ */
+export type OrderVoucher = Prisma.OrderVoucherModel
+/**
+ * Model FlashSale
+ * 
+ */
+export type FlashSale = Prisma.FlashSaleModel
+/**
+ * Model LoyaltyAccount
+ * 
+ */
+export type LoyaltyAccount = Prisma.LoyaltyAccountModel
+/**
+ * Model LoyaltyHistory
+ * 
+ */
+export type LoyaltyHistory = Prisma.LoyaltyHistoryModel

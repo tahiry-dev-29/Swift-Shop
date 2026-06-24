@@ -53,6 +53,7 @@ export type SpecificPriceMinAggregateOutputType = {
   priority: number | null
   active: boolean | null
   dateAdd: Date | null
+  flashSaleId: string | null
 }
 
 export type SpecificPriceMaxAggregateOutputType = {
@@ -70,6 +71,7 @@ export type SpecificPriceMaxAggregateOutputType = {
   priority: number | null
   active: boolean | null
   dateAdd: Date | null
+  flashSaleId: string | null
 }
 
 export type SpecificPriceCountAggregateOutputType = {
@@ -87,6 +89,7 @@ export type SpecificPriceCountAggregateOutputType = {
   priority: number
   active: number
   dateAdd: number
+  flashSaleId: number
   _all: number
 }
 
@@ -118,6 +121,7 @@ export type SpecificPriceMinAggregateInputType = {
   priority?: true
   active?: true
   dateAdd?: true
+  flashSaleId?: true
 }
 
 export type SpecificPriceMaxAggregateInputType = {
@@ -135,6 +139,7 @@ export type SpecificPriceMaxAggregateInputType = {
   priority?: true
   active?: true
   dateAdd?: true
+  flashSaleId?: true
 }
 
 export type SpecificPriceCountAggregateInputType = {
@@ -152,6 +157,7 @@ export type SpecificPriceCountAggregateInputType = {
   priority?: true
   active?: true
   dateAdd?: true
+  flashSaleId?: true
   _all?: true
 }
 
@@ -256,6 +262,7 @@ export type SpecificPriceGroupByOutputType = {
   priority: number
   active: boolean
   dateAdd: Date
+  flashSaleId: string | null
   _count: SpecificPriceCountAggregateOutputType | null
   _avg: SpecificPriceAvgAggregateOutputType | null
   _sum: SpecificPriceSumAggregateOutputType | null
@@ -296,11 +303,13 @@ export type SpecificPriceWhereInput = {
   priority?: Prisma.IntFilter<"SpecificPrice"> | number
   active?: Prisma.BoolFilter<"SpecificPrice"> | boolean
   dateAdd?: Prisma.DateTimeFilter<"SpecificPrice"> | Date | string
+  flashSaleId?: Prisma.StringNullableFilter<"SpecificPrice"> | string | null
   product?: Prisma.XOR<Prisma.ProductNullableScalarRelationFilter, Prisma.ProductWhereInput> | null
   combination?: Prisma.XOR<Prisma.ProductCombinationNullableScalarRelationFilter, Prisma.ProductCombinationWhereInput> | null
   customer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
   customerGroup?: Prisma.XOR<Prisma.CustomerGroupNullableScalarRelationFilter, Prisma.CustomerGroupWhereInput> | null
   country?: Prisma.XOR<Prisma.CountryNullableScalarRelationFilter, Prisma.CountryWhereInput> | null
+  flashSale?: Prisma.XOR<Prisma.FlashSaleNullableScalarRelationFilter, Prisma.FlashSaleWhereInput> | null
 }
 
 export type SpecificPriceOrderByWithRelationInput = {
@@ -318,11 +327,13 @@ export type SpecificPriceOrderByWithRelationInput = {
   priority?: Prisma.SortOrder
   active?: Prisma.SortOrder
   dateAdd?: Prisma.SortOrder
+  flashSaleId?: Prisma.SortOrderInput | Prisma.SortOrder
   product?: Prisma.ProductOrderByWithRelationInput
   combination?: Prisma.ProductCombinationOrderByWithRelationInput
   customer?: Prisma.CustomerOrderByWithRelationInput
   customerGroup?: Prisma.CustomerGroupOrderByWithRelationInput
   country?: Prisma.CountryOrderByWithRelationInput
+  flashSale?: Prisma.FlashSaleOrderByWithRelationInput
 }
 
 export type SpecificPriceWhereUniqueInput = Prisma.AtLeast<{
@@ -343,11 +354,13 @@ export type SpecificPriceWhereUniqueInput = Prisma.AtLeast<{
   priority?: Prisma.IntFilter<"SpecificPrice"> | number
   active?: Prisma.BoolFilter<"SpecificPrice"> | boolean
   dateAdd?: Prisma.DateTimeFilter<"SpecificPrice"> | Date | string
+  flashSaleId?: Prisma.StringNullableFilter<"SpecificPrice"> | string | null
   product?: Prisma.XOR<Prisma.ProductNullableScalarRelationFilter, Prisma.ProductWhereInput> | null
   combination?: Prisma.XOR<Prisma.ProductCombinationNullableScalarRelationFilter, Prisma.ProductCombinationWhereInput> | null
   customer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
   customerGroup?: Prisma.XOR<Prisma.CustomerGroupNullableScalarRelationFilter, Prisma.CustomerGroupWhereInput> | null
   country?: Prisma.XOR<Prisma.CountryNullableScalarRelationFilter, Prisma.CountryWhereInput> | null
+  flashSale?: Prisma.XOR<Prisma.FlashSaleNullableScalarRelationFilter, Prisma.FlashSaleWhereInput> | null
 }, "id">
 
 export type SpecificPriceOrderByWithAggregationInput = {
@@ -365,6 +378,7 @@ export type SpecificPriceOrderByWithAggregationInput = {
   priority?: Prisma.SortOrder
   active?: Prisma.SortOrder
   dateAdd?: Prisma.SortOrder
+  flashSaleId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.SpecificPriceCountOrderByAggregateInput
   _avg?: Prisma.SpecificPriceAvgOrderByAggregateInput
   _max?: Prisma.SpecificPriceMaxOrderByAggregateInput
@@ -390,6 +404,7 @@ export type SpecificPriceScalarWhereWithAggregatesInput = {
   priority?: Prisma.IntWithAggregatesFilter<"SpecificPrice"> | number
   active?: Prisma.BoolWithAggregatesFilter<"SpecificPrice"> | boolean
   dateAdd?: Prisma.DateTimeWithAggregatesFilter<"SpecificPrice"> | Date | string
+  flashSaleId?: Prisma.StringNullableWithAggregatesFilter<"SpecificPrice"> | string | null
 }
 
 export type SpecificPriceCreateInput = {
@@ -407,6 +422,7 @@ export type SpecificPriceCreateInput = {
   customer?: Prisma.CustomerCreateNestedOneWithoutSpecificPricesInput
   customerGroup?: Prisma.CustomerGroupCreateNestedOneWithoutSpecificPricesInput
   country?: Prisma.CountryCreateNestedOneWithoutSpecificPricesInput
+  flashSale?: Prisma.FlashSaleCreateNestedOneWithoutSpecificPricesInput
 }
 
 export type SpecificPriceUncheckedCreateInput = {
@@ -424,6 +440,7 @@ export type SpecificPriceUncheckedCreateInput = {
   priority?: number
   active?: boolean
   dateAdd?: Date | string
+  flashSaleId?: string | null
 }
 
 export type SpecificPriceUpdateInput = {
@@ -441,6 +458,7 @@ export type SpecificPriceUpdateInput = {
   customer?: Prisma.CustomerUpdateOneWithoutSpecificPricesNestedInput
   customerGroup?: Prisma.CustomerGroupUpdateOneWithoutSpecificPricesNestedInput
   country?: Prisma.CountryUpdateOneWithoutSpecificPricesNestedInput
+  flashSale?: Prisma.FlashSaleUpdateOneWithoutSpecificPricesNestedInput
 }
 
 export type SpecificPriceUncheckedUpdateInput = {
@@ -458,6 +476,7 @@ export type SpecificPriceUncheckedUpdateInput = {
   priority?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dateAdd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  flashSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type SpecificPriceCreateManyInput = {
@@ -475,6 +494,7 @@ export type SpecificPriceCreateManyInput = {
   priority?: number
   active?: boolean
   dateAdd?: Date | string
+  flashSaleId?: string | null
 }
 
 export type SpecificPriceUpdateManyMutationInput = {
@@ -504,6 +524,7 @@ export type SpecificPriceUncheckedUpdateManyInput = {
   priority?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dateAdd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  flashSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type SpecificPriceListRelationFilter = {
@@ -531,6 +552,7 @@ export type SpecificPriceCountOrderByAggregateInput = {
   priority?: Prisma.SortOrder
   active?: Prisma.SortOrder
   dateAdd?: Prisma.SortOrder
+  flashSaleId?: Prisma.SortOrder
 }
 
 export type SpecificPriceAvgOrderByAggregateInput = {
@@ -554,6 +576,7 @@ export type SpecificPriceMaxOrderByAggregateInput = {
   priority?: Prisma.SortOrder
   active?: Prisma.SortOrder
   dateAdd?: Prisma.SortOrder
+  flashSaleId?: Prisma.SortOrder
 }
 
 export type SpecificPriceMinOrderByAggregateInput = {
@@ -571,6 +594,7 @@ export type SpecificPriceMinOrderByAggregateInput = {
   priority?: Prisma.SortOrder
   active?: Prisma.SortOrder
   dateAdd?: Prisma.SortOrder
+  flashSaleId?: Prisma.SortOrder
 }
 
 export type SpecificPriceSumOrderByAggregateInput = {
@@ -789,6 +813,48 @@ export type SpecificPriceUncheckedUpdateManyWithoutCountryNestedInput = {
   deleteMany?: Prisma.SpecificPriceScalarWhereInput | Prisma.SpecificPriceScalarWhereInput[]
 }
 
+export type SpecificPriceCreateNestedManyWithoutFlashSaleInput = {
+  create?: Prisma.XOR<Prisma.SpecificPriceCreateWithoutFlashSaleInput, Prisma.SpecificPriceUncheckedCreateWithoutFlashSaleInput> | Prisma.SpecificPriceCreateWithoutFlashSaleInput[] | Prisma.SpecificPriceUncheckedCreateWithoutFlashSaleInput[]
+  connectOrCreate?: Prisma.SpecificPriceCreateOrConnectWithoutFlashSaleInput | Prisma.SpecificPriceCreateOrConnectWithoutFlashSaleInput[]
+  createMany?: Prisma.SpecificPriceCreateManyFlashSaleInputEnvelope
+  connect?: Prisma.SpecificPriceWhereUniqueInput | Prisma.SpecificPriceWhereUniqueInput[]
+}
+
+export type SpecificPriceUncheckedCreateNestedManyWithoutFlashSaleInput = {
+  create?: Prisma.XOR<Prisma.SpecificPriceCreateWithoutFlashSaleInput, Prisma.SpecificPriceUncheckedCreateWithoutFlashSaleInput> | Prisma.SpecificPriceCreateWithoutFlashSaleInput[] | Prisma.SpecificPriceUncheckedCreateWithoutFlashSaleInput[]
+  connectOrCreate?: Prisma.SpecificPriceCreateOrConnectWithoutFlashSaleInput | Prisma.SpecificPriceCreateOrConnectWithoutFlashSaleInput[]
+  createMany?: Prisma.SpecificPriceCreateManyFlashSaleInputEnvelope
+  connect?: Prisma.SpecificPriceWhereUniqueInput | Prisma.SpecificPriceWhereUniqueInput[]
+}
+
+export type SpecificPriceUpdateManyWithoutFlashSaleNestedInput = {
+  create?: Prisma.XOR<Prisma.SpecificPriceCreateWithoutFlashSaleInput, Prisma.SpecificPriceUncheckedCreateWithoutFlashSaleInput> | Prisma.SpecificPriceCreateWithoutFlashSaleInput[] | Prisma.SpecificPriceUncheckedCreateWithoutFlashSaleInput[]
+  connectOrCreate?: Prisma.SpecificPriceCreateOrConnectWithoutFlashSaleInput | Prisma.SpecificPriceCreateOrConnectWithoutFlashSaleInput[]
+  upsert?: Prisma.SpecificPriceUpsertWithWhereUniqueWithoutFlashSaleInput | Prisma.SpecificPriceUpsertWithWhereUniqueWithoutFlashSaleInput[]
+  createMany?: Prisma.SpecificPriceCreateManyFlashSaleInputEnvelope
+  set?: Prisma.SpecificPriceWhereUniqueInput | Prisma.SpecificPriceWhereUniqueInput[]
+  disconnect?: Prisma.SpecificPriceWhereUniqueInput | Prisma.SpecificPriceWhereUniqueInput[]
+  delete?: Prisma.SpecificPriceWhereUniqueInput | Prisma.SpecificPriceWhereUniqueInput[]
+  connect?: Prisma.SpecificPriceWhereUniqueInput | Prisma.SpecificPriceWhereUniqueInput[]
+  update?: Prisma.SpecificPriceUpdateWithWhereUniqueWithoutFlashSaleInput | Prisma.SpecificPriceUpdateWithWhereUniqueWithoutFlashSaleInput[]
+  updateMany?: Prisma.SpecificPriceUpdateManyWithWhereWithoutFlashSaleInput | Prisma.SpecificPriceUpdateManyWithWhereWithoutFlashSaleInput[]
+  deleteMany?: Prisma.SpecificPriceScalarWhereInput | Prisma.SpecificPriceScalarWhereInput[]
+}
+
+export type SpecificPriceUncheckedUpdateManyWithoutFlashSaleNestedInput = {
+  create?: Prisma.XOR<Prisma.SpecificPriceCreateWithoutFlashSaleInput, Prisma.SpecificPriceUncheckedCreateWithoutFlashSaleInput> | Prisma.SpecificPriceCreateWithoutFlashSaleInput[] | Prisma.SpecificPriceUncheckedCreateWithoutFlashSaleInput[]
+  connectOrCreate?: Prisma.SpecificPriceCreateOrConnectWithoutFlashSaleInput | Prisma.SpecificPriceCreateOrConnectWithoutFlashSaleInput[]
+  upsert?: Prisma.SpecificPriceUpsertWithWhereUniqueWithoutFlashSaleInput | Prisma.SpecificPriceUpsertWithWhereUniqueWithoutFlashSaleInput[]
+  createMany?: Prisma.SpecificPriceCreateManyFlashSaleInputEnvelope
+  set?: Prisma.SpecificPriceWhereUniqueInput | Prisma.SpecificPriceWhereUniqueInput[]
+  disconnect?: Prisma.SpecificPriceWhereUniqueInput | Prisma.SpecificPriceWhereUniqueInput[]
+  delete?: Prisma.SpecificPriceWhereUniqueInput | Prisma.SpecificPriceWhereUniqueInput[]
+  connect?: Prisma.SpecificPriceWhereUniqueInput | Prisma.SpecificPriceWhereUniqueInput[]
+  update?: Prisma.SpecificPriceUpdateWithWhereUniqueWithoutFlashSaleInput | Prisma.SpecificPriceUpdateWithWhereUniqueWithoutFlashSaleInput[]
+  updateMany?: Prisma.SpecificPriceUpdateManyWithWhereWithoutFlashSaleInput | Prisma.SpecificPriceUpdateManyWithWhereWithoutFlashSaleInput[]
+  deleteMany?: Prisma.SpecificPriceScalarWhereInput | Prisma.SpecificPriceScalarWhereInput[]
+}
+
 export type SpecificPriceCreateWithoutCustomerInput = {
   id?: string
   reductionType: string
@@ -803,6 +869,7 @@ export type SpecificPriceCreateWithoutCustomerInput = {
   combination?: Prisma.ProductCombinationCreateNestedOneWithoutSpecificPricesInput
   customerGroup?: Prisma.CustomerGroupCreateNestedOneWithoutSpecificPricesInput
   country?: Prisma.CountryCreateNestedOneWithoutSpecificPricesInput
+  flashSale?: Prisma.FlashSaleCreateNestedOneWithoutSpecificPricesInput
 }
 
 export type SpecificPriceUncheckedCreateWithoutCustomerInput = {
@@ -819,6 +886,7 @@ export type SpecificPriceUncheckedCreateWithoutCustomerInput = {
   priority?: number
   active?: boolean
   dateAdd?: Date | string
+  flashSaleId?: string | null
 }
 
 export type SpecificPriceCreateOrConnectWithoutCustomerInput = {
@@ -865,6 +933,7 @@ export type SpecificPriceScalarWhereInput = {
   priority?: Prisma.IntFilter<"SpecificPrice"> | number
   active?: Prisma.BoolFilter<"SpecificPrice"> | boolean
   dateAdd?: Prisma.DateTimeFilter<"SpecificPrice"> | Date | string
+  flashSaleId?: Prisma.StringNullableFilter<"SpecificPrice"> | string | null
 }
 
 export type SpecificPriceCreateWithoutCustomerGroupInput = {
@@ -881,6 +950,7 @@ export type SpecificPriceCreateWithoutCustomerGroupInput = {
   combination?: Prisma.ProductCombinationCreateNestedOneWithoutSpecificPricesInput
   customer?: Prisma.CustomerCreateNestedOneWithoutSpecificPricesInput
   country?: Prisma.CountryCreateNestedOneWithoutSpecificPricesInput
+  flashSale?: Prisma.FlashSaleCreateNestedOneWithoutSpecificPricesInput
 }
 
 export type SpecificPriceUncheckedCreateWithoutCustomerGroupInput = {
@@ -897,6 +967,7 @@ export type SpecificPriceUncheckedCreateWithoutCustomerGroupInput = {
   priority?: number
   active?: boolean
   dateAdd?: Date | string
+  flashSaleId?: string | null
 }
 
 export type SpecificPriceCreateOrConnectWithoutCustomerGroupInput = {
@@ -939,6 +1010,7 @@ export type SpecificPriceCreateWithoutProductInput = {
   customer?: Prisma.CustomerCreateNestedOneWithoutSpecificPricesInput
   customerGroup?: Prisma.CustomerGroupCreateNestedOneWithoutSpecificPricesInput
   country?: Prisma.CountryCreateNestedOneWithoutSpecificPricesInput
+  flashSale?: Prisma.FlashSaleCreateNestedOneWithoutSpecificPricesInput
 }
 
 export type SpecificPriceUncheckedCreateWithoutProductInput = {
@@ -955,6 +1027,7 @@ export type SpecificPriceUncheckedCreateWithoutProductInput = {
   priority?: number
   active?: boolean
   dateAdd?: Date | string
+  flashSaleId?: string | null
 }
 
 export type SpecificPriceCreateOrConnectWithoutProductInput = {
@@ -997,6 +1070,7 @@ export type SpecificPriceCreateWithoutCombinationInput = {
   customer?: Prisma.CustomerCreateNestedOneWithoutSpecificPricesInput
   customerGroup?: Prisma.CustomerGroupCreateNestedOneWithoutSpecificPricesInput
   country?: Prisma.CountryCreateNestedOneWithoutSpecificPricesInput
+  flashSale?: Prisma.FlashSaleCreateNestedOneWithoutSpecificPricesInput
 }
 
 export type SpecificPriceUncheckedCreateWithoutCombinationInput = {
@@ -1013,6 +1087,7 @@ export type SpecificPriceUncheckedCreateWithoutCombinationInput = {
   priority?: number
   active?: boolean
   dateAdd?: Date | string
+  flashSaleId?: string | null
 }
 
 export type SpecificPriceCreateOrConnectWithoutCombinationInput = {
@@ -1055,6 +1130,7 @@ export type SpecificPriceCreateWithoutCountryInput = {
   combination?: Prisma.ProductCombinationCreateNestedOneWithoutSpecificPricesInput
   customer?: Prisma.CustomerCreateNestedOneWithoutSpecificPricesInput
   customerGroup?: Prisma.CustomerGroupCreateNestedOneWithoutSpecificPricesInput
+  flashSale?: Prisma.FlashSaleCreateNestedOneWithoutSpecificPricesInput
 }
 
 export type SpecificPriceUncheckedCreateWithoutCountryInput = {
@@ -1071,6 +1147,7 @@ export type SpecificPriceUncheckedCreateWithoutCountryInput = {
   priority?: number
   active?: boolean
   dateAdd?: Date | string
+  flashSaleId?: string | null
 }
 
 export type SpecificPriceCreateOrConnectWithoutCountryInput = {
@@ -1099,6 +1176,66 @@ export type SpecificPriceUpdateManyWithWhereWithoutCountryInput = {
   data: Prisma.XOR<Prisma.SpecificPriceUpdateManyMutationInput, Prisma.SpecificPriceUncheckedUpdateManyWithoutCountryInput>
 }
 
+export type SpecificPriceCreateWithoutFlashSaleInput = {
+  id?: string
+  reductionType: string
+  reduction: runtime.Decimal | runtime.DecimalJsLike | number | string
+  fromQuantity?: number
+  dateFrom?: Date | string | null
+  dateTo?: Date | string | null
+  priority?: number
+  active?: boolean
+  dateAdd?: Date | string
+  product?: Prisma.ProductCreateNestedOneWithoutSpecificPricesInput
+  combination?: Prisma.ProductCombinationCreateNestedOneWithoutSpecificPricesInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutSpecificPricesInput
+  customerGroup?: Prisma.CustomerGroupCreateNestedOneWithoutSpecificPricesInput
+  country?: Prisma.CountryCreateNestedOneWithoutSpecificPricesInput
+}
+
+export type SpecificPriceUncheckedCreateWithoutFlashSaleInput = {
+  id?: string
+  productId?: string | null
+  combinationId?: string | null
+  customerId?: string | null
+  customerGroupId?: string | null
+  countryId?: string | null
+  reductionType: string
+  reduction: runtime.Decimal | runtime.DecimalJsLike | number | string
+  fromQuantity?: number
+  dateFrom?: Date | string | null
+  dateTo?: Date | string | null
+  priority?: number
+  active?: boolean
+  dateAdd?: Date | string
+}
+
+export type SpecificPriceCreateOrConnectWithoutFlashSaleInput = {
+  where: Prisma.SpecificPriceWhereUniqueInput
+  create: Prisma.XOR<Prisma.SpecificPriceCreateWithoutFlashSaleInput, Prisma.SpecificPriceUncheckedCreateWithoutFlashSaleInput>
+}
+
+export type SpecificPriceCreateManyFlashSaleInputEnvelope = {
+  data: Prisma.SpecificPriceCreateManyFlashSaleInput | Prisma.SpecificPriceCreateManyFlashSaleInput[]
+  skipDuplicates?: boolean
+}
+
+export type SpecificPriceUpsertWithWhereUniqueWithoutFlashSaleInput = {
+  where: Prisma.SpecificPriceWhereUniqueInput
+  update: Prisma.XOR<Prisma.SpecificPriceUpdateWithoutFlashSaleInput, Prisma.SpecificPriceUncheckedUpdateWithoutFlashSaleInput>
+  create: Prisma.XOR<Prisma.SpecificPriceCreateWithoutFlashSaleInput, Prisma.SpecificPriceUncheckedCreateWithoutFlashSaleInput>
+}
+
+export type SpecificPriceUpdateWithWhereUniqueWithoutFlashSaleInput = {
+  where: Prisma.SpecificPriceWhereUniqueInput
+  data: Prisma.XOR<Prisma.SpecificPriceUpdateWithoutFlashSaleInput, Prisma.SpecificPriceUncheckedUpdateWithoutFlashSaleInput>
+}
+
+export type SpecificPriceUpdateManyWithWhereWithoutFlashSaleInput = {
+  where: Prisma.SpecificPriceScalarWhereInput
+  data: Prisma.XOR<Prisma.SpecificPriceUpdateManyMutationInput, Prisma.SpecificPriceUncheckedUpdateManyWithoutFlashSaleInput>
+}
+
 export type SpecificPriceCreateManyCustomerInput = {
   id?: string
   productId?: string | null
@@ -1113,6 +1250,7 @@ export type SpecificPriceCreateManyCustomerInput = {
   priority?: number
   active?: boolean
   dateAdd?: Date | string
+  flashSaleId?: string | null
 }
 
 export type SpecificPriceUpdateWithoutCustomerInput = {
@@ -1129,6 +1267,7 @@ export type SpecificPriceUpdateWithoutCustomerInput = {
   combination?: Prisma.ProductCombinationUpdateOneWithoutSpecificPricesNestedInput
   customerGroup?: Prisma.CustomerGroupUpdateOneWithoutSpecificPricesNestedInput
   country?: Prisma.CountryUpdateOneWithoutSpecificPricesNestedInput
+  flashSale?: Prisma.FlashSaleUpdateOneWithoutSpecificPricesNestedInput
 }
 
 export type SpecificPriceUncheckedUpdateWithoutCustomerInput = {
@@ -1145,6 +1284,7 @@ export type SpecificPriceUncheckedUpdateWithoutCustomerInput = {
   priority?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dateAdd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  flashSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type SpecificPriceUncheckedUpdateManyWithoutCustomerInput = {
@@ -1161,6 +1301,7 @@ export type SpecificPriceUncheckedUpdateManyWithoutCustomerInput = {
   priority?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dateAdd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  flashSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type SpecificPriceCreateManyCustomerGroupInput = {
@@ -1177,6 +1318,7 @@ export type SpecificPriceCreateManyCustomerGroupInput = {
   priority?: number
   active?: boolean
   dateAdd?: Date | string
+  flashSaleId?: string | null
 }
 
 export type SpecificPriceUpdateWithoutCustomerGroupInput = {
@@ -1193,6 +1335,7 @@ export type SpecificPriceUpdateWithoutCustomerGroupInput = {
   combination?: Prisma.ProductCombinationUpdateOneWithoutSpecificPricesNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutSpecificPricesNestedInput
   country?: Prisma.CountryUpdateOneWithoutSpecificPricesNestedInput
+  flashSale?: Prisma.FlashSaleUpdateOneWithoutSpecificPricesNestedInput
 }
 
 export type SpecificPriceUncheckedUpdateWithoutCustomerGroupInput = {
@@ -1209,6 +1352,7 @@ export type SpecificPriceUncheckedUpdateWithoutCustomerGroupInput = {
   priority?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dateAdd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  flashSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type SpecificPriceUncheckedUpdateManyWithoutCustomerGroupInput = {
@@ -1225,6 +1369,7 @@ export type SpecificPriceUncheckedUpdateManyWithoutCustomerGroupInput = {
   priority?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dateAdd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  flashSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type SpecificPriceCreateManyProductInput = {
@@ -1241,6 +1386,7 @@ export type SpecificPriceCreateManyProductInput = {
   priority?: number
   active?: boolean
   dateAdd?: Date | string
+  flashSaleId?: string | null
 }
 
 export type SpecificPriceUpdateWithoutProductInput = {
@@ -1257,6 +1403,7 @@ export type SpecificPriceUpdateWithoutProductInput = {
   customer?: Prisma.CustomerUpdateOneWithoutSpecificPricesNestedInput
   customerGroup?: Prisma.CustomerGroupUpdateOneWithoutSpecificPricesNestedInput
   country?: Prisma.CountryUpdateOneWithoutSpecificPricesNestedInput
+  flashSale?: Prisma.FlashSaleUpdateOneWithoutSpecificPricesNestedInput
 }
 
 export type SpecificPriceUncheckedUpdateWithoutProductInput = {
@@ -1273,6 +1420,7 @@ export type SpecificPriceUncheckedUpdateWithoutProductInput = {
   priority?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dateAdd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  flashSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type SpecificPriceUncheckedUpdateManyWithoutProductInput = {
@@ -1289,6 +1437,7 @@ export type SpecificPriceUncheckedUpdateManyWithoutProductInput = {
   priority?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dateAdd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  flashSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type SpecificPriceCreateManyCombinationInput = {
@@ -1305,6 +1454,7 @@ export type SpecificPriceCreateManyCombinationInput = {
   priority?: number
   active?: boolean
   dateAdd?: Date | string
+  flashSaleId?: string | null
 }
 
 export type SpecificPriceUpdateWithoutCombinationInput = {
@@ -1321,6 +1471,7 @@ export type SpecificPriceUpdateWithoutCombinationInput = {
   customer?: Prisma.CustomerUpdateOneWithoutSpecificPricesNestedInput
   customerGroup?: Prisma.CustomerGroupUpdateOneWithoutSpecificPricesNestedInput
   country?: Prisma.CountryUpdateOneWithoutSpecificPricesNestedInput
+  flashSale?: Prisma.FlashSaleUpdateOneWithoutSpecificPricesNestedInput
 }
 
 export type SpecificPriceUncheckedUpdateWithoutCombinationInput = {
@@ -1337,6 +1488,7 @@ export type SpecificPriceUncheckedUpdateWithoutCombinationInput = {
   priority?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dateAdd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  flashSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type SpecificPriceUncheckedUpdateManyWithoutCombinationInput = {
@@ -1353,6 +1505,7 @@ export type SpecificPriceUncheckedUpdateManyWithoutCombinationInput = {
   priority?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dateAdd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  flashSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type SpecificPriceCreateManyCountryInput = {
@@ -1369,6 +1522,7 @@ export type SpecificPriceCreateManyCountryInput = {
   priority?: number
   active?: boolean
   dateAdd?: Date | string
+  flashSaleId?: string | null
 }
 
 export type SpecificPriceUpdateWithoutCountryInput = {
@@ -1385,6 +1539,7 @@ export type SpecificPriceUpdateWithoutCountryInput = {
   combination?: Prisma.ProductCombinationUpdateOneWithoutSpecificPricesNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutSpecificPricesNestedInput
   customerGroup?: Prisma.CustomerGroupUpdateOneWithoutSpecificPricesNestedInput
+  flashSale?: Prisma.FlashSaleUpdateOneWithoutSpecificPricesNestedInput
 }
 
 export type SpecificPriceUncheckedUpdateWithoutCountryInput = {
@@ -1401,6 +1556,7 @@ export type SpecificPriceUncheckedUpdateWithoutCountryInput = {
   priority?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dateAdd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  flashSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type SpecificPriceUncheckedUpdateManyWithoutCountryInput = {
@@ -1409,6 +1565,75 @@ export type SpecificPriceUncheckedUpdateManyWithoutCountryInput = {
   combinationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reductionType?: Prisma.StringFieldUpdateOperationsInput | string
+  reduction?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  fromQuantity?: Prisma.IntFieldUpdateOperationsInput | number
+  dateFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dateTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  priority?: Prisma.IntFieldUpdateOperationsInput | number
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dateAdd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  flashSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type SpecificPriceCreateManyFlashSaleInput = {
+  id?: string
+  productId?: string | null
+  combinationId?: string | null
+  customerId?: string | null
+  customerGroupId?: string | null
+  countryId?: string | null
+  reductionType: string
+  reduction: runtime.Decimal | runtime.DecimalJsLike | number | string
+  fromQuantity?: number
+  dateFrom?: Date | string | null
+  dateTo?: Date | string | null
+  priority?: number
+  active?: boolean
+  dateAdd?: Date | string
+}
+
+export type SpecificPriceUpdateWithoutFlashSaleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  reductionType?: Prisma.StringFieldUpdateOperationsInput | string
+  reduction?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  fromQuantity?: Prisma.IntFieldUpdateOperationsInput | number
+  dateFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dateTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  priority?: Prisma.IntFieldUpdateOperationsInput | number
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dateAdd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  product?: Prisma.ProductUpdateOneWithoutSpecificPricesNestedInput
+  combination?: Prisma.ProductCombinationUpdateOneWithoutSpecificPricesNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutSpecificPricesNestedInput
+  customerGroup?: Prisma.CustomerGroupUpdateOneWithoutSpecificPricesNestedInput
+  country?: Prisma.CountryUpdateOneWithoutSpecificPricesNestedInput
+}
+
+export type SpecificPriceUncheckedUpdateWithoutFlashSaleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  combinationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reductionType?: Prisma.StringFieldUpdateOperationsInput | string
+  reduction?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  fromQuantity?: Prisma.IntFieldUpdateOperationsInput | number
+  dateFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dateTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  priority?: Prisma.IntFieldUpdateOperationsInput | number
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dateAdd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type SpecificPriceUncheckedUpdateManyWithoutFlashSaleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  combinationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reductionType?: Prisma.StringFieldUpdateOperationsInput | string
   reduction?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   fromQuantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1436,11 +1661,13 @@ export type SpecificPriceSelect<ExtArgs extends runtime.Types.Extensions.Interna
   priority?: boolean
   active?: boolean
   dateAdd?: boolean
+  flashSaleId?: boolean
   product?: boolean | Prisma.SpecificPrice$productArgs<ExtArgs>
   combination?: boolean | Prisma.SpecificPrice$combinationArgs<ExtArgs>
   customer?: boolean | Prisma.SpecificPrice$customerArgs<ExtArgs>
   customerGroup?: boolean | Prisma.SpecificPrice$customerGroupArgs<ExtArgs>
   country?: boolean | Prisma.SpecificPrice$countryArgs<ExtArgs>
+  flashSale?: boolean | Prisma.SpecificPrice$flashSaleArgs<ExtArgs>
 }, ExtArgs["result"]["specificPrice"]>
 
 export type SpecificPriceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1458,11 +1685,13 @@ export type SpecificPriceSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   priority?: boolean
   active?: boolean
   dateAdd?: boolean
+  flashSaleId?: boolean
   product?: boolean | Prisma.SpecificPrice$productArgs<ExtArgs>
   combination?: boolean | Prisma.SpecificPrice$combinationArgs<ExtArgs>
   customer?: boolean | Prisma.SpecificPrice$customerArgs<ExtArgs>
   customerGroup?: boolean | Prisma.SpecificPrice$customerGroupArgs<ExtArgs>
   country?: boolean | Prisma.SpecificPrice$countryArgs<ExtArgs>
+  flashSale?: boolean | Prisma.SpecificPrice$flashSaleArgs<ExtArgs>
 }, ExtArgs["result"]["specificPrice"]>
 
 export type SpecificPriceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1480,11 +1709,13 @@ export type SpecificPriceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   priority?: boolean
   active?: boolean
   dateAdd?: boolean
+  flashSaleId?: boolean
   product?: boolean | Prisma.SpecificPrice$productArgs<ExtArgs>
   combination?: boolean | Prisma.SpecificPrice$combinationArgs<ExtArgs>
   customer?: boolean | Prisma.SpecificPrice$customerArgs<ExtArgs>
   customerGroup?: boolean | Prisma.SpecificPrice$customerGroupArgs<ExtArgs>
   country?: boolean | Prisma.SpecificPrice$countryArgs<ExtArgs>
+  flashSale?: boolean | Prisma.SpecificPrice$flashSaleArgs<ExtArgs>
 }, ExtArgs["result"]["specificPrice"]>
 
 export type SpecificPriceSelectScalar = {
@@ -1502,15 +1733,17 @@ export type SpecificPriceSelectScalar = {
   priority?: boolean
   active?: boolean
   dateAdd?: boolean
+  flashSaleId?: boolean
 }
 
-export type SpecificPriceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productId" | "combinationId" | "customerId" | "customerGroupId" | "countryId" | "reductionType" | "reduction" | "fromQuantity" | "dateFrom" | "dateTo" | "priority" | "active" | "dateAdd", ExtArgs["result"]["specificPrice"]>
+export type SpecificPriceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productId" | "combinationId" | "customerId" | "customerGroupId" | "countryId" | "reductionType" | "reduction" | "fromQuantity" | "dateFrom" | "dateTo" | "priority" | "active" | "dateAdd" | "flashSaleId", ExtArgs["result"]["specificPrice"]>
 export type SpecificPriceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.SpecificPrice$productArgs<ExtArgs>
   combination?: boolean | Prisma.SpecificPrice$combinationArgs<ExtArgs>
   customer?: boolean | Prisma.SpecificPrice$customerArgs<ExtArgs>
   customerGroup?: boolean | Prisma.SpecificPrice$customerGroupArgs<ExtArgs>
   country?: boolean | Prisma.SpecificPrice$countryArgs<ExtArgs>
+  flashSale?: boolean | Prisma.SpecificPrice$flashSaleArgs<ExtArgs>
 }
 export type SpecificPriceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.SpecificPrice$productArgs<ExtArgs>
@@ -1518,6 +1751,7 @@ export type SpecificPriceIncludeCreateManyAndReturn<ExtArgs extends runtime.Type
   customer?: boolean | Prisma.SpecificPrice$customerArgs<ExtArgs>
   customerGroup?: boolean | Prisma.SpecificPrice$customerGroupArgs<ExtArgs>
   country?: boolean | Prisma.SpecificPrice$countryArgs<ExtArgs>
+  flashSale?: boolean | Prisma.SpecificPrice$flashSaleArgs<ExtArgs>
 }
 export type SpecificPriceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.SpecificPrice$productArgs<ExtArgs>
@@ -1525,6 +1759,7 @@ export type SpecificPriceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Type
   customer?: boolean | Prisma.SpecificPrice$customerArgs<ExtArgs>
   customerGroup?: boolean | Prisma.SpecificPrice$customerGroupArgs<ExtArgs>
   country?: boolean | Prisma.SpecificPrice$countryArgs<ExtArgs>
+  flashSale?: boolean | Prisma.SpecificPrice$flashSaleArgs<ExtArgs>
 }
 
 export type $SpecificPricePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1535,6 +1770,7 @@ export type $SpecificPricePayload<ExtArgs extends runtime.Types.Extensions.Inter
     customer: Prisma.$CustomerPayload<ExtArgs> | null
     customerGroup: Prisma.$CustomerGroupPayload<ExtArgs> | null
     country: Prisma.$CountryPayload<ExtArgs> | null
+    flashSale: Prisma.$FlashSalePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1551,6 +1787,7 @@ export type $SpecificPricePayload<ExtArgs extends runtime.Types.Extensions.Inter
     priority: number
     active: boolean
     dateAdd: Date
+    flashSaleId: string | null
   }, ExtArgs["result"]["specificPrice"]>
   composites: {}
 }
@@ -1950,6 +2187,7 @@ export interface Prisma__SpecificPriceClient<T, Null = never, ExtArgs extends ru
   customer<T extends Prisma.SpecificPrice$customerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SpecificPrice$customerArgs<ExtArgs>>): Prisma.Prisma__CustomerClient<runtime.Types.Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   customerGroup<T extends Prisma.SpecificPrice$customerGroupArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SpecificPrice$customerGroupArgs<ExtArgs>>): Prisma.Prisma__CustomerGroupClient<runtime.Types.Result.GetResult<Prisma.$CustomerGroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   country<T extends Prisma.SpecificPrice$countryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SpecificPrice$countryArgs<ExtArgs>>): Prisma.Prisma__CountryClient<runtime.Types.Result.GetResult<Prisma.$CountryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  flashSale<T extends Prisma.SpecificPrice$flashSaleArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SpecificPrice$flashSaleArgs<ExtArgs>>): Prisma.Prisma__FlashSaleClient<runtime.Types.Result.GetResult<Prisma.$FlashSalePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1993,6 +2231,7 @@ export interface SpecificPriceFieldRefs {
   readonly priority: Prisma.FieldRef<"SpecificPrice", 'Int'>
   readonly active: Prisma.FieldRef<"SpecificPrice", 'Boolean'>
   readonly dateAdd: Prisma.FieldRef<"SpecificPrice", 'DateTime'>
+  readonly flashSaleId: Prisma.FieldRef<"SpecificPrice", 'String'>
 }
     
 
@@ -2486,6 +2725,25 @@ export type SpecificPrice$countryArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   include?: Prisma.CountryInclude<ExtArgs> | null
   where?: Prisma.CountryWhereInput
+}
+
+/**
+ * SpecificPrice.flashSale
+ */
+export type SpecificPrice$flashSaleArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FlashSale
+   */
+  select?: Prisma.FlashSaleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FlashSale
+   */
+  omit?: Prisma.FlashSaleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FlashSaleInclude<ExtArgs> | null
+  where?: Prisma.FlashSaleWhereInput
 }
 
 /**

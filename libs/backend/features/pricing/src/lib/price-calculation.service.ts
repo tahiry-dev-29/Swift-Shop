@@ -12,6 +12,7 @@ export class PriceCalculationService {
       combinationId,
       customerId,
       countryId,
+      currencyId,
       quantity = 1,
     } = params;
 
@@ -71,11 +72,36 @@ export class PriceCalculationService {
       price -= specificPriceReduction;
     }
 
-    const priceHT = Math.max(0, price);
+    let priceHT = Math.max(0, price);
 
     const taxRate = await this.getTaxRate(countryId);
-    const taxAmount = (priceHT * taxRate) / 100;
-    const priceTTC = priceHT + taxAmount;
+    let taxAmount = (priceHT * taxRate) / 100;
+    let priceTTC = priceHT + taxAmount;
+
+    // Currency Support and Rounding Rules
+    let exchangeRate = 1;
+    let roundingDecimals = 2;
+
+    if (currencyId) {
+      const currency = await this.prisma.currency.findUnique({
+        where: { id: currencyId },
+      });
+      if (currency) {
+        exchangeRate = Number(currency.exchangeRate);
+        roundingDecimals = currency.roundingDecimals;
+      }
+    }
+
+    if (exchangeRate !== 1) {
+      priceHT *= exchangeRate;
+      taxAmount *= exchangeRate;
+      priceTTC *= exchangeRate;
+    }
+
+    const factor = Math.pow(10, roundingDecimals);
+    priceHT = Math.round(priceHT * factor) / factor;
+    taxAmount = Math.round(taxAmount * factor) / factor;
+    priceTTC = Math.round(priceTTC * factor) / factor;
 
     return {
       basePrice,
@@ -86,6 +112,8 @@ export class PriceCalculationService {
       taxRate,
       taxAmount,
       priceTTC,
+      currencyId,
+      exchangeRate,
     };
   }
 
