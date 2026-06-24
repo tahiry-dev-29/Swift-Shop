@@ -1,4 +1,5 @@
 {
+  "root": true,
   "env": {
     "browser": true,
     "es2021": true,
@@ -8,6 +9,7 @@
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint"],
   "rules": {
+    "max-classes-per-file": ["error", 1],
     "max-lines": [
       "error",
       { "max": 200, "skipBlankLines": true, "skipComments": true }

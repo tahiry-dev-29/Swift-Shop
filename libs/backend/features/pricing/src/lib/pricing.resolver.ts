@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int, ID } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ID, Int } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard, SuperAdminGuard } from '@dima-new/backend/auth';
 import { PriceCalculationService } from './price-calculation.service';
@@ -42,7 +42,7 @@ export class PricingResolver {
     @Args('productId', { type: () => ID, nullable: true }) productId?: string,
     @Args('customerId', { type: () => ID, nullable: true }) customerId?: string,
   ) {
-    const where: any = { active: true };
+    const where: Record<string, unknown> = { active: true };
     if (productId) where.productId = productId;
     if (customerId) where.customerId = customerId;
 

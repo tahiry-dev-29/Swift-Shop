@@ -47,8 +47,48 @@ export default [
         'error',
         { max: 200, skipBlankLines: true, skipComments: true },
       ],
+      'max-classes-per-file': ['error', 1],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            'ForOfStatement CallExpression[callee.object.property.name="logger"]',
+          message:
+            '❌ Master Summary Violation: Do not use logger inside a loop. Buffer your data and log once outside to prevent I/O bottlenecks.',
+        },
+        {
+          selector:
+            'ForStatement CallExpression[callee.object.property.name="logger"]',
+          message:
+            '❌ Master Summary Violation: Do not use logger inside a loop. Buffer your data and log once outside to prevent I/O bottlenecks.',
+        },
+        {
+          selector:
+            'CallExpression[callee.property.name="forEach"] CallExpression[callee.object.property.name="logger"]',
+          message:
+            '❌ Master Summary Violation: Do not use logger inside a loop. Buffer your data and log once outside to prevent I/O bottlenecks.',
+        },
+      ],
       '@typescript-eslint/no-explicit-any': 'error',
       'no-console': 'warn',
+    },
+  },
+  {
+    // 🛡️ EXCEPTION: DTOs, Types, and Inputs are allowed to have multiple classes per file
+    // as per standard NestJS / GraphQL practices for grouping related data structures.
+    files: [
+      '**/*.dto.ts',
+      '**/*.type.ts',
+      '**/*.types.ts',
+      '**/*.input.ts',
+      '**/*.inputs.ts',
+      '**/*-type.ts',
+      '**/*-types.ts',
+      '**/*-input.ts',
+      '**/*-inputs.ts',
+    ],
+    rules: {
+      'max-classes-per-file': 'off',
     },
   },
 ];

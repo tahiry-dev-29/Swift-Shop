@@ -43,7 +43,7 @@ function requireProductionValues(env: Environment, keys: string[]): void {
 }
 
 export function validateEnvironment(env: Environment): ValidatedEnvironment {
-  const { PORT, DATABASE_URL, JWT_SECRET, ...rest } = env;
+  const { PORT, ...rest } = env;
   requireProductionValues(env, [
     'SMTP_HOST',
     'SMTP_USER',

@@ -3,6 +3,16 @@ import { PrismaService } from '@dima-new/data-access-prisma';
 import * as ExcelJS from 'exceljs';
 import { ProductSearchService } from './product-search.service';
 
+export interface BulkProductRow {
+  id?: string;
+  reference: string;
+  name: string;
+  slug: string;
+  price: number;
+  active: boolean;
+  categoryId: string | null;
+}
+
 @Injectable()
 export class ProductBulkService {
   private readonly logger = new Logger(ProductBulkService.name);
@@ -45,16 +55,16 @@ export class ProductBulkService {
     return (await workbook.xlsx.writeBuffer()) as unknown as Uint8Array;
   }
 
-  async importProducts(buffer: any) {
+  async importProducts(buffer: Buffer | ArrayBuffer) {
     const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.load(buffer);
+    await workbook.xlsx.load(buffer as ExcelJS.Buffer);
     const worksheet = workbook.getWorksheet(1);
 
     if (!worksheet) {
       throw new BadRequestException('No worksheet found');
     }
 
-    const rows: Record<string, any>[] = [];
+    const rows: BulkProductRow[] = [];
     worksheet.eachRow((row, rowNumber) => {
       if (rowNumber === 1) return; // Skip header
 
@@ -80,35 +90,41 @@ export class ProductBulkService {
     });
 
     let imported = 0;
+    const errors: string[] = [];
     for (const data of rows) {
       try {
         const product = await this.prisma.product.upsert({
-          where: { id: data['id'] || '' },
+          where: { id: data.id || '' },
           update: {
-            name: data['name'],
-            reference: data['reference'],
-            price: data['price'],
-            active: data['active'],
-            categoryId: data['categoryId'],
+            name: data.name,
+            reference: data.reference,
+            price: data.price,
+            active: data.active,
+            categoryId: data.categoryId,
           },
           create: {
-            name: data['name'],
-            slug: data['slug'],
-            reference: data['reference'],
-            price: data['price'],
-            active: data['active'],
-            categoryId: data['categoryId'],
+            name: data.name,
+            slug: data.slug,
+            reference: data.reference,
+            price: data.price,
+            active: data.active,
+            categoryId: data.categoryId,
           },
         });
 
         await this.searchService.syncProduct(product);
         imported++;
       } catch (error) {
-        this.logger.error(
-          `Failed to import row: ${JSON.stringify(data)}`,
-          error,
+        errors.push(
+          `Row ${data.reference || 'Unknown'}: ${(error as Error).message}`,
         );
       }
+    }
+
+    if (errors.length > 0) {
+      this.logger.error(
+        `Failed to import ${errors.length} products. Master Summary:\n${errors.join('\n')}`,
+      );
     }
 
     return { imported, total: rows.length };

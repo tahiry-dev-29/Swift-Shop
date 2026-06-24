@@ -24,7 +24,13 @@ export class LanguageService {
     });
   }
 
-  async create(data: { name: string; code: string; locale: string; isDefault?: boolean; active?: boolean }) {
+  async create(data: {
+    name: string;
+    code: string;
+    locale: string;
+    isDefault?: boolean;
+    active?: boolean;
+  }) {
     if (data.isDefault) {
       await this.prisma.language.updateMany({
         where: { isDefault: true },
@@ -37,7 +43,16 @@ export class LanguageService {
     });
   }
 
-  async update(id: string, data: { name?: string; code?: string; locale?: string; isDefault?: boolean; active?: boolean }) {
+  async update(
+    id: string,
+    data: {
+      name?: string;
+      code?: string;
+      locale?: string;
+      isDefault?: boolean;
+      active?: boolean;
+    },
+  ) {
     if (data.isDefault) {
       await this.prisma.language.updateMany({
         where: { isDefault: true, id: { not: id } },

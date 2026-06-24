@@ -154,10 +154,12 @@ export class CartService {
   async mergeGuestCart(sessionId: string, customerId: string) {
     return this.cartMergeService.mergeGuestCart(sessionId, customerId);
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async applyCoupon(_cartId: string, _code: string) {
     throw new NotImplementedException('Coupon system not implemented yet');
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async removeCoupon(_cartId: string) {
     throw new NotImplementedException('Coupon system not implemented yet');
   }

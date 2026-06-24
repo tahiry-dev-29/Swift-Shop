@@ -13,7 +13,14 @@ export class SettingService {
     return this.parseValue(setting.value, setting.type);
   }
 
-  async set(key: string, value: unknown, type = 'string', group = 'general', isPublic = false, description?: string) {
+  async set(
+    key: string,
+    value: unknown,
+    type = 'string',
+    group = 'general',
+    isPublic = false,
+    description?: string,
+  ) {
     const stringValue = this.stringifyValue(value, type);
 
     return this.prisma.setting.upsert({
@@ -41,10 +48,13 @@ export class SettingService {
       where: { group },
     });
 
-    return settings.reduce((acc, setting) => {
-      acc[setting.key] = this.parseValue(setting.value, setting.type);
-      return acc;
-    }, {} as Record<string, unknown>);
+    return settings.reduce(
+      (acc, setting) => {
+        acc[setting.key] = this.parseValue(setting.value, setting.type);
+        return acc;
+      },
+      {} as Record<string, unknown>,
+    );
   }
 
   async getPublicSettings() {
@@ -52,10 +62,13 @@ export class SettingService {
       where: { isPublic: true },
     });
 
-    return settings.reduce((acc, setting) => {
-      acc[setting.key] = this.parseValue(setting.value, setting.type);
-      return acc;
-    }, {} as Record<string, unknown>);
+    return settings.reduce(
+      (acc, setting) => {
+        acc[setting.key] = this.parseValue(setting.value, setting.type);
+        return acc;
+      },
+      {} as Record<string, unknown>,
+    );
   }
 
   private parseValue(value: string, type: string): unknown {
@@ -81,4 +94,3 @@ export class SettingService {
     return String(value);
   }
 }
-

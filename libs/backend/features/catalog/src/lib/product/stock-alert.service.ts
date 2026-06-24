@@ -1,49 +1,54 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { PrismaService } from '@dima-new/data-access-prisma';
+import { StockAlertRepository } from './stock-alert.repository';
+import { StockAlertFormatter } from './stock-alert.formatter';
+import { StockAlertRow } from './interfaces/stock-alert-row.interface';
 
 @Injectable()
 export class StockAlertService {
   private readonly logger = new Logger(StockAlertService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly repository: StockAlertRepository,
+    private readonly formatter: StockAlertFormatter,
+  ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_8AM)
-  async checkLowStock() {
-    this.logger.log('Running daily low stock check...');
+  async checkLowStock(): Promise<void> {
+    this.logger.log('Starting daily automated low stock inspection...');
 
     try {
-      // Production-ready: Use raw SQL to natively compare two columns efficiently
-      const lowStocks = await this.prisma.$queryRaw<any[]>`
-        SELECT s.id, s.quantity, s."minQuantity", 
-               p.name as "productName", p.reference as "productRef",
-               c.reference as "combinationRef", cp.name as "combinationProductName"
-        FROM "Stock" s
-        LEFT JOIN "Product" p ON s."productId" = p.id
-        LEFT JOIN "ProductCombination" c ON s."combinationId" = c.id
-        LEFT JOIN "Product" cp ON c."productId" = cp.id
-        WHERE s.quantity <= s."minQuantity"
-      `;
+      const lowStocks = await this.repository.findLowStockItems();
 
-      if (lowStocks.length > 0) {
-        this.logger.warn(`Found ${lowStocks.length} items with low stock!`);
-
-        for (const stock of lowStocks) {
-          const itemName = stock.combinationRef
-            ? `${stock.combinationProductName} (Comb: ${stock.combinationRef})`
-            : stock.productName;
-
-          this.logger.warn(
-            `Low Stock Alert: ${itemName} - Qty: ${stock.quantity} (Min: ${stock.minQuantity})`,
-          );
-        }
-
-        // TODO: Send an email to the admin
-      } else {
-        this.logger.log('No low stock items found.');
+      if (lowStocks.length === 0) {
+        this.logger.log('Inspection complete: No low stock items detected.');
+        return;
       }
+
+      this.logger.warn(
+        `Alert triggered: ${lowStocks.length} items require attention.`,
+      );
+      this.processAlerts(lowStocks);
     } catch (error) {
-      this.logger.error('Failed to run low stock check', error);
+      this.logger.error(
+        'Critical failure during low stock inspection process',
+        error,
+      );
     }
+  }
+
+  /**
+   * Buffer and process alerts using batched logs to prevent thread blocking.
+   */
+  private processAlerts(lowStocks: StockAlertRow[]): void {
+    const summary = lowStocks.map((stock) => {
+      const name = this.formatter.formatItemName(stock);
+      return ` - ${name} | Qty: ${stock.quantity} (Min: ${stock.minQuantity})`;
+    });
+
+    // Rare & Safe approach: single log point to avoid production overhead
+    this.logger.warn(`Low Stock Master Summary:\n${summary.join('\n')}`);
+
+    // TODO: Inject NotificationService to dispatch single aggregated report
   }
 }

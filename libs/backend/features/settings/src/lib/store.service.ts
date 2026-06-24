@@ -24,7 +24,12 @@ export class StoreService {
     });
   }
 
-  async create(data: { name: string; url?: string; isDefault?: boolean; active?: boolean }) {
+  async create(data: {
+    name: string;
+    url?: string;
+    isDefault?: boolean;
+    active?: boolean;
+  }) {
     if (data.isDefault) {
       await this.prisma.store.updateMany({
         where: { isDefault: true },
@@ -37,7 +42,15 @@ export class StoreService {
     });
   }
 
-  async update(id: string, data: { name?: string; url?: string; isDefault?: boolean; active?: boolean }) {
+  async update(
+    id: string,
+    data: {
+      name?: string;
+      url?: string;
+      isDefault?: boolean;
+      active?: boolean;
+    },
+  ) {
     if (data.isDefault) {
       await this.prisma.store.updateMany({
         where: { isDefault: true, id: { not: id } },

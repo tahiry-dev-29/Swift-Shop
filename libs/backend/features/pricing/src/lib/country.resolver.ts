@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int, ID } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard, SuperAdminGuard } from '@dima-new/backend/auth';
 import { PrismaService } from '@dima-new/data-access-prisma';
@@ -35,7 +35,7 @@ export class CountryResolver {
   @UseGuards(JwtAuthGuard, SuperAdminGuard)
   async updateCountry(
     @Args('id', { type: () => ID }) id: string,
-    @Args('input') input: UpdateCountryInput
+    @Args('input') input: UpdateCountryInput,
   ) {
     return this.prisma.country.update({
       where: { id },

@@ -22,10 +22,12 @@ lint:
     - checkov@3.2.533
     - dotenv-linter@4.0.0
     - git-diff-check
-    - grype@0.114.0
+    # grype — runs on CI only (too slow locally, scans pnpm-lock.yaml)
+    # - grype@0.114.0
     - hadolint@2.14.0
     - markdownlint@0.48.0
-    - osv-scanner@2.3.8
+    # osv-scanner — runs on CI only (slow remote DB lookup)
+    # - osv-scanner@2.3.8
     - pinact@4.0.0
     - prettier@3.8.3
     - shellcheck@0.11.0
@@ -42,7 +44,9 @@ lint:
     - pylint
     - ruff
     - autopep8
-    # Infrastructure / Security (we want these, so removing from disabled)
+    # Vulnerability scanners — CI only (slow remote DB fetch + lock file scan)
+    - grype
+    - osv-scanner
     # Other languages
     - clippy # Rust
     - buf # Protobuf
@@ -70,7 +74,7 @@ lint:
         - '**/generated/**'
         - '**/*.g.dart'
         - '**/*.freezed.dart'
-        - '.agents/**'
+        - .agents/**
 
 actions:
   enabled:

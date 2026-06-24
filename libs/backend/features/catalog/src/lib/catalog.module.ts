@@ -5,6 +5,7 @@ import { CategoryResolver } from './category/category.resolver';
 import { AttributeService } from './attribute/attribute.service';
 import { AttributeResolver } from './attribute/attribute.resolver';
 import { ProductService } from './product/product.service';
+import { ProductDuplicateService } from './product/product-duplicate.service';
 import { ProductCombinationService } from './product/product-combination.service';
 import { ProductImageService } from './product/product-image.service';
 import { ProductResolver } from './product/product.resolver';
@@ -13,6 +14,8 @@ import { ProductStockService } from './product/product-stock.service';
 import { ProductSearchService } from './product/product-search.service';
 import { ProductBulkService } from './product/product-bulk.service';
 import { StockAlertService } from './product/stock-alert.service';
+import { StockAlertRepository } from './product/stock-alert.repository';
+import { StockAlertFormatter } from './product/stock-alert.formatter';
 import { ProductBulkController } from './product/product-bulk.controller';
 import { FeatureService } from './feature/feature.service';
 import { FeatureResolver } from './feature/feature.resolver';
@@ -29,6 +32,7 @@ import { SearchModule } from '@dima-new/backend/search';
     AttributeService,
     AttributeResolver,
     ProductService,
+    ProductDuplicateService,
     ProductCombinationService,
     ProductImageService,
     ProductResolver,
@@ -37,6 +41,8 @@ import { SearchModule } from '@dima-new/backend/search';
     ProductSearchService,
     ProductBulkService,
     StockAlertService,
+    StockAlertRepository,
+    StockAlertFormatter,
     FeatureService,
     FeatureResolver,
   ],
@@ -47,6 +53,7 @@ import { SearchModule } from '@dima-new/backend/search';
     AttributeService,
     AttributeResolver,
     ProductService,
+    ProductDuplicateService,
     ProductCombinationService,
     ProductImageService,
     ProductResolver,

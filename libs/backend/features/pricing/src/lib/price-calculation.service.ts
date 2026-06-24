@@ -95,7 +95,7 @@ export class PriceCalculationService {
     customerId?: string;
     countryId: string;
     quantity: number;
-  }): Promise<any | null> {
+  }): Promise<Record<string, unknown> | null> {
     const { productId, combinationId, customerId, countryId, quantity } =
       params;
     const now = new Date();
@@ -109,7 +109,7 @@ export class PriceCalculationService {
       customerGroupId = customer?.groupId;
     }
 
-    const conditions: any[] = [
+    const conditions: Record<string, unknown>[] = [
       { active: true },
       { fromQuantity: { lte: quantity } },
     ];
@@ -122,7 +122,7 @@ export class PriceCalculationService {
       OR: [{ dateTo: null }, { dateTo: { gte: now } }],
     });
 
-    const targetConditions: any[] = [];
+    const targetConditions: Record<string, unknown>[] = [];
 
     if (combinationId) {
       targetConditions.push({ combinationId });

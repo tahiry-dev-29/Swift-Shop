@@ -19,14 +19,14 @@ const colors = {
 
 let adminToken = null;
 let customerToken = null;
-let testResults = {
+const testResults = {
   passed: 0,
   failed: 0,
   total: 0,
 };
 
 // Test data IDs
-let testData = {
+const testData = {
   productId: null,
   imageId: null,
   combinationId: null,

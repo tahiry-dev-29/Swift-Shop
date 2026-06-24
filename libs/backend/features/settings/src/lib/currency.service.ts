@@ -24,7 +24,14 @@ export class CurrencyService {
     });
   }
 
-  async create(data: { name: string; code: string; symbol: string; exchangeRate?: number; isDefault?: boolean; active?: boolean }) {
+  async create(data: {
+    name: string;
+    code: string;
+    symbol: string;
+    exchangeRate?: number;
+    isDefault?: boolean;
+    active?: boolean;
+  }) {
     if (data.isDefault) {
       await this.prisma.currency.updateMany({
         where: { isDefault: true },
@@ -37,7 +44,17 @@ export class CurrencyService {
     });
   }
 
-  async update(id: string, data: { name?: string; code?: string; symbol?: string; exchangeRate?: number; isDefault?: boolean; active?: boolean }) {
+  async update(
+    id: string,
+    data: {
+      name?: string;
+      code?: string;
+      symbol?: string;
+      exchangeRate?: number;
+      isDefault?: boolean;
+      active?: boolean;
+    },
+  ) {
     if (data.isDefault) {
       await this.prisma.currency.updateMany({
         where: { isDefault: true, id: { not: id } },
@@ -68,7 +85,7 @@ export class CurrencyService {
   async syncExchangeRates(rates: Record<string, number>) {
     // Expected format: { "EUR": 1.0, "USD": 1.05 }
     const currencies = await this.prisma.currency.findMany();
-    
+
     for (const currency of currencies) {
       const newRate = rates[currency.code];
       if (newRate && newRate !== currency.exchangeRate.toNumber()) {

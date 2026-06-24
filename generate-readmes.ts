@@ -15,14 +15,14 @@ const schema = buildSchema(schemaStr);
 const queryType = schema.getQueryType();
 const mutationType = schema.getMutationType();
 
-function getBaseType(type: any): any {
+function getBaseType(type: unknown): unknown {
   if (isNonNullType(type) || isListType(type)) {
     return getBaseType(type.ofType);
   }
   return type;
 }
 
-function generateDummyValue(type: any): any {
+function generateDummyValue(type: unknown): unknown {
   if (isNonNullType(type)) {
     return generateDummyValue(type.ofType);
   }
@@ -52,7 +52,7 @@ function generateDummyValue(type: any): any {
   }
   if (isInputObjectType(type)) {
     const fields = type.getFields();
-    const obj: any = {};
+    const obj: Record<string, unknown> = {};
     for (const key of Object.keys(fields)) {
       obj[key] = generateDummyValue(fields[key].type);
     }
@@ -61,7 +61,7 @@ function generateDummyValue(type: any): any {
   return null;
 }
 
-function generateReturnFields(type: any, depth = 0): string {
+function generateReturnFields(type: unknown, depth = 0): string {
   if (depth > 2) return ''; // Prevent infinite recursion
   const base = getBaseType(type);
   if (isScalarType(base) || isEnumType(base)) {
@@ -95,15 +95,20 @@ function generateReturnFields(type: any, depth = 0): string {
 
 function generateOperationDoc(
   operationName: string,
-  opField: any,
+  opField: Record<string, unknown>,
   isMutation = false,
 ): string {
   const args = opField.args;
 
-  const varDefs = args
-    .map((a: any) => `$${a.name}: ${a.type.toString()}`)
+  const varDefs = (args as Record<string, unknown>[])
+    .map(
+      (a: Record<string, unknown>) =>
+        `$${a['name']}: ${(a['type'] as { toString: () => string }).toString()}`,
+    )
     .join(', ');
-  const varCalls = args.map((a: any) => `${a.name}: $${a.name}`).join(', ');
+  const varCalls = (args as Record<string, unknown>[])
+    .map((a: Record<string, unknown>) => `${a['name']}: $${a['name']}`)
+    .join(', ');
 
   const opTypeStr = isMutation ? 'mutation' : 'query';
 
@@ -119,9 +124,9 @@ function generateOperationDoc(
   doc += generateReturnFields(opField.type, 1) + '\n';
   doc += '}\n';
 
-  const variables: any = {};
-  for (const a of args) {
-    variables[a.name] = generateDummyValue(a.type);
+  const variables: Record<string, unknown> = {};
+  for (const a of args as Record<string, unknown>[]) {
+    variables[a['name'] as string] = generateDummyValue(a['type']);
   }
 
   return `### ${operationName}
@@ -184,6 +189,7 @@ for (const file of files) {
     const baseName = path.basename(file).replace('.ts', '');
     const readmePath = path.join(dir, `README-${baseName}.md`);
     fs.writeFileSync(readmePath, readme);
+    // eslint-disable-next-line no-console
     console.log(`Created ${readmePath} with ${count} operations.`);
   }
 }

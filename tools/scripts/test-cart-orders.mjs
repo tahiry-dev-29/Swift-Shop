@@ -73,12 +73,11 @@ async function runTests() {
   let passed = 0;
   let total = 0;
   let customerToken = '';
-  let customerId = '';
   let productId = '';
   let combinationId = '';
   let addressId = '';
   let cartId = '';
-  let sessionId = 'session-' + Date.now();
+  const sessionId = 'session-' + Date.now();
 
   // 0. Setup: Login & Get Data
   log(`0. SETUP`, COLORS.yellow);
@@ -89,7 +88,6 @@ async function runTests() {
   );
   if (loginData && loginData.customerLogin) {
     customerToken = loginData.customerLogin.accessToken;
-    customerId = loginData.customerLogin.customer.id;
     log(`  Customer Logged In`, COLORS.green);
   } else {
     log(`  Customer Login Failed`, COLORS.red);

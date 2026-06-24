@@ -17,9 +17,9 @@ const colors = {
   magenta: '\x1b[35m',
 };
 
-let tokens = { admin: null, customer: null };
-let testResults = { passed: 0, failed: 0, total: 0 };
-let testData = {};
+const tokens = { admin: null, customer: null };
+const testResults = { passed: 0, failed: 0, total: 0 };
+const testData = {};
 
 async function gql(query, token = null) {
   const headers = { 'Content-Type': 'application/json' };

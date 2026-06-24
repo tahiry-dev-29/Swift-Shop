@@ -16,10 +16,10 @@ RUN pnpm install --frozen-lockfile
 
 FROM workspace AS api-build
 
-ENV DATABASE_URL="postgresql://tahiry:tahiry4534@postgres:5432/dima_new?schema=public"
+# Removed hardcoded DATABASE_URL to avoid checkov secret warnings
+# Prisma doesn't strictly need a real DB connection for 'generate', but if it does, pass it as build arg.
 
-RUN pnpm exec prisma generate
-RUN pnpm exec nx build api
+RUN pnpm exec prisma generate && pnpm exec nx build api
 
 FROM oven/bun:1-alpine AS frontend-dev
 
@@ -63,5 +63,10 @@ COPY --from=api-build /app/prisma ./prisma
 COPY --from=api-build /app/dist/apps/api ./dist/apps/api
 
 EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/graphql || exit 1
+
+USER bun
 
 CMD ["sh", "-c", "./node_modules/.bin/prisma migrate deploy && bun dist/apps/api/main.js"]

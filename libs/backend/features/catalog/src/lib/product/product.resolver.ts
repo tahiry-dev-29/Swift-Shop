@@ -20,6 +20,7 @@ import {
 import { ProductCombinationService } from './product-combination.service';
 import { ProductImageService } from './product-image.service';
 import { ProductStockService } from './product-stock.service';
+import { ProductDuplicateService } from './product-duplicate.service';
 
 @Resolver(() => ProductType)
 export class ProductResolver {
@@ -28,6 +29,7 @@ export class ProductResolver {
     private readonly imageService: ProductImageService,
     private readonly combinationService: ProductCombinationService,
     private readonly stockService: ProductStockService,
+    private readonly duplicateService: ProductDuplicateService,
   ) {}
 
   @Query(() => ProductListType)
@@ -60,19 +62,13 @@ export class ProductResolver {
   @Mutation(() => ProductType)
   @UseGuards(SuperAdminGuard)
   async duplicateProduct(@Args('id', { type: () => ID }) id: string) {
-    return this.productService.duplicate(id);
+    return this.duplicateService.duplicate(id);
   }
 
   @Mutation(() => ProductType)
   @UseGuards(SuperAdminGuard)
   async deleteProduct(@Args('id', { type: () => ID }) id: string) {
     return this.productService.delete(id);
-  }
-
-  @Mutation(() => ProductType)
-  @UseGuards(SuperAdminGuard)
-  async duplicateProduct(@Args('id', { type: () => ID }) id: string) {
-    return this.productService.duplicate(id);
   }
 
   @Mutation(() => ProductImageType)

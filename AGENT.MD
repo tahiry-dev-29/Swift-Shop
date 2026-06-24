@@ -67,6 +67,8 @@
 #### 🟢 Backend
 
 * Follow the standard **Nest.js Clean Architecture** principles as outlined in the core guidelines.
+* **Micro-Component Isolation:** A service must be split into specific layers (Interfaces, Repository, Formatter, and Service). One Class Per File!
+* **Prevent I/O Bottlenecks (Master Summary):** Never use `logger.warn()` or send notifications inside a `for` loop. Buffer the data and use a single "Master Summary Log" or grouped notification to avoid CPU/IO saturation.
 
 ---
 

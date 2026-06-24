@@ -20,7 +20,9 @@ export class CustomerGuard extends JwtAuthGuard {
   handleRequest<TUser = AuthUser>(
     err: unknown,
     user: TUser,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _info: unknown,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _context: ExecutionContext,
   ): TUser {
     if (err || !user) {
