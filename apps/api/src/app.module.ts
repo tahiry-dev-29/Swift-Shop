@@ -25,6 +25,9 @@ import { MediaModule } from '@dima-new/backend/media';
 import { SettingsModule } from '@dima-new/backend/settings';
 import { validateEnvironment } from './config/env.validation';
 import { HealthModule } from './health/health.module';
+import { BullModule } from '@nestjs/bullmq';
+import { BullBoardModule } from '@bull-board/nestjs';
+import { ExpressAdapter } from '@bull-board/express';
 
 @Module({
   imports: [
@@ -57,6 +60,18 @@ import { HealthModule } from './health/health.module';
     }),
 
     ScheduleModule.forRoot(),
+
+    BullModule.forRoot({
+      connection: {
+        host: process.env['REDIS_HOST'] || 'localhost',
+        port: parseInt(process.env['REDIS_PORT'] || '6379', 10),
+      },
+    }),
+
+    BullBoardModule.forRoot({
+      route: '/admin/queues',
+      adapter: ExpressAdapter,
+    }),
 
     DataAccessPrismaModule,
 

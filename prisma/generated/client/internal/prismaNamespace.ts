@@ -442,6 +442,7 @@ export const ModelName = {
   Country: 'Country',
   TaxRule: 'TaxRule',
   SpecificPrice: 'SpecificPrice',
+  CartRule: 'CartRule',
   Setting: 'Setting',
   Language: 'Language',
   Currency: 'Currency',
@@ -461,7 +462,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "role" | "permission" | "rolePermission" | "permissionAuditLog" | "employeeRole" | "storeBranch" | "employeeStoreBranch" | "temporaryRoleElevation" | "customer" | "customerGroup" | "employee" | "auditLog" | "oAuthAccount" | "trustedDevice" | "address" | "category" | "attributeGroup" | "attributeValue" | "feature" | "featureValue" | "productFeature" | "product" | "productReview" | "productLabel" | "relatedProduct" | "bundleItem" | "priceHistory" | "productImage" | "productCombination" | "productCombinationAttribute" | "stock" | "cart" | "cartItem" | "cartCoupon" | "orderState" | "order" | "orderItem" | "orderAddress" | "shipment" | "return" | "returnItem" | "invoice" | "orderNote" | "orderHistory" | "carrier" | "shippingZone" | "shippingRate" | "shipmentEvent" | "deliverySlot" | "pickupPoint" | "payment" | "refund" | "paymentWebhookEvent" | "mvolaTransaction" | "airtelTransaction" | "country" | "taxRule" | "specificPrice" | "setting" | "language" | "currency" | "store"
+    modelProps: "role" | "permission" | "rolePermission" | "permissionAuditLog" | "employeeRole" | "storeBranch" | "employeeStoreBranch" | "temporaryRoleElevation" | "customer" | "customerGroup" | "employee" | "auditLog" | "oAuthAccount" | "trustedDevice" | "address" | "category" | "attributeGroup" | "attributeValue" | "feature" | "featureValue" | "productFeature" | "product" | "productReview" | "productLabel" | "relatedProduct" | "bundleItem" | "priceHistory" | "productImage" | "productCombination" | "productCombinationAttribute" | "stock" | "cart" | "cartItem" | "orderState" | "order" | "orderItem" | "orderAddress" | "shipment" | "return" | "returnItem" | "invoice" | "orderNote" | "orderHistory" | "country" | "taxRule" | "specificPrice" | "cartRule" | "setting" | "language" | "currency" | "store"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -4757,6 +4758,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    CartRule: {
+      payload: Prisma.$CartRulePayload<ExtArgs>
+      fields: Prisma.CartRuleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CartRuleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CartRulePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CartRuleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CartRulePayload>
+        }
+        findFirst: {
+          args: Prisma.CartRuleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CartRulePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CartRuleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CartRulePayload>
+        }
+        findMany: {
+          args: Prisma.CartRuleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CartRulePayload>[]
+        }
+        create: {
+          args: Prisma.CartRuleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CartRulePayload>
+        }
+        createMany: {
+          args: Prisma.CartRuleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CartRuleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CartRulePayload>[]
+        }
+        delete: {
+          args: Prisma.CartRuleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CartRulePayload>
+        }
+        update: {
+          args: Prisma.CartRuleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CartRulePayload>
+        }
+        deleteMany: {
+          args: Prisma.CartRuleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CartRuleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CartRuleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CartRulePayload>[]
+        }
+        upsert: {
+          args: Prisma.CartRuleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CartRulePayload>
+        }
+        aggregate: {
+          args: Prisma.CartRuleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCartRule>
+        }
+        groupBy: {
+          args: Prisma.CartRuleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CartRuleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CartRuleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CartRuleCountAggregateOutputType> | number
+        }
+      }
+    }
     Setting: {
       payload: Prisma.$SettingPayload<ExtArgs>
       fields: Prisma.SettingFieldRefs
@@ -5894,11 +5969,34 @@ export const SpecificPriceScalarFieldEnum = {
   dateFrom: 'dateFrom',
   dateTo: 'dateTo',
   priority: 'priority',
+  isFlashSale: 'isFlashSale',
   active: 'active',
   dateAdd: 'dateAdd'
 } as const
 
 export type SpecificPriceScalarFieldEnum = (typeof SpecificPriceScalarFieldEnum)[keyof typeof SpecificPriceScalarFieldEnum]
+
+
+export const CartRuleScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  code: 'code',
+  description: 'description',
+  priority: 'priority',
+  active: 'active',
+  dateFrom: 'dateFrom',
+  dateTo: 'dateTo',
+  minimumAmount: 'minimumAmount',
+  quantity: 'quantity',
+  quantityPerUser: 'quantityPerUser',
+  reductionType: 'reductionType',
+  reduction: 'reduction',
+  freeShipping: 'freeShipping',
+  dateAdd: 'dateAdd',
+  dateUpd: 'dateUpd'
+} as const
+
+export type CartRuleScalarFieldEnum = (typeof CartRuleScalarFieldEnum)[keyof typeof CartRuleScalarFieldEnum]
 
 
 export const SettingScalarFieldEnum = {
@@ -6270,6 +6368,7 @@ export type GlobalOmitConfig = {
   country?: Prisma.CountryOmit
   taxRule?: Prisma.TaxRuleOmit
   specificPrice?: Prisma.SpecificPriceOmit
+  cartRule?: Prisma.CartRuleOmit
   setting?: Prisma.SettingOmit
   language?: Prisma.LanguageOmit
   currency?: Prisma.CurrencyOmit

@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@dima-new/data-access-prisma';
 import { PriceResult, CalculatePriceParams } from '@dima-new/models';
+import { PriceQueryService } from './price-query.service';
 
 @Injectable()
 export class PriceCalculationService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly priceQuery: PriceQueryService,
+  ) {}
 
   async calculatePrice(params: CalculatePriceParams): Promise<PriceResult> {
     const {
@@ -13,6 +17,8 @@ export class PriceCalculationService {
       customerId,
       countryId,
       quantity = 1,
+      currencyCode,
+      cartRuleCodes,
     } = params;
 
     const product = await this.prisma.product.findUnique({
@@ -46,13 +52,16 @@ export class PriceCalculationService {
       });
 
       if (customer && customer.group) {
+        if (!customer.group.showPrices) {
+          throw new Error('Prices are hidden for this customer group');
+        }
         const groupReductionPercent = Number(customer.group.reduction);
         customerGroupReduction = (price * groupReductionPercent) / 100;
         price -= customerGroupReduction;
       }
     }
 
-    const specificPrice = await this.findBestSpecificPrice({
+    const specificPrice = await this.priceQuery.findBestSpecificPrice({
       productId,
       combinationId,
       customerId,
@@ -62,127 +71,87 @@ export class PriceCalculationService {
 
     let specificPriceReduction = 0;
     if (specificPrice) {
-      if (specificPrice.reductionType === 'percentage') {
+      if (specificPrice['reductionType'] === 'percentage') {
         specificPriceReduction =
-          (price * Number(specificPrice.reduction)) / 100;
+          (price * Number(specificPrice['reduction'])) / 100;
       } else {
-        specificPriceReduction = Number(specificPrice.reduction);
+        specificPriceReduction = Number(specificPrice['reduction']);
       }
       price -= specificPriceReduction;
     }
 
-    const priceHT = Math.max(0, price);
+    let cartRuleReduction = 0;
+    if (cartRuleCodes && cartRuleCodes.length > 0) {
+      cartRuleReduction = await this.applyCartRules(cartRuleCodes, price);
+      price -= cartRuleReduction;
+    }
 
-    const taxRate = await this.getTaxRate(countryId);
-    const taxAmount = (priceHT * taxRate) / 100;
-    const priceTTC = priceHT + taxAmount;
+    let exchangeRate = 1;
+    if (currencyCode) {
+      const currency = await this.prisma.currency.findUnique({
+        where: { code: currencyCode },
+      });
+      if (!currency) {
+        throw new Error("Currency " + currencyCode + " not found");
+      }
+      exchangeRate = Number(currency.exchangeRate);
+    }
+
+    const priceHT = this.roundPrice(Math.max(0, price) * exchangeRate);
+    const taxRate = await this.priceQuery.getTaxRate(countryId);
+    const taxAmount = this.roundPrice((priceHT * taxRate) / 100);
+    const priceTTC = this.roundPrice(priceHT + taxAmount);
+    const loyaltyPointsEarned = Math.floor(priceTTC / 10);
 
     return {
-      basePrice,
-      combinationImpact,
-      customerGroupReduction,
-      specificPriceReduction,
+      basePrice: this.roundPrice(basePrice * exchangeRate),
+      combinationImpact: this.roundPrice(combinationImpact * exchangeRate),
+      customerGroupReduction: this.roundPrice(
+        customerGroupReduction * exchangeRate,
+      ),
+      specificPriceReduction: this.roundPrice(
+        specificPriceReduction * exchangeRate,
+      ),
+      cartRuleReduction: this.roundPrice(cartRuleReduction * exchangeRate),
       priceHT,
       taxRate,
       taxAmount,
       priceTTC,
+      currencyCode,
+      loyaltyPointsEarned,
     };
   }
 
-  async findBestSpecificPrice(params: {
-    productId: string;
-    combinationId?: string;
-    customerId?: string;
-    countryId: string;
-    quantity: number;
-  }): Promise<Record<string, unknown> | null> {
-    const { productId, combinationId, customerId, countryId, quantity } =
-      params;
+  private async applyCartRules(
+    codes: string[],
+    price: number,
+  ): Promise<number> {
     const now = new Date();
-
-    let customerGroupId: string | undefined;
-    if (customerId) {
-      const customer = await this.prisma.customer.findUnique({
-        where: { id: customerId },
-        select: { groupId: true },
-      });
-      customerGroupId = customer?.groupId;
-    }
-
-    const conditions: Record<string, unknown>[] = [
-      { active: true },
-      { fromQuantity: { lte: quantity } },
-    ];
-
-    conditions.push({
-      OR: [{ dateFrom: null }, { dateFrom: { lte: now } }],
-    });
-
-    conditions.push({
-      OR: [{ dateTo: null }, { dateTo: { gte: now } }],
-    });
-
-    const targetConditions: Record<string, unknown>[] = [];
-
-    if (combinationId) {
-      targetConditions.push({ combinationId });
-    }
-
-    targetConditions.push({ productId, combinationId: null });
-
-    if (customerId) {
-      targetConditions.push({ customerId });
-    }
-
-    if (customerGroupId) {
-      targetConditions.push({ customerGroupId });
-    }
-
-    targetConditions.push({ countryId });
-
-    targetConditions.push({
-      productId: null,
-      combinationId: null,
-      customerId: null,
-      customerGroupId: null,
-      countryId: null,
-    });
-
-    conditions.push({
-      OR: targetConditions,
-    });
-
-    const specificPrices = await this.prisma.specificPrice.findMany({
+    const cartRules = await this.prisma.cartRule.findMany({
       where: {
-        AND: conditions,
+        code: { in: codes },
+        active: true,
+        OR: [{ dateFrom: null }, { dateFrom: { lte: now } }],
+        AND: [
+          { OR: [{ dateTo: null }, { dateTo: { gte: now } }] },
+          { minimumAmount: { lte: price } },
+          { quantity: { gt: 0 } },
+        ],
       },
-      orderBy: [{ priority: 'desc' }, { id: 'asc' }],
     });
 
-    return specificPrices[0] || null;
+    let total = 0;
+    for (const rule of cartRules) {
+      if (rule.reductionType === 'percentage') {
+        total += (price * Number(rule.reduction)) / 100;
+      } else {
+        total += Number(rule.reduction);
+      }
+    }
+    return total;
   }
 
-  async getTaxRate(countryId: string): Promise<number> {
-    const taxRule = await this.prisma.taxRule.findFirst({
-      where: {
-        countryId,
-        active: true,
-      },
-      orderBy: { id: 'desc' },
-    });
-
-    if (taxRule) {
-      return Number(taxRule.rate);
-    }
-
-    const country = await this.prisma.country.findUnique({
-      where: { id: countryId },
-    });
-
-    if (!country) {
-      throw new Error(`Country #${countryId} not found`);
-    }
-
-    return Number(country.taxRate);
+  private roundPrice(value: number): number {
+    return Math.round(value * 100) / 100;
   }
 }

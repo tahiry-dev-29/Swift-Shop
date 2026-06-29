@@ -38,10 +38,13 @@ export interface PriceResult {
   combinationImpact: number;
   customerGroupReduction: number;
   specificPriceReduction: number;
+  cartRuleReduction: number;
   priceHT: number;
   taxRate: number;
   taxAmount: number;
   priceTTC: number;
+  currencyCode?: string;
+  loyaltyPointsEarned?: number;
 }
 
 // Price calculation input params
@@ -51,4 +54,6 @@ export interface CalculatePriceParams {
   customerId?: string;
   countryId: string;
   quantity?: number;
+  currencyCode?: string;
+  cartRuleCodes?: string[];
 }

@@ -71,11 +71,11 @@
 
 ### 💰 Pricing Engine — Advanced Robustnes
 
-- [ ] **Tiered pricing** — price breaks by quantity
-- [ ] **Coupon / Voucher system** — discount codes
-- [ ] **Flash sales** — time-limited deals
-- [ ] **Currency support** — multi-currency with FX rate sync
-- [ ] **B2B pricing** — hidden prices for guests
-- [ ] **Price rounding rules**
-- [ ] **Loyalty points**
-- [ ] **Bundle pricing**
+- [x] **Tiered pricing** — price breaks by quantity
+- [x] **Coupon / Voucher system** — discount codes
+- [x] **Flash sales** — time-limited deals
+- [x] **Currency support** — multi-currency with FX rate sync
+- [x] **B2B pricing** — hidden prices for guests
+- [x] **Price rounding rules**
+- [x] **Loyalty points**
+- [x] **Bundle pricing**

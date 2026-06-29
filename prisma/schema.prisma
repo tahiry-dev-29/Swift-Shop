@@ -1029,6 +1029,9 @@ model SpecificPrice {
   // Priorité (plus haut = prioritaire)
   priority Int @default(1)
 
+  // Flash Sales
+  isFlashSale Boolean @default(false)
+
   active  Boolean  @default(true)
   dateAdd DateTime @default(now())
 
@@ -1038,6 +1041,31 @@ model SpecificPrice {
   customer      Customer?           @relation(fields: [customerId], references: [id], onDelete: Cascade)
   customerGroup CustomerGroup?      @relation(fields: [customerGroupId], references: [id])
   country       Country?            @relation(fields: [countryId], references: [id])
+}
+
+// Cart Rules (Coupons / Vouchers)
+model CartRule {
+  id          String  @id @default(uuid())
+  name        String
+  code        String  @unique
+  description String?
+  priority    Int     @default(1)
+  active      Boolean @default(true)
+
+  // Conditions
+  dateFrom        DateTime?
+  dateTo          DateTime?
+  minimumAmount   Decimal   @default(0.00)
+  quantity        Int       @default(1) // Total usage available
+  quantityPerUser Int       @default(1) // Usage per customer
+
+  // Actions
+  reductionType String // "percentage" ou "amount"
+  reduction     Decimal
+  freeShipping  Boolean @default(false)
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
 }
 
 // ----------------------------------------------------------------------
