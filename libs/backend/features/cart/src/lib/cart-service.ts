@@ -2,11 +2,11 @@ import {
   Injectable,
   BadRequestException,
   NotFoundException,
-  NotImplementedException,
 } from '@nestjs/common';
 import { PrismaService } from '@dima-new/data-access-prisma';
 import { CartMergeService } from './cart-merge.service';
 import { CartPricingService } from './cart-pricing.service';
+import { CartCouponService } from './cart-coupon.service';
 
 @Injectable()
 export class CartService {
@@ -14,6 +14,7 @@ export class CartService {
     private readonly prisma: PrismaService,
     private readonly cartMergeService: CartMergeService,
     private readonly cartPricingService: CartPricingService,
+    private readonly cartCouponService: CartCouponService,
   ) {}
 
   async getOrCreateCart(customerId?: string, sessionId?: string) {
@@ -154,13 +155,11 @@ export class CartService {
   async mergeGuestCart(sessionId: string, customerId: string) {
     return this.cartMergeService.mergeGuestCart(sessionId, customerId);
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async applyCoupon(_cartId: string, _code: string) {
-    throw new NotImplementedException('Coupon system not implemented yet');
+  async applyCoupon(cartId: string, code: string, countryId?: string) {
+    return this.cartCouponService.applyCoupon(cartId, code, countryId);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async removeCoupon(_cartId: string) {
-    throw new NotImplementedException('Coupon system not implemented yet');
+  async removeCoupon(cartId: string, countryId?: string) {
+    return this.cartCouponService.removeCoupon(cartId, countryId);
   }
 }
