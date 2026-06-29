@@ -1,6 +1,21 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@dima-new/prisma-client';
 import { ProductRepository } from './product.repository';
 import { ProductService } from './product.service';
+
+type ProductDuplicationSource = Prisma.ProductGetPayload<{
+  include: {
+    images: true;
+    features: true;
+    combinations: {
+      include: {
+        attributes: true;
+        stock: true;
+      };
+    };
+    stock: true;
+  };
+}>;
 
 @Injectable()
 export class ProductDuplicateService {
@@ -10,7 +25,7 @@ export class ProductDuplicateService {
   ) {}
 
   async duplicate(id: string) {
-    const source = await this.productRepo.findUnique({
+    const source = (await this.productRepo.findUnique({
       where: { id },
       include: {
         images: true,
@@ -23,7 +38,7 @@ export class ProductDuplicateService {
         },
         stock: true,
       },
-    });
+    })) as ProductDuplicationSource | null;
 
     if (!source) {
       throw new NotFoundException(`Product #${id} not found`);
