@@ -207,6 +207,11 @@ export type Cart = Prisma.CartModel
  */
 export type CartItem = Prisma.CartItemModel
 /**
+ * Model CartCoupon
+ * 
+ */
+export type CartCoupon = Prisma.CartCouponModel
+/**
  * Model OrderState
  * 
  */
@@ -256,6 +261,61 @@ export type OrderNote = Prisma.OrderNoteModel
  * 
  */
 export type OrderHistory = Prisma.OrderHistoryModel
+/**
+ * Model Carrier
+ * 
+ */
+export type Carrier = Prisma.CarrierModel
+/**
+ * Model ShippingZone
+ * 
+ */
+export type ShippingZone = Prisma.ShippingZoneModel
+/**
+ * Model ShippingRate
+ * 
+ */
+export type ShippingRate = Prisma.ShippingRateModel
+/**
+ * Model ShipmentEvent
+ * 
+ */
+export type ShipmentEvent = Prisma.ShipmentEventModel
+/**
+ * Model DeliverySlot
+ * 
+ */
+export type DeliverySlot = Prisma.DeliverySlotModel
+/**
+ * Model PickupPoint
+ * 
+ */
+export type PickupPoint = Prisma.PickupPointModel
+/**
+ * Model Payment
+ * 
+ */
+export type Payment = Prisma.PaymentModel
+/**
+ * Model Refund
+ * 
+ */
+export type Refund = Prisma.RefundModel
+/**
+ * Model PaymentWebhookEvent
+ * 
+ */
+export type PaymentWebhookEvent = Prisma.PaymentWebhookEventModel
+/**
+ * Model MvolaTransaction
+ * 
+ */
+export type MvolaTransaction = Prisma.MvolaTransactionModel
+/**
+ * Model AirtelTransaction
+ * 
+ */
+export type AirtelTransaction = Prisma.AirtelTransactionModel
 /**
  * Model Country
  * 
