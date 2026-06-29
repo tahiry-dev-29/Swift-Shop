@@ -26,6 +26,10 @@ export class PricingResolver {
     @Args('customerId', { type: () => ID, nullable: true }) customerId?: string,
     @Args('quantity', { type: () => Int, nullable: true, defaultValue: 1 })
     quantity?: number,
+    @Args('currencyCode', { type: () => String, nullable: true })
+    currencyCode?: string,
+    @Args('cartRuleCodes', { type: () => [String], nullable: true })
+    cartRuleCodes?: string[],
   ) {
     return this.priceCalculationService.calculatePrice({
       productId,
@@ -33,6 +37,8 @@ export class PricingResolver {
       combinationId,
       customerId,
       quantity,
+      currencyCode,
+      cartRuleCodes,
     });
   }
 
