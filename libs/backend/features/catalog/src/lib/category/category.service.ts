@@ -7,31 +7,19 @@ import {
   UpdateCategoryPositionInput,
   CategoryConnectionArgs,
 } from './dto';
-import Redis from 'ioredis';
-
-function generateSlug(name: string): string {
-  return (
-    name.toLowerCase().replace(/[^a-z0-9]+/g, '-') +
-    '-' +
-    Math.random().toString(36).substring(2, 6)
-  );
-}
+import { CategoryCacheService } from './category-cache.service';
+import { generateCategorySlug } from './category.utils';
 
 @Injectable()
 export class CategoryService {
-  private redis = new Redis(
-    process.env['REDIS_URL'] || 'redis://localhost:6379',
-  );
-
-  constructor(private readonly prisma: PrismaService) {}
-
-  private async invalidateCache() {
-    await this.redis.del('categories:all', 'categories:tree');
-  }
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cache: CategoryCacheService,
+  ) {}
 
   async findAll() {
-    const cached = await this.redis.get('categories:all');
-    if (cached) return JSON.parse(cached);
+    const cached = await this.cache.get('categories:all');
+    if (cached) return cached;
 
     const categories = await this.prisma.category.findMany({
       where: { deletedAt: null },
@@ -39,18 +27,13 @@ export class CategoryService {
       include: { parent: true },
     });
 
-    await this.redis.set(
-      'categories:all',
-      JSON.stringify(categories),
-      'EX',
-      3600,
-    );
+    await this.cache.set('categories:all', categories);
     return categories;
   }
 
   async findTree() {
-    const cached = await this.redis.get('categories:tree');
-    if (cached) return JSON.parse(cached);
+    const cached = await this.cache.get('categories:tree');
+    if (cached) return cached;
 
     const categories = await this.prisma.category.findMany({
       where: { parentId: null, deletedAt: null },
@@ -65,12 +48,7 @@ export class CategoryService {
       orderBy: { position: 'asc' },
     });
 
-    await this.redis.set(
-      'categories:tree',
-      JSON.stringify(categories),
-      'EX',
-      3600,
-    );
+    await this.cache.set('categories:tree', categories);
     return categories;
   }
 
@@ -143,7 +121,7 @@ export class CategoryService {
       const parent = await this.findById(input.parentId);
       if (parent) parentPath = parent.path;
     }
-    const slug = input.slug || generateSlug(input.name);
+    const slug = input.slug || generateCategorySlug(input.name);
 
     const result = await this.prisma.$transaction(async (tx) => {
       const category = await tx.category.create({
@@ -157,7 +135,7 @@ export class CategoryService {
       });
     });
 
-    await this.invalidateCache();
+    await this.cache.invalidate();
     return result;
   }
 
@@ -166,14 +144,14 @@ export class CategoryService {
       ...input,
     };
     if (input.name && !input.slug) {
-      data.slug = generateSlug(input.name);
+      data.slug = generateCategorySlug(input.name);
     }
     const result = await this.prisma.category.update({
       where: { id },
       data,
       include: { parent: true },
     });
-    await this.invalidateCache();
+    await this.cache.invalidate();
     return result;
   }
 
@@ -186,7 +164,7 @@ export class CategoryService {
         }),
       ),
     );
-    await this.invalidateCache();
+    await this.cache.invalidate();
     return result;
   }
 
@@ -205,7 +183,7 @@ export class CategoryService {
       },
       data: { deletedAt: new Date() },
     });
-    await this.invalidateCache();
+    await this.cache.invalidate();
     return result;
   }
 }

@@ -4,62 +4,14 @@ import { EmployeeAuthAuditService } from './employee-auth-audit.service';
 import { EmployeeService } from './employee.service';
 import { EmployeeTwoFactorFlowService } from './employee-two-factor-flow.service';
 import { EmployeeAuthResponse } from './dto';
-
-export interface EmployeeGraphQLContext {
-  req: {
-    headers: Record<string, string | string[] | undefined>;
-    ip?: string;
-  };
-  res?: {
-    cookie: (name: string, value: string, options: TrustedDeviceCookie) => void;
-  };
-}
-
-type TrustedDeviceCookie = {
-  httpOnly: boolean;
-  secure: boolean;
-  sameSite: 'strict';
-  maxAge: number;
-  path: string;
-};
-
-type LoginInput = {
-  context: EmployeeGraphQLContext;
-  email: string;
-  password: string;
-  totp?: string;
-  trustedDeviceToken?: string;
-  rememberDevice?: boolean;
-};
-
-type LoginEmployee = {
-  id: string;
-  twoFactorEnabled: boolean;
-  twoFactorSecret?: string | null;
-};
-
-const TRUSTED_DEVICE_COOKIE_NAME = 'dima_trusted_employee_device';
-const TRUSTED_DEVICE_COOKIE_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
-
-function headerValue(value: string | string[] | undefined): string | undefined {
-  return Array.isArray(value) ? value[0] : value;
-}
-
-function requestMeta(context: EmployeeGraphQLContext) {
-  return {
-    ipAddress:
-      headerValue(context.req.headers['x-forwarded-for']) ?? context.req.ip,
-    userAgent: headerValue(context.req.headers['user-agent']),
-  };
-}
-
-function cookieValue(cookieHeader: string | undefined, name: string) {
-  return cookieHeader
-    ?.split(';')
-    .map((cookie) => cookie.trim())
-    .find((cookie) => cookie.startsWith(`${name}=`))
-    ?.slice(name.length + 1);
-}
+import { LoginEmployee, LoginInput } from './employee-auth-flow.types';
+import {
+  TRUSTED_DEVICE_COOKIE_NAME,
+  cookieValue,
+  headerValue,
+  requestMeta,
+  trustedDeviceCookieOptions,
+} from './employee-auth-flow.utils';
 
 @Injectable()
 export class EmployeeAuthFlowService {
@@ -188,17 +140,7 @@ export class EmployeeAuthFlowService {
     input.context.res.cookie(
       TRUSTED_DEVICE_COOKIE_NAME,
       deviceToken,
-      this.trustedDeviceCookieOptions(),
+      trustedDeviceCookieOptions(),
     );
-  }
-
-  private trustedDeviceCookieOptions(): TrustedDeviceCookie {
-    return {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-      maxAge: TRUSTED_DEVICE_COOKIE_MAX_AGE,
-      path: '/',
-    };
   }
 }

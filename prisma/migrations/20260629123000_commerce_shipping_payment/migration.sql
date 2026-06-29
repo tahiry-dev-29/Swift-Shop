@@ -4,10 +4,21 @@ ADD COLUMN "idempotencyKey" TEXT,
 ADD COLUMN "discountTotal" DECIMAL(65,30) NOT NULL DEFAULT 0,
 ADD COLUMN "shippingTotal" DECIMAL(65,30) NOT NULL DEFAULT 0;
 
--- AlterTable
-ALTER TABLE "Shipment"
-ADD COLUMN "carrierId" TEXT,
-ADD COLUMN "status" TEXT NOT NULL DEFAULT 'CREATED';
+-- CreateTable
+CREATE TABLE "Shipment" (
+    "id" TEXT NOT NULL,
+    "orderId" TEXT NOT NULL,
+    "carrierId" TEXT,
+    "trackingNumber" TEXT,
+    "carrier" TEXT,
+    "status" TEXT NOT NULL DEFAULT 'CREATED',
+    "estimatedDeliveryDate" TIMESTAMP(3),
+    "trackingEvents" JSONB,
+    "dateAdd" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "dateUpd" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Shipment_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "CartCoupon" (
@@ -253,3 +264,6 @@ ALTER TABLE "Payment" ADD CONSTRAINT "Payment_orderId_fkey" FOREIGN KEY ("orderI
 
 -- AddForeignKey
 ALTER TABLE "Refund" ADD CONSTRAINT "Refund_paymentId_fkey" FOREIGN KEY ("paymentId") REFERENCES "Payment"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Shipment" ADD CONSTRAINT "Shipment_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE CASCADE ON UPDATE CASCADE;

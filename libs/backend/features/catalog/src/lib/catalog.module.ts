@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { DataAccessPrismaModule } from '@dima-new/data-access-prisma';
+import { CategoryCacheService } from './category/category-cache.service';
 import { CategoryService } from './category/category.service';
 import { CategoryResolver } from './category/category.resolver';
 import { AttributeService } from './attribute/attribute.service';
@@ -28,6 +29,7 @@ import { SearchModule } from '@dima-new/backend/search';
   controllers: [ProductBulkController],
   providers: [
     CatalogDataLoader,
+    CategoryCacheService,
     CategoryService,
     CategoryResolver,
     AttributeService,

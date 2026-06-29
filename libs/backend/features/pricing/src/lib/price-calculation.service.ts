@@ -92,7 +92,7 @@ export class PriceCalculationService {
         where: { code: currencyCode },
       });
       if (!currency) {
-        throw new Error("Currency " + currencyCode + " not found");
+        throw new Error('Currency ' + currencyCode + ' not found');
       }
       exchangeRate = Number(currency.exchangeRate);
     }

@@ -6,10 +6,8 @@ import {
   EmployeeType,
   TwoFactorGenerateResponse,
 } from './dto';
-import {
-  EmployeeAuthFlowService,
-  EmployeeGraphQLContext,
-} from './employee-auth-flow.service';
+import { EmployeeAuthFlowService } from './employee-auth-flow.service';
+import { EmployeeGraphQLContext } from './employee-auth-flow.types';
 
 @Resolver()
 export class EmployeeAuthResolver {
