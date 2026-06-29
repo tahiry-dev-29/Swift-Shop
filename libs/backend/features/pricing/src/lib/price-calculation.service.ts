@@ -91,9 +91,10 @@ export class PriceCalculationService {
       const currency = await this.prisma.currency.findUnique({
         where: { code: currencyCode },
       });
-      if (currency) {
-        exchangeRate = Number(currency.exchangeRate);
+      if (!currency) {
+        throw new Error("Currency " + currencyCode + " not found");
       }
+      exchangeRate = Number(currency.exchangeRate);
     }
 
     const priceHT = this.roundPrice(Math.max(0, price) * exchangeRate);
