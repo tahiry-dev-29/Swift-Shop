@@ -13,12 +13,17 @@ import { OrderCreationService } from './order-creation.service';
 import { OrderActionService } from './order-action.service';
 import {
   OrderType,
-  CreateOrderInput,
   OrderStateType,
   ReturnType,
-  RequestReturnInput,
   OrderNoteType,
 } from './dto/order-types';
+import { InvoiceType, OrderExportType } from './dto/order-artifact-types';
+import {
+  CreateOrderInput,
+  GuestCheckoutInput,
+  RequestReturnInput,
+} from './dto/order-inputs';
+import { CartType } from '@dima-new/backend/cart';
 
 interface CurrentUserType {
   id: string;
@@ -64,7 +69,50 @@ export class OrderResolver {
       input.deliveryAddressId,
       input.billingAddressId,
       input.idempotencyKey,
+      input.deliveryAddressIds,
     );
+  }
+
+  @Mutation(() => OrderType)
+  async createGuestOrder(@Args('input') input: GuestCheckoutInput) {
+    return this.orderCreationService.createGuestOrderFromCart({
+      cartId: input.cartId,
+      email: input.email,
+      firstname: input.firstname,
+      lastname: input.lastname,
+      deliveryAddressId: input.deliveryAddressId,
+      billingAddressId: input.billingAddressId,
+      idempotencyKey: input.idempotencyKey,
+      deliveryAddressIds: input.deliveryAddressIds,
+    });
+  }
+
+  @Mutation(() => InvoiceType)
+  @UseGuards(CustomerGuard)
+  async generateInvoice(
+    @Args('orderId', { type: () => ID }) orderId: string,
+    @CurrentUser() user: CurrentUserType,
+  ) {
+    const order = await this.orderService.getOrder(orderId, user.id);
+    return this.orderService.generateInvoicePDF(order.id);
+  }
+
+  @Mutation(() => CartType)
+  @UseGuards(CustomerGuard)
+  async reorder(
+    @Args('orderId', { type: () => ID }) orderId: string,
+    @CurrentUser() user: CurrentUserType,
+  ) {
+    return this.orderService.reorderToCart(orderId, user.id);
+  }
+
+  @Query(() => OrderExportType)
+  @UseGuards(CustomerGuard)
+  async exportMyOrders(
+    @CurrentUser() user: CurrentUserType,
+    @Args('format', { defaultValue: 'csv' }) format: 'csv' | 'xlsx',
+  ) {
+    return this.orderService.exportOrders(user.id, format);
   }
 
   @Mutation(() => OrderType)

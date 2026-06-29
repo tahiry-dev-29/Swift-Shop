@@ -4,6 +4,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '@dima-new/data-access-prisma';
+import { CartService } from '@dima-new/backend/cart';
+import { OrderExportService } from './order-export.service';
+import { OrderInvoiceService } from './order-invoice.service';
 
 const ALLOWED_ORDER_TRANSITIONS: Record<string, string[]> = {
   PENDING: ['PROCESSING', 'CANCELLED'],
@@ -16,7 +19,12 @@ const ALLOWED_ORDER_TRANSITIONS: Record<string, string[]> = {
 
 @Injectable()
 export class OrderService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cartService: CartService,
+    private readonly orderExportService: OrderExportService,
+    private readonly orderInvoiceService: OrderInvoiceService,
+  ) {}
 
   async getMyOrders(customerId: string) {
     return this.prisma.order.findMany({
@@ -105,27 +113,27 @@ export class OrderService {
   }
 
   async generateInvoicePDF(orderId: string) {
-    const order = await this.prisma.order.findUnique({
-      where: { id: orderId },
-    });
-    if (!order) throw new NotFoundException('Order not found');
+    return this.orderInvoiceService.generateInvoicePDF(orderId);
+  }
 
-    let invoice = await this.prisma.invoice.findUnique({
-      where: { orderId },
-    });
+  async reorderToCart(orderId: string, customerId: string) {
+    const order = await this.getOrder(orderId, customerId);
+    const cart = await this.cartService.getOrCreateCart(customerId);
 
-    if (!invoice) {
-      const invoiceNumber = `INV-${order.reference}`;
-      invoice = await this.prisma.invoice.create({
-        data: {
-          orderId,
-          invoiceNumber,
-          pdfStorageRef: `uploads/invoices/${invoiceNumber}.pdf`,
-        },
-      });
+    for (const item of order.items) {
+      await this.cartService.addToCart(
+        cart.id,
+        item.productId,
+        item.quantity,
+        item.combinationId ?? undefined,
+      );
     }
 
-    return invoice;
+    return this.cartService.getCartWithTotals(cart.id);
+  }
+
+  async exportOrders(customerId: string, format: 'csv' | 'xlsx' = 'csv') {
+    return this.orderExportService.exportOrders(customerId, format);
   }
 
   async addOrderNote(
