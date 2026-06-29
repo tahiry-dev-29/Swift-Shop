@@ -95,3 +95,15 @@ export class ApplyCouponInput {
   @Field()
   code!: string;
 }
+
+@ObjectType()
+export class CartStockReservationType {
+  @Field(() => ID)
+  cartId!: string;
+
+  @Field()
+  expiresAt!: string;
+
+  @Field(() => Int)
+  reservedItems!: number;
+}

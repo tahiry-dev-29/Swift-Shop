@@ -14,7 +14,12 @@ import {
   OptionalCustomerGuard,
 } from '@dima-new/backend/auth';
 import { CartService } from './cart-service';
-import { ApplyCouponInput, CartType, AddToCartInput } from './dto/cart-types';
+import {
+  ApplyCouponInput,
+  CartStockReservationType,
+  CartType,
+  AddToCartInput,
+} from './dto/cart-types';
 
 interface CurrentUserType {
   id: string;
@@ -162,5 +167,11 @@ export class CartResolver {
   @UseGuards(OptionalCustomerGuard)
   async removeCoupon(@Args('cartId', { type: () => ID }) cartId: string) {
     return this.cartService.removeCoupon(cartId);
+  }
+
+  @Mutation(() => CartStockReservationType)
+  @UseGuards(OptionalCustomerGuard)
+  async reserveCartStock(@Args('cartId', { type: () => ID }) cartId: string) {
+    return this.cartService.reserveStock(cartId);
   }
 }

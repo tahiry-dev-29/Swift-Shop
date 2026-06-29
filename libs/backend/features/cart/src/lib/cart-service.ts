@@ -7,6 +7,7 @@ import { PrismaService } from '@dima-new/data-access-prisma';
 import { CartMergeService } from './cart-merge.service';
 import { CartPricingService } from './cart-pricing.service';
 import { CartCouponService } from './cart-coupon.service';
+import { CartStockReservationService } from './cart-stock-reservation.service';
 
 @Injectable()
 export class CartService {
@@ -15,6 +16,7 @@ export class CartService {
     private readonly cartMergeService: CartMergeService,
     private readonly cartPricingService: CartPricingService,
     private readonly cartCouponService: CartCouponService,
+    private readonly cartStockReservationService: CartStockReservationService,
   ) {}
 
   async getOrCreateCart(customerId?: string, sessionId?: string) {
@@ -161,5 +163,16 @@ export class CartService {
 
   async removeCoupon(cartId: string, countryId?: string) {
     return this.cartCouponService.removeCoupon(cartId, countryId);
+  }
+
+  async reserveStock(cartId: string, ttlSeconds?: number) {
+    return this.cartStockReservationService.reserveCartStock(
+      cartId,
+      ttlSeconds,
+    );
+  }
+
+  async releaseReservedStock(cartId: string) {
+    return this.cartStockReservationService.releaseCartStock(cartId);
   }
 }
