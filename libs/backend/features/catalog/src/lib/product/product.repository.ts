@@ -6,27 +6,39 @@ import { Prisma } from '@dima-new/prisma-client';
 export class ProductRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findMany(args: Prisma.ProductFindManyArgs) {
+  findMany<T extends Prisma.ProductFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.ProductFindManyArgs>,
+  ) {
     return this.prisma.product.findMany(args);
   }
 
-  async count(args: Prisma.ProductCountArgs) {
+  count<T extends Prisma.ProductCountArgs>(
+    args: Prisma.SelectSubset<T, Prisma.ProductCountArgs>,
+  ) {
     return this.prisma.product.count(args);
   }
 
-  async findUnique(args: Prisma.ProductFindUniqueArgs) {
+  findUnique<T extends Prisma.ProductFindUniqueArgs>(
+    args: Prisma.SelectSubset<T, Prisma.ProductFindUniqueArgs>,
+  ) {
     return this.prisma.product.findUnique(args);
   }
 
-  async create(args: Prisma.ProductCreateArgs) {
+  create<T extends Prisma.ProductCreateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.ProductCreateArgs>,
+  ) {
     return this.prisma.product.create(args);
   }
 
-  async update(args: Prisma.ProductUpdateArgs) {
+  update<T extends Prisma.ProductUpdateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.ProductUpdateArgs>,
+  ) {
     return this.prisma.product.update(args);
   }
 
-  async delete(args: Prisma.ProductDeleteArgs) {
+  delete<T extends Prisma.ProductDeleteArgs>(
+    args: Prisma.SelectSubset<T, Prisma.ProductDeleteArgs>,
+  ) {
     return this.prisma.product.delete(args);
   }
 
