@@ -33,15 +33,15 @@
 ### Advanced Robustness
 
 - [x] **Idempotency** on `createOrder`
-- [ ] **Soft stock lock** — temporary reservation during checkout (Redis)
-- [ ] **Abandoned cart recovery** — BullMQ scheduler
+- [x] **Soft stock lock** — temporary reservation during checkout (Redis)
+- [x] **Abandoned cart recovery** — Nest scheduler with Redis dedup queue
 - [x] **Payment webhooks** — Stripe / PayPal / MVola / AirtelMoney
-- [ ] **PDF invoice generation** — Puppeteer / PDFKit
+- [x] **PDF invoice generation** — local PDF writer
 - [x] **Strict order state machine** — prevent illegal transitions
-- [ ] **Multi-address checkout**
-- [ ] **Guest checkout**
-- [ ] **Re-order** — one-click re-add past order to cart
-- [ ] **Order export** — CSV/XLSX
+- [x] **Multi-address checkout**
+- [x] **Guest checkout**
+- [x] **Re-order** — one-click re-add past order to cart
+- [x] **Order export** — CSV/XLSX
 
 ---
 
