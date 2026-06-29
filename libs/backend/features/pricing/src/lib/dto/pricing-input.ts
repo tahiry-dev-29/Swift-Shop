@@ -37,6 +37,9 @@ export class CreateSpecificPriceInput {
 
   @Field({ defaultValue: true })
   active!: boolean;
+
+  @Field({ defaultValue: false })
+  isFlashSale!: boolean;
 }
 
 @InputType()
@@ -61,6 +64,9 @@ export class UpdateSpecificPriceInput {
 
   @Field({ nullable: true })
   active?: boolean;
+
+  @Field({ nullable: true })
+  isFlashSale?: boolean;
 }
 
 @InputType()

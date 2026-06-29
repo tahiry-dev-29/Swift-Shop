@@ -15,6 +15,9 @@ export class PriceDetailType {
   specificPriceReduction!: number;
 
   @Field(() => Float)
+  cartRuleReduction!: number;
+
+  @Field(() => Float)
   priceHT!: number;
 
   @Field(() => Float)
@@ -25,6 +28,12 @@ export class PriceDetailType {
 
   @Field(() => Float)
   priceTTC!: number;
+
+  @Field({ nullable: true })
+  currencyCode?: string;
+
+  @Field(() => Int, { defaultValue: 0 })
+  loyaltyPointsEarned?: number;
 }
 
 @ObjectType()
@@ -106,6 +115,9 @@ export class SpecificPriceType {
 
   @Field()
   active!: boolean;
+
+  @Field({ defaultValue: false })
+  isFlashSale!: boolean;
 
   @Field()
   dateAdd!: Date;
