@@ -22,8 +22,8 @@
 
 - [x] `CartService`: `getOrCreateCart`, `addToCart`, `updateQuantity`, `removeFromCart`, `getCartWithTotals`, `clearCart`
 - [x] `CartMergeService`: `mergeGuestCart(sessionId, customerId)`
-- [ ] `applyCoupon(cartId, code)` — validate and apply discount code
-- [ ] `removeCoupon(cartId)` — remove applied coupon
+- [x] `applyCoupon(cartId, code)` — validate and apply discount code
+- [x] `removeCoupon(cartId)` — remove applied coupon
 - [x] `OrderService`: `createOrderFromCart`, `calculateOrderTotals`, `getMyOrders`, `getOrderDetails`
 - [x] `OrderActionService`: `cancelOrder` (stock rollback), `requestReturn`
 - [x] `updateOrderStatus(orderId, statusId)` — with state machine validation
@@ -32,39 +32,39 @@
 
 ### Advanced Robustness
 
-- [ ] **Idempotency** on `createOrder`
-- [ ] **Soft stock lock** — temporary reservation during checkout (Redis)
-- [ ] **Abandoned cart recovery** — BullMQ scheduler
-- [ ] **Payment webhooks** — Stripe / PayPal / MVola / AirtelMoney
-- [ ] **PDF invoice generation** — Puppeteer / PDFKit
-- [ ] **Strict order state machine** — prevent illegal transitions
-- [ ] **Multi-address checkout**
-- [ ] **Guest checkout**
-- [ ] **Re-order** — one-click re-add past order to cart
-- [ ] **Order export** — CSV/XLSX
+- [x] **Idempotency** on `createOrder`
+- [x] **Soft stock lock** — temporary reservation during checkout (Redis)
+- [x] **Abandoned cart recovery** — Nest scheduler with Redis dedup queue
+- [x] **Payment webhooks** — Stripe / PayPal / MVola / AirtelMoney
+- [x] **PDF invoice generation** — local PDF writer
+- [x] **Strict order state machine** — prevent illegal transitions
+- [x] **Multi-address checkout**
+- [x] **Guest checkout**
+- [x] **Re-order** — one-click re-add past order to cart
+- [x] **Order export** — CSV/XLSX
 
 ---
 
 ## 🚚 Delivery & Shipping System
 
-- [ ] `Carrier` — shipping carrier definition
-- [ ] `ShippingZone` — geographic zone
-- [ ] `ShippingRate` — rate per carrier/zone/weight range
-- [ ] `ShipmentEvent` — tracking event log
-- [ ] `DeliverySlot` — time-slot delivery option
-- [ ] `PickupPoint` — relay/pickup point locations
-- [ ] **Carrier Adapters**: Colissimo, DHL, FedEx, Local Madagascar (Sodiat, Espace Logistique)
-- [ ] `ShippingCalculationService`: `getAvailableCarriers`, `calculateShippingCost`
-- [ ] `ShipmentService`: `createShipment`, `updateShipmentStatus`, `syncTrackingFromCarrier`
+- [x] `Carrier` — shipping carrier definition
+- [x] `ShippingZone` — geographic zone
+- [x] `ShippingRate` — rate per carrier/zone/weight range
+- [x] `ShipmentEvent` — tracking event log
+- [x] `DeliverySlot` — time-slot delivery option
+- [x] `PickupPoint` — relay/pickup point locations
+- [x] **Carrier Adapters**: Colissimo, DHL, FedEx, Local Madagascar (Sodiat, Espace Logistique)
+- [x] `ShippingCalculationService`: `getAvailableCarriers`, `calculateShippingCost`
+- [x] `ShipmentService`: `createShipment`, `updateShipmentStatus`, `syncTrackingFromCarrier`
 
 ---
 
 ## 💳 Payment Gateways
 
-- [ ] `Payment` — unified payment record
-- [ ] `Refund` — refund record linked to `Payment`
-- [ ] `MvolaTransaction` — MVola-specific fields
-- [ ] `AirtelTransaction` — AirtelMoney-specific fields
-- [ ] **Payment Adapters**: MVola, AirtelMoney, Stripe, PayPal, COD, Manual
-- [ ] `PaymentService` (orchestrator): `initiatePayment`, `verifyPayment`, `processRefund`
-- [ ] **Security**: HMAC signature verification, Webhook replay protection
+- [x] `Payment` — unified payment record
+- [x] `Refund` — refund record linked to `Payment`
+- [x] `MvolaTransaction` — MVola-specific fields
+- [x] `AirtelTransaction` — AirtelMoney-specific fields
+- [x] **Payment Adapters**: MVola, AirtelMoney, Stripe, PayPal, COD, Manual
+- [x] `PaymentService` (orchestrator): `initiatePayment`, `verifyPayment`, `processRefund`
+- [x] **Security**: HMAC signature verification, Webhook replay protection

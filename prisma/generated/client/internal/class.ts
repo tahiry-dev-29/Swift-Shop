@@ -519,6 +519,16 @@ export interface PrismaClient<
   get cartItem(): Prisma.CartItemDelegate<ExtArgs, { omit: OmitOpts }>;
 
   /**
+   * `prisma.cartCoupon`: Exposes CRUD operations for the **CartCoupon** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CartCoupons
+    * const cartCoupons = await prisma.cartCoupon.findMany()
+    * ```
+    */
+  get cartCoupon(): Prisma.CartCouponDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
    * `prisma.orderState`: Exposes CRUD operations for the **OrderState** model.
     * Example usage:
     * ```ts
@@ -617,6 +627,116 @@ export interface PrismaClient<
     * ```
     */
   get orderHistory(): Prisma.OrderHistoryDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.carrier`: Exposes CRUD operations for the **Carrier** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Carriers
+    * const carriers = await prisma.carrier.findMany()
+    * ```
+    */
+  get carrier(): Prisma.CarrierDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.shippingZone`: Exposes CRUD operations for the **ShippingZone** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ShippingZones
+    * const shippingZones = await prisma.shippingZone.findMany()
+    * ```
+    */
+  get shippingZone(): Prisma.ShippingZoneDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.shippingRate`: Exposes CRUD operations for the **ShippingRate** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ShippingRates
+    * const shippingRates = await prisma.shippingRate.findMany()
+    * ```
+    */
+  get shippingRate(): Prisma.ShippingRateDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.shipmentEvent`: Exposes CRUD operations for the **ShipmentEvent** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ShipmentEvents
+    * const shipmentEvents = await prisma.shipmentEvent.findMany()
+    * ```
+    */
+  get shipmentEvent(): Prisma.ShipmentEventDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.deliverySlot`: Exposes CRUD operations for the **DeliverySlot** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DeliverySlots
+    * const deliverySlots = await prisma.deliverySlot.findMany()
+    * ```
+    */
+  get deliverySlot(): Prisma.DeliverySlotDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.pickupPoint`: Exposes CRUD operations for the **PickupPoint** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PickupPoints
+    * const pickupPoints = await prisma.pickupPoint.findMany()
+    * ```
+    */
+  get pickupPoint(): Prisma.PickupPointDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.payment`: Exposes CRUD operations for the **Payment** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Payments
+    * const payments = await prisma.payment.findMany()
+    * ```
+    */
+  get payment(): Prisma.PaymentDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.refund`: Exposes CRUD operations for the **Refund** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Refunds
+    * const refunds = await prisma.refund.findMany()
+    * ```
+    */
+  get refund(): Prisma.RefundDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.paymentWebhookEvent`: Exposes CRUD operations for the **PaymentWebhookEvent** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PaymentWebhookEvents
+    * const paymentWebhookEvents = await prisma.paymentWebhookEvent.findMany()
+    * ```
+    */
+  get paymentWebhookEvent(): Prisma.PaymentWebhookEventDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.mvolaTransaction`: Exposes CRUD operations for the **MvolaTransaction** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more MvolaTransactions
+    * const mvolaTransactions = await prisma.mvolaTransaction.findMany()
+    * ```
+    */
+  get mvolaTransaction(): Prisma.MvolaTransactionDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.airtelTransaction`: Exposes CRUD operations for the **AirtelTransaction** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AirtelTransactions
+    * const airtelTransactions = await prisma.airtelTransaction.findMany()
+    * ```
+    */
+  get airtelTransaction(): Prisma.AirtelTransactionDelegate<ExtArgs, { omit: OmitOpts }>;
 
   /**
    * `prisma.country`: Exposes CRUD operations for the **Country** model.

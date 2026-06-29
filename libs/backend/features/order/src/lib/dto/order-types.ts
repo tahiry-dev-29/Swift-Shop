@@ -1,4 +1,4 @@
-import { ObjectType, Field, ID, Float, Int, InputType } from '@nestjs/graphql';
+import { ObjectType, Field, ID, Float, Int } from '@nestjs/graphql';
 import { CustomerType } from '@dima-new/backend/customer';
 
 @ObjectType()
@@ -111,6 +111,12 @@ export class OrderType {
   @Field(() => Float)
   totalTTC!: number;
 
+  @Field(() => Float)
+  discountTotal!: number;
+
+  @Field(() => Float)
+  shippingTotal!: number;
+
   @Field(() => [OrderItemType])
   items!: OrderItemType[];
 
@@ -122,18 +128,6 @@ export class OrderType {
 
   @Field()
   dateUpd!: Date;
-}
-
-@InputType()
-export class CreateOrderInput {
-  @Field(() => ID)
-  cartId!: string;
-
-  @Field(() => ID)
-  deliveryAddressId!: string;
-
-  @Field(() => ID, { nullable: true })
-  billingAddressId?: string;
 }
 
 @ObjectType()
@@ -170,30 +164,6 @@ export class ReturnType {
 
   @Field()
   dateAdd!: Date;
-}
-
-@InputType()
-export class RequestReturnInputItem {
-  @Field(() => ID)
-  orderItemId!: string;
-
-  @Field(() => Int)
-  quantity!: number;
-
-  @Field({ nullable: true })
-  reason?: string;
-}
-
-@InputType()
-export class RequestReturnInput {
-  @Field(() => ID)
-  orderId!: string;
-
-  @Field(() => [RequestReturnInputItem])
-  items!: RequestReturnInputItem[];
-
-  @Field({ nullable: true })
-  customerNotes?: string;
 }
 
 @ObjectType()

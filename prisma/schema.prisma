@@ -593,7 +593,8 @@ model Cart {
   customerId String? @unique // Null for guest carts
   sessionId  String? @unique // For guest users
 
-  items CartItem[]
+  items   CartItem[]
+  coupon  CartCoupon?
 
   dateAdd DateTime @default(now())
   dateUpd DateTime @updatedAt
@@ -617,6 +618,23 @@ model CartItem {
   @@unique([cartId, productId, combinationId])
 }
 
+model CartCoupon {
+  id             String   @id @default(uuid())
+  cartId         String   @unique
+  code           String
+  discountType   String   @default("percent") // percent, fixed
+  discountValue  Decimal  @default(0)
+  discountAmount Decimal  @default(0)
+  expiresAt      DateTime?
+
+  cart Cart @relation(fields: [cartId], references: [id], onDelete: Cascade)
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
+
+  @@index([code])
+}
+
 // ----------------------------------------------------------------------
 // ORDERS (Commandes)
 // ----------------------------------------------------------------------
@@ -636,14 +654,18 @@ model Order {
   reference  String @unique // Format: DO-20251210-XXXXX
   customerId String
   stateId    String
+  idempotencyKey String? @unique
 
   totalHT  Decimal @default(0)
   totalTax Decimal @default(0)
   totalTTC Decimal @default(0)
+  discountTotal Decimal @default(0)
+  shippingTotal Decimal @default(0)
 
   items     OrderItem[]
   addresses OrderAddress[]
   shipments Shipment[]
+  payments  Payment[]
   returns   Return[]
   invoice   Invoice?
   notes     OrderNote[]
@@ -696,12 +718,16 @@ model OrderAddress {
 model Shipment {
   id                    String    @id @default(uuid())
   orderId               String
+  carrierId             String?
   trackingNumber        String?
   carrier               String?
+  status                String    @default("CREATED")
   estimatedDeliveryDate DateTime?
   trackingEvents        Json?
 
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order         Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  carrierRef   Carrier?        @relation(fields: [carrierId], references: [id], onDelete: SetNull)
+  events       ShipmentEvent[]
 
   dateAdd DateTime @default(now())
   dateUpd DateTime @updatedAt
@@ -770,6 +796,183 @@ model OrderHistory {
   employee Employee?  @relation(fields: [employeeId], references: [id])
 
   dateAdd DateTime @default(now())
+}
+
+// ----------------------------------------------------------------------
+// SHIPPING
+// ----------------------------------------------------------------------
+
+model Carrier {
+  id            String  @id @default(uuid())
+  code          String  @unique
+  name          String
+  adapter       String  @default("manual") // colissimo, dhl, fedex, local_mg, manual
+  active        Boolean @default(true)
+  trackingUrlTemplate String?
+
+  rates     ShippingRate[]
+  shipments Shipment[]
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
+}
+
+model ShippingZone {
+  id          String  @id @default(uuid())
+  code        String  @unique
+  name        String
+  countries   String[] @default([])
+  active      Boolean @default(true)
+
+  rates ShippingRate[]
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
+}
+
+model ShippingRate {
+  id            String  @id @default(uuid())
+  carrierId     String
+  zoneId        String
+  minWeightGrams Int    @default(0)
+  maxWeightGrams Int?
+  price         Decimal @default(0)
+  currency      String  @default("EUR")
+  active        Boolean @default(true)
+
+  carrier Carrier      @relation(fields: [carrierId], references: [id], onDelete: Cascade)
+  zone    ShippingZone @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
+
+  @@index([carrierId, zoneId])
+}
+
+model ShipmentEvent {
+  id          String   @id @default(uuid())
+  shipmentId  String
+  status      String
+  description String?
+  location    String?
+  occurredAt  DateTime @default(now())
+  rawPayload   Json?
+
+  shipment Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+
+  dateAdd DateTime @default(now())
+}
+
+model DeliverySlot {
+  id        String   @id @default(uuid())
+  zoneId    String?
+  label     String
+  startsAt  DateTime
+  endsAt    DateTime
+  capacity  Int      @default(0)
+  active    Boolean  @default(true)
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
+
+  @@index([zoneId, startsAt])
+}
+
+model PickupPoint {
+  id        String  @id @default(uuid())
+  code      String  @unique
+  name      String
+  carrierId String?
+  address1  String
+  address2  String?
+  postcode  String
+  city      String
+  country   String
+  latitude  Decimal?
+  longitude Decimal?
+  active    Boolean @default(true)
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
+}
+
+// ----------------------------------------------------------------------
+// PAYMENTS
+// ----------------------------------------------------------------------
+
+model Payment {
+  id            String   @id @default(uuid())
+  orderId       String
+  provider      String
+  status        String   @default("PENDING")
+  amount        Decimal
+  currency      String   @default("EUR")
+  externalId    String?
+  idempotencyKey String? @unique
+  metadata      Json?
+
+  order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  refunds Refund[]
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
+
+  @@index([orderId, provider])
+  @@index([provider, externalId])
+}
+
+model Refund {
+  id         String   @id @default(uuid())
+  paymentId  String
+  amount     Decimal
+  reason     String?
+  status     String   @default("PENDING")
+  externalId String?
+  metadata   Json?
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
+}
+
+model PaymentWebhookEvent {
+  id          String   @id @default(uuid())
+  provider    String
+  eventId     String
+  signature   String?
+  payloadHash String
+  processedAt DateTime?
+  payload     Json
+
+  dateAdd DateTime @default(now())
+
+  @@unique([provider, eventId])
+}
+
+model MvolaTransaction {
+  id            String  @id @default(uuid())
+  paymentId     String  @unique
+  serverCorrelationId String?
+  conversationId String?
+  phoneNumber   String?
+  status        String  @default("PENDING")
+  rawPayload    Json?
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
+}
+
+model AirtelTransaction {
+  id            String  @id @default(uuid())
+  paymentId     String  @unique
+  transactionId String?
+  phoneNumber   String?
+  status        String  @default("PENDING")
+  rawPayload    Json?
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
 }
 
 // ----------------------------------------------------------------------

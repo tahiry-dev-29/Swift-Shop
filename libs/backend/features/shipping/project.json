@@ -1,0 +1,8 @@
+{
+  "name": "shipping",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/backend/features/shipping/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {}
+}
