@@ -44,6 +44,7 @@ export class CartPricingService {
             combination: { include: { stock: true } },
           },
         },
+        coupon: true,
         customer: { include: { country: true, group: true } },
       },
     });
@@ -70,30 +71,38 @@ export class CartPricingService {
       }),
     );
 
+    const totalHT = itemsWithPrices.reduce(
+      (sum, item) =>
+        sum +
+        toNum(item.priceDetail?.priceHT ?? item.product.price) * item.quantity,
+      0,
+    );
+    const totalTax = itemsWithPrices.reduce(
+      (sum, item) =>
+        sum + toNum(item.priceDetail?.taxAmount ?? 0) * item.quantity,
+      0,
+    );
+    const totalTTCBeforeDiscount = itemsWithPrices.reduce(
+      (sum, item) =>
+        sum +
+        toNum(item.priceDetail?.priceTTC ?? item.product.price) * item.quantity,
+      0,
+    );
+    const discountTotal = Math.min(
+      totalTTCBeforeDiscount,
+      toNum(cart.coupon?.discountAmount ?? 0),
+    );
+
     return {
       id: cart.id,
       customerId: cart.customerId ?? undefined,
       sessionId: cart.sessionId ?? undefined,
       items: itemsWithPrices,
-      totalHT: itemsWithPrices.reduce(
-        (sum, item) =>
-          sum +
-          toNum(item.priceDetail?.priceHT ?? item.product.price) *
-            item.quantity,
-        0,
-      ),
-      totalTax: itemsWithPrices.reduce(
-        (sum, item) =>
-          sum + toNum(item.priceDetail?.taxAmount ?? 0) * item.quantity,
-        0,
-      ),
-      totalTTC: itemsWithPrices.reduce(
-        (sum, item) =>
-          sum +
-          toNum(item.priceDetail?.priceTTC ?? item.product.price) *
-            item.quantity,
-        0,
-      ),
+      couponCode: cart.coupon?.code,
+      discountTotal,
+      totalHT,
+      totalTax,
+      totalTTC: Math.max(0, totalTTCBeforeDiscount - discountTotal),
       itemCount: cart.items.reduce((sum, item) => sum + item.quantity, 0),
       dateAdd: cart.dateAdd,
       dateUpd: cart.dateUpd,

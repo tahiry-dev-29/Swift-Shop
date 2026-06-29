@@ -50,6 +50,12 @@ export class CartType {
   @Field(() => [CartItemType])
   items!: CartItemType[];
 
+  @Field(() => String, { nullable: true })
+  couponCode?: string;
+
+  @Field(() => Float)
+  discountTotal!: number;
+
   @Field(() => Float)
   totalHT!: number;
 
@@ -79,4 +85,25 @@ export class AddToCartInput {
 
   @Field(() => Int, { defaultValue: 1 })
   quantity!: number;
+}
+
+@InputType()
+export class ApplyCouponInput {
+  @Field(() => ID)
+  cartId!: string;
+
+  @Field()
+  code!: string;
+}
+
+@ObjectType()
+export class CartStockReservationType {
+  @Field(() => ID)
+  cartId!: string;
+
+  @Field()
+  expiresAt!: string;
+
+  @Field(() => Int)
+  reservedItems!: number;
 }

@@ -84,6 +84,7 @@ export const ModelName = {
   Stock: 'Stock',
   Cart: 'Cart',
   CartItem: 'CartItem',
+  CartCoupon: 'CartCoupon',
   OrderState: 'OrderState',
   Order: 'Order',
   OrderItem: 'OrderItem',
@@ -94,6 +95,17 @@ export const ModelName = {
   Invoice: 'Invoice',
   OrderNote: 'OrderNote',
   OrderHistory: 'OrderHistory',
+  Carrier: 'Carrier',
+  ShippingZone: 'ShippingZone',
+  ShippingRate: 'ShippingRate',
+  ShipmentEvent: 'ShipmentEvent',
+  DeliverySlot: 'DeliverySlot',
+  PickupPoint: 'PickupPoint',
+  Payment: 'Payment',
+  Refund: 'Refund',
+  PaymentWebhookEvent: 'PaymentWebhookEvent',
+  MvolaTransaction: 'MvolaTransaction',
+  AirtelTransaction: 'AirtelTransaction',
   Country: 'Country',
   TaxRule: 'TaxRule',
   SpecificPrice: 'SpecificPrice',
@@ -565,6 +577,21 @@ export const CartItemScalarFieldEnum = {
 export type CartItemScalarFieldEnum = (typeof CartItemScalarFieldEnum)[keyof typeof CartItemScalarFieldEnum]
 
 
+export const CartCouponScalarFieldEnum = {
+  id: 'id',
+  cartId: 'cartId',
+  code: 'code',
+  discountType: 'discountType',
+  discountValue: 'discountValue',
+  discountAmount: 'discountAmount',
+  expiresAt: 'expiresAt',
+  dateAdd: 'dateAdd',
+  dateUpd: 'dateUpd'
+} as const
+
+export type CartCouponScalarFieldEnum = (typeof CartCouponScalarFieldEnum)[keyof typeof CartCouponScalarFieldEnum]
+
+
 export const OrderStateScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -580,9 +607,12 @@ export const OrderScalarFieldEnum = {
   reference: 'reference',
   customerId: 'customerId',
   stateId: 'stateId',
+  idempotencyKey: 'idempotencyKey',
   totalHT: 'totalHT',
   totalTax: 'totalTax',
   totalTTC: 'totalTTC',
+  discountTotal: 'discountTotal',
+  shippingTotal: 'shippingTotal',
   dateAdd: 'dateAdd',
   dateUpd: 'dateUpd'
 } as const
@@ -628,8 +658,10 @@ export type OrderAddressScalarFieldEnum = (typeof OrderAddressScalarFieldEnum)[k
 export const ShipmentScalarFieldEnum = {
   id: 'id',
   orderId: 'orderId',
+  carrierId: 'carrierId',
   trackingNumber: 'trackingNumber',
   carrier: 'carrier',
+  status: 'status',
   estimatedDeliveryDate: 'estimatedDeliveryDate',
   trackingEvents: 'trackingEvents',
   dateAdd: 'dateAdd',
@@ -697,6 +729,173 @@ export const OrderHistoryScalarFieldEnum = {
 } as const
 
 export type OrderHistoryScalarFieldEnum = (typeof OrderHistoryScalarFieldEnum)[keyof typeof OrderHistoryScalarFieldEnum]
+
+
+export const CarrierScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  adapter: 'adapter',
+  active: 'active',
+  trackingUrlTemplate: 'trackingUrlTemplate',
+  dateAdd: 'dateAdd',
+  dateUpd: 'dateUpd'
+} as const
+
+export type CarrierScalarFieldEnum = (typeof CarrierScalarFieldEnum)[keyof typeof CarrierScalarFieldEnum]
+
+
+export const ShippingZoneScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  countries: 'countries',
+  active: 'active',
+  dateAdd: 'dateAdd',
+  dateUpd: 'dateUpd'
+} as const
+
+export type ShippingZoneScalarFieldEnum = (typeof ShippingZoneScalarFieldEnum)[keyof typeof ShippingZoneScalarFieldEnum]
+
+
+export const ShippingRateScalarFieldEnum = {
+  id: 'id',
+  carrierId: 'carrierId',
+  zoneId: 'zoneId',
+  minWeightGrams: 'minWeightGrams',
+  maxWeightGrams: 'maxWeightGrams',
+  price: 'price',
+  currency: 'currency',
+  active: 'active',
+  dateAdd: 'dateAdd',
+  dateUpd: 'dateUpd'
+} as const
+
+export type ShippingRateScalarFieldEnum = (typeof ShippingRateScalarFieldEnum)[keyof typeof ShippingRateScalarFieldEnum]
+
+
+export const ShipmentEventScalarFieldEnum = {
+  id: 'id',
+  shipmentId: 'shipmentId',
+  status: 'status',
+  description: 'description',
+  location: 'location',
+  occurredAt: 'occurredAt',
+  rawPayload: 'rawPayload',
+  dateAdd: 'dateAdd'
+} as const
+
+export type ShipmentEventScalarFieldEnum = (typeof ShipmentEventScalarFieldEnum)[keyof typeof ShipmentEventScalarFieldEnum]
+
+
+export const DeliverySlotScalarFieldEnum = {
+  id: 'id',
+  zoneId: 'zoneId',
+  label: 'label',
+  startsAt: 'startsAt',
+  endsAt: 'endsAt',
+  capacity: 'capacity',
+  active: 'active',
+  dateAdd: 'dateAdd',
+  dateUpd: 'dateUpd'
+} as const
+
+export type DeliverySlotScalarFieldEnum = (typeof DeliverySlotScalarFieldEnum)[keyof typeof DeliverySlotScalarFieldEnum]
+
+
+export const PickupPointScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  carrierId: 'carrierId',
+  address1: 'address1',
+  address2: 'address2',
+  postcode: 'postcode',
+  city: 'city',
+  country: 'country',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  active: 'active',
+  dateAdd: 'dateAdd',
+  dateUpd: 'dateUpd'
+} as const
+
+export type PickupPointScalarFieldEnum = (typeof PickupPointScalarFieldEnum)[keyof typeof PickupPointScalarFieldEnum]
+
+
+export const PaymentScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  provider: 'provider',
+  status: 'status',
+  amount: 'amount',
+  currency: 'currency',
+  externalId: 'externalId',
+  idempotencyKey: 'idempotencyKey',
+  metadata: 'metadata',
+  dateAdd: 'dateAdd',
+  dateUpd: 'dateUpd'
+} as const
+
+export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const RefundScalarFieldEnum = {
+  id: 'id',
+  paymentId: 'paymentId',
+  amount: 'amount',
+  reason: 'reason',
+  status: 'status',
+  externalId: 'externalId',
+  metadata: 'metadata',
+  dateAdd: 'dateAdd',
+  dateUpd: 'dateUpd'
+} as const
+
+export type RefundScalarFieldEnum = (typeof RefundScalarFieldEnum)[keyof typeof RefundScalarFieldEnum]
+
+
+export const PaymentWebhookEventScalarFieldEnum = {
+  id: 'id',
+  provider: 'provider',
+  eventId: 'eventId',
+  signature: 'signature',
+  payloadHash: 'payloadHash',
+  processedAt: 'processedAt',
+  payload: 'payload',
+  dateAdd: 'dateAdd'
+} as const
+
+export type PaymentWebhookEventScalarFieldEnum = (typeof PaymentWebhookEventScalarFieldEnum)[keyof typeof PaymentWebhookEventScalarFieldEnum]
+
+
+export const MvolaTransactionScalarFieldEnum = {
+  id: 'id',
+  paymentId: 'paymentId',
+  serverCorrelationId: 'serverCorrelationId',
+  conversationId: 'conversationId',
+  phoneNumber: 'phoneNumber',
+  status: 'status',
+  rawPayload: 'rawPayload',
+  dateAdd: 'dateAdd',
+  dateUpd: 'dateUpd'
+} as const
+
+export type MvolaTransactionScalarFieldEnum = (typeof MvolaTransactionScalarFieldEnum)[keyof typeof MvolaTransactionScalarFieldEnum]
+
+
+export const AirtelTransactionScalarFieldEnum = {
+  id: 'id',
+  paymentId: 'paymentId',
+  transactionId: 'transactionId',
+  phoneNumber: 'phoneNumber',
+  status: 'status',
+  rawPayload: 'rawPayload',
+  dateAdd: 'dateAdd',
+  dateUpd: 'dateUpd'
+} as const
+
+export type AirtelTransactionScalarFieldEnum = (typeof AirtelTransactionScalarFieldEnum)[keyof typeof AirtelTransactionScalarFieldEnum]
 
 
 export const CountryScalarFieldEnum = {
@@ -812,6 +1011,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

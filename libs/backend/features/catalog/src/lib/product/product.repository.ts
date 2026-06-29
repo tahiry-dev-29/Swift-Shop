@@ -6,7 +6,7 @@ import { Prisma } from '@dima-new/prisma-client';
 export class ProductRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findMany(args: Prisma.ProductFindManyArgs) {
+  async findMany<T extends Prisma.ProductFindManyArgs>(args: T) {
     return this.prisma.product.findMany(args);
   }
 
@@ -14,7 +14,7 @@ export class ProductRepository {
     return this.prisma.product.count(args);
   }
 
-  async findUnique(args: Prisma.ProductFindUniqueArgs) {
+  async findUnique<T extends Prisma.ProductFindUniqueArgs>(args: T) {
     return this.prisma.product.findUnique(args);
   }
 

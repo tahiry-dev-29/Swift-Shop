@@ -1,9 +1,30 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '@dima-new/data-access-prisma';
+import { CartService } from '@dima-new/backend/cart';
+import { OrderExportService } from './order-export.service';
+import { OrderInvoiceService } from './order-invoice.service';
+
+const ALLOWED_ORDER_TRANSITIONS: Record<string, string[]> = {
+  PENDING: ['PROCESSING', 'CANCELLED'],
+  PROCESSING: ['SHIPPED', 'CANCELLED'],
+  SHIPPED: ['DELIVERED', 'RETURNED'],
+  DELIVERED: ['RETURNED'],
+  CANCELLED: [],
+  RETURNED: [],
+};
 
 @Injectable()
 export class OrderService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cartService: CartService,
+    private readonly orderExportService: OrderExportService,
+    private readonly orderInvoiceService: OrderInvoiceService,
+  ) {}
 
   async getMyOrders(customerId: string) {
     return this.prisma.order.findMany({
@@ -56,6 +77,8 @@ export class OrderService {
     });
     if (!newState) throw new NotFoundException('Order state not found');
 
+    this.assertTransitionAllowed(order.state.name, newState.name);
+
     return this.prisma.$transaction(async (tx) => {
       const updatedOrder = await tx.order.update({
         where: { id: orderId },
@@ -76,28 +99,41 @@ export class OrderService {
     });
   }
 
-  async generateInvoicePDF(orderId: string) {
-    const order = await this.prisma.order.findUnique({
-      where: { id: orderId },
-    });
-    if (!order) throw new NotFoundException('Order not found');
-
-    let invoice = await this.prisma.invoice.findUnique({
-      where: { orderId },
-    });
-
-    if (!invoice) {
-      const invoiceNumber = `INV-${order.reference}`;
-      invoice = await this.prisma.invoice.create({
-        data: {
-          orderId,
-          invoiceNumber,
-          pdfStorageRef: `uploads/invoices/${invoiceNumber}.pdf`,
-        },
-      });
+  private assertTransitionAllowed(currentState: string, nextState: string) {
+    if (currentState === nextState) {
+      return;
     }
 
-    return invoice;
+    const allowedStates = ALLOWED_ORDER_TRANSITIONS[currentState] ?? [];
+    if (!allowedStates.includes(nextState)) {
+      throw new BadRequestException(
+        `Illegal order transition from ${currentState} to ${nextState}`,
+      );
+    }
+  }
+
+  async generateInvoicePDF(orderId: string) {
+    return this.orderInvoiceService.generateInvoicePDF(orderId);
+  }
+
+  async reorderToCart(orderId: string, customerId: string) {
+    const order = await this.getOrder(orderId, customerId);
+    const cart = await this.cartService.getOrCreateCart(customerId);
+
+    for (const item of order.items) {
+      await this.cartService.addToCart(
+        cart.id,
+        item.productId,
+        item.quantity,
+        item.combinationId ?? undefined,
+      );
+    }
+
+    return this.cartService.getCartWithTotals(cart.id);
+  }
+
+  async exportOrders(customerId: string, format: 'csv' | 'xlsx' = 'csv') {
+    return this.orderExportService.exportOrders(customerId, format);
   }
 
   async addOrderNote(
