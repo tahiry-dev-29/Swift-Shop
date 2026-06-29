@@ -97,6 +97,7 @@ export const ModelName = {
   Country: 'Country',
   TaxRule: 'TaxRule',
   SpecificPrice: 'SpecificPrice',
+  CartRule: 'CartRule',
   Setting: 'Setting',
   Language: 'Language',
   Currency: 'Currency',
@@ -734,11 +735,34 @@ export const SpecificPriceScalarFieldEnum = {
   dateFrom: 'dateFrom',
   dateTo: 'dateTo',
   priority: 'priority',
+  isFlashSale: 'isFlashSale',
   active: 'active',
   dateAdd: 'dateAdd'
 } as const
 
 export type SpecificPriceScalarFieldEnum = (typeof SpecificPriceScalarFieldEnum)[keyof typeof SpecificPriceScalarFieldEnum]
+
+
+export const CartRuleScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  code: 'code',
+  description: 'description',
+  priority: 'priority',
+  active: 'active',
+  dateFrom: 'dateFrom',
+  dateTo: 'dateTo',
+  minimumAmount: 'minimumAmount',
+  quantity: 'quantity',
+  quantityPerUser: 'quantityPerUser',
+  reductionType: 'reductionType',
+  reduction: 'reduction',
+  freeShipping: 'freeShipping',
+  dateAdd: 'dateAdd',
+  dateUpd: 'dateUpd'
+} as const
+
+export type CartRuleScalarFieldEnum = (typeof CartRuleScalarFieldEnum)[keyof typeof CartRuleScalarFieldEnum]
 
 
 export const SettingScalarFieldEnum = {

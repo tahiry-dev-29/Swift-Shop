@@ -272,6 +272,11 @@ export type TaxRule = Prisma.TaxRuleModel
  */
 export type SpecificPrice = Prisma.SpecificPriceModel
 /**
+ * Model CartRule
+ * 
+ */
+export type CartRule = Prisma.CartRuleModel
+/**
  * Model Setting
  * 
  */
