@@ -63,6 +63,7 @@ export class OrderResolver {
       user.id,
       input.deliveryAddressId,
       input.billingAddressId,
+      input.idempotencyKey,
     );
   }
 

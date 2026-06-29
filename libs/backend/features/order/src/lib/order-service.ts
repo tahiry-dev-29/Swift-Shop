@@ -1,5 +1,18 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '@dima-new/data-access-prisma';
+
+const ALLOWED_ORDER_TRANSITIONS: Record<string, string[]> = {
+  PENDING: ['PROCESSING', 'CANCELLED'],
+  PROCESSING: ['SHIPPED', 'CANCELLED'],
+  SHIPPED: ['DELIVERED', 'RETURNED'],
+  DELIVERED: ['RETURNED'],
+  CANCELLED: [],
+  RETURNED: [],
+};
 
 @Injectable()
 export class OrderService {
@@ -56,6 +69,8 @@ export class OrderService {
     });
     if (!newState) throw new NotFoundException('Order state not found');
 
+    this.assertTransitionAllowed(order.state.name, newState.name);
+
     return this.prisma.$transaction(async (tx) => {
       const updatedOrder = await tx.order.update({
         where: { id: orderId },
@@ -74,6 +89,19 @@ export class OrderService {
 
       return updatedOrder;
     });
+  }
+
+  private assertTransitionAllowed(currentState: string, nextState: string) {
+    if (currentState === nextState) {
+      return;
+    }
+
+    const allowedStates = ALLOWED_ORDER_TRANSITIONS[currentState] ?? [];
+    if (!allowedStates.includes(nextState)) {
+      throw new BadRequestException(
+        `Illegal order transition from ${currentState} to ${nextState}`,
+      );
+    }
   }
 
   async generateInvoicePDF(orderId: string) {

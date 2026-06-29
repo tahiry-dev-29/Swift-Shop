@@ -27,7 +27,18 @@ export class OrderCreationService {
     customerId: string,
     deliveryAddressId: string,
     billingAddressId?: string,
+    idempotencyKey?: string,
   ) {
+    if (idempotencyKey) {
+      const existingOrder = await this.prisma.order.findUnique({
+        where: { idempotencyKey },
+        include: { state: true, items: true, addresses: true },
+      });
+      if (existingOrder) {
+        return existingOrder;
+      }
+    }
+
     const cart = await this.cartService.getCartWithTotals(cartId);
 
     if (!cart.items || cart.items.length === 0) {
@@ -69,6 +80,8 @@ export class OrderCreationService {
           totalHT: cart.totalHT ?? 0,
           totalTax: cart.totalTax ?? 0,
           totalTTC: cart.totalTTC ?? 0,
+          discountTotal: cart.discountTotal ?? 0,
+          idempotencyKey,
         },
         include: { state: true },
       });

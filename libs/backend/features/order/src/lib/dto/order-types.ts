@@ -111,6 +111,12 @@ export class OrderType {
   @Field(() => Float)
   totalTTC!: number;
 
+  @Field(() => Float)
+  discountTotal!: number;
+
+  @Field(() => Float)
+  shippingTotal!: number;
+
   @Field(() => [OrderItemType])
   items!: OrderItemType[];
 
@@ -134,6 +140,9 @@ export class CreateOrderInput {
 
   @Field(() => ID, { nullable: true })
   billingAddressId?: string;
+
+  @Field({ nullable: true })
+  idempotencyKey?: string;
 }
 
 @ObjectType()
