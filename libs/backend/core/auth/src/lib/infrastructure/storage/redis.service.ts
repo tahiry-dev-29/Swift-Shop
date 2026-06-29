@@ -62,4 +62,19 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
       }
     }
   }
+
+  async keysByPattern(pattern: string): Promise<string[]> {
+    const foundKeys: string[] = [];
+    const stream = this.client.scanStream({ match: pattern, count: 100 });
+    for await (const keys of stream) {
+      if (Array.isArray(keys) && keys.length > 0) {
+        foundKeys.push(...keys);
+      }
+    }
+    return foundKeys;
+  }
+
+  async ttl(key: string): Promise<number> {
+    return this.client.ttl(key);
+  }
 }
