@@ -15,9 +15,9 @@
 
 ## 💬 Customer Support & Live Chat
 
-- [ ] Prisma models: `SupportTicket`, `TicketMessage`, `LiveChatSession`, `ChatMessage`
-- [ ] `SupportTicketService`: `createTicket`, `replyToTicket`, `assignTicket`
-- [ ] `LiveChatGateway` (WebSocket): `joinChat`, `sendMessage`, `agentTyping`
+- [x] Prisma models: `SupportTicket`, `TicketMessage`, `LiveChatSession`, `ChatMessage`
+- [x] `SupportTicketService`: `createTicket`, `replyToTicket`, `assignTicket`
+- [x] `LiveChatGateway` (WebSocket): `joinChat`, `sendMessage`, `agentTyping`
 - [ ] **Frontend**: `SupportTicketListComponent`, `LiveChatWidgetComponent`
 
 ---
