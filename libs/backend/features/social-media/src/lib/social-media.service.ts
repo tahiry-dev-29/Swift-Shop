@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -47,7 +47,7 @@ export class SocialMediaService {
   async getPost(id: string): Promise<SocialPostType> {
     const post = await this.repository.getPostById(id);
     if (!post) {
-      throw new NotFoundException(`Post not found`);
+      throw new NotFoundException(`Post #${id} not found`);
     }
     return this.formatter.formatPost(post);
   }
@@ -74,17 +74,49 @@ export class SocialMediaService {
       return;
     }
 
-    const jobPromises = pendingPosts.map((post) =>
-      this.queue.add(
-        SOCIAL_MEDIA_JOBS.PUBLISH_POST,
-        { postId: post.id },
-        { priority: SOCIAL_MEDIA_PRIORITY.NORMAL },
-      ),
+    const queuedPosts = [];
+    for (const post of pendingPosts) {
+      try {
+        const updated = await this.repository.updatePostStatusIfScheduled(
+          post.id,
+          'QUEUED',
+        );
+        if (updated) {
+          queuedPosts.push(updated);
+        }
+      } catch (err) {
+        // Buffer errors to avoid I/O bottlenecks in the loop
+      }
+    }
+
+    const errors = [];
+    // ... logic ...
+    // After loop, log all errors
+    if (errors.length > 0) {
+      this.logger.error(`Failed to process ${errors.length} posts`, { errors });
+    }
+
+    const jobPromises = queuedPosts.map((post) =>
+      this.queue
+        .add(
+          SOCIAL_MEDIA_JOBS.PUBLISH_POST,
+          { postId: post.id },
+          { priority: SOCIAL_MEDIA_PRIORITY.NORMAL },
+        )
+        .catch((err) => {
+          this.logger.error(`Failed to queue job for post ${post.id}: ${err}`);
+          return this.repository.updatePostStatus(
+            post.id,
+            'SCHEDULED',
+            undefined,
+            'Failed to queue job',
+          );
+        }),
     );
 
     await Promise.all(jobPromises);
     this.logger.log(
-      `Master Summary: Queued ${pendingPosts.length} scheduled posts for publishing`,
+      `Master Summary: Queued ${queuedPosts.length} scheduled posts for publishing`,
     );
   }
 }

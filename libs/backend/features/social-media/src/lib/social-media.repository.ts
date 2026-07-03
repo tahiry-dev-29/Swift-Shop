@@ -40,9 +40,33 @@ export class SocialMediaRepository {
       data: {
         status,
         externalId,
-        errorMessage,
+        errorMessage:
+          errorMessage ?? (status === 'PUBLISHED' ? null : undefined),
         ...(status === 'PUBLISHED' ? { publishedAt: new Date() } : {}),
       },
+    });
+  }
+
+  async updatePostStatusIfScheduled(
+    id: string,
+    newStatus: string,
+  ): Promise<SocialPost | null> {
+    const result = await this.prisma.socialPost.updateMany({
+      where: {
+        id,
+        status: 'SCHEDULED',
+      },
+      data: {
+        status: newStatus,
+      },
+    });
+
+    if (result.count === 0) {
+      return null;
+    }
+
+    return this.prisma.socialPost.findUnique({
+      where: { id },
     });
   }
 
