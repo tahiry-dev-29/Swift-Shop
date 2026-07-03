@@ -71,10 +71,8 @@ export class CreateTicketInput {
 
 @InputType()
 export class ReplyTicketInput {
-  @Field()
-  senderType!: string;
+  senderType?: string;
 
-  @Field(() => ID, { nullable: true })
   senderId?: string;
 
   @Field()

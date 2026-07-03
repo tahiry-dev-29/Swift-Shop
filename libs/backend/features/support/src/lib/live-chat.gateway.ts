@@ -6,6 +6,7 @@ import {
   ConnectedSocket,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
@@ -32,13 +33,32 @@ export class LiveChatGateway
 
   @SubscribeMessage('joinChat')
   async joinChat(
-    @MessageBody() data: { sessionId: string },
+    @MessageBody() data: { sessionId?: string; customerId?: string },
     @ConnectedSocket() client: Socket,
   ) {
-    client.join(data.sessionId);
-    this.logger.log(`Client ${client.id} joined session ${data.sessionId}`);
+    let sessionId = data.sessionId;
 
-    return { event: 'joined', data: { sessionId: data.sessionId } };
+    if (sessionId) {
+      const existing = await this.prisma.liveChatSession.findUnique({
+        where: { id: sessionId },
+      });
+      if (!existing) {
+        throw new WsException(`Session ${sessionId} not found`);
+      }
+    } else {
+      const session = await this.prisma.liveChatSession.create({
+        data: {
+          customerId: data.customerId ?? null,
+          status: 'ACTIVE',
+        },
+      });
+      sessionId = session.id;
+    }
+
+    client.join(sessionId);
+    this.logger.log(`Client ${client.id} joined session ${sessionId}`);
+
+    return { event: 'joined', data: { sessionId } };
   }
 
   @SubscribeMessage('sendMessage')
@@ -52,7 +72,13 @@ export class LiveChatGateway
     },
     @ConnectedSocket() client: Socket,
   ) {
-    // Save to DB
+    const session = await this.prisma.liveChatSession.findUnique({
+      where: { id: data.sessionId },
+    });
+    if (!session) {
+      throw new WsException(`Session ${data.sessionId} not found`);
+    }
+
     const message = await this.prisma.chatMessage.create({
       data: {
         sessionId: data.sessionId,
@@ -62,7 +88,6 @@ export class LiveChatGateway
       },
     });
 
-    // Broadcast to others in the room
     client.to(data.sessionId).emit('newMessage', message);
 
     return { event: 'messageSent', data: message };
