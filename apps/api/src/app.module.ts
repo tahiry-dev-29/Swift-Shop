@@ -20,6 +20,7 @@ import { CartModule } from '@dima-new/backend/cart';
 import { OrderModule } from '@dima-new/backend/order';
 import { ShippingModule } from '@dima-new/backend/shipping';
 import { PaymentModule } from '@dima-new/backend/payment';
+import { AnalyticsModule } from '@dima-new/backend/analytics';
 import { SearchModule } from '@dima-new/backend/search';
 import { MediaModule } from '@dima-new/backend/media';
 import { SettingsModule } from '@dima-new/backend/settings';
@@ -86,6 +87,7 @@ import { ExpressAdapter } from '@bull-board/express';
     OrderModule,
     ShippingModule,
     PaymentModule,
+    AnalyticsModule,
     SearchModule,
     MediaModule,
     SettingsModule,
