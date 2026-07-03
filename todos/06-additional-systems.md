@@ -24,9 +24,9 @@
 
 ## 📬 Email Messaging System (Inbox & Compose)
 
-- [ ] Prisma models: `EmailMessage`, `EmailThread`, `EmailTemplate`, `EmailAttachment`
-- [ ] `MessagingService`: `sendMessage`, `replyToThread`, `getInbox`, `getThread`
-- [ ] `EmailTemplateService`: CRUD for admin templates
+- [x] Prisma models: `EmailMessage`, `EmailThread`, `EmailTemplate`, `EmailAttachment`
+- [x] `MessagingService`: `sendMessage`, `replyToThread`, `getInbox`, `getThread`
+- [x] `EmailTemplateService`: CRUD for admin templates
 - [ ] **Frontend**: `MailboxComponent`, `ThreadDetailComponent`, `ComposeModalComponent`
 
 ---

@@ -1119,3 +1119,47 @@ model Store {
   dateAdd DateTime @default(now())
   dateUpd DateTime @updatedAt
 }
+
+// ----------------------------------------------------------------------
+// MESSAGING & EMAILS
+// ----------------------------------------------------------------------
+
+model EmailTemplate {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  subject   String
+  bodyHtml  String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EmailThread {
+  id        String         @id @default(uuid())
+  subject   String
+  messages  EmailMessage[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model EmailMessage {
+  id          String            @id @default(uuid())
+  threadId    String
+  thread      EmailThread       @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  senderId    String?           // customerId or employeeId or "SYSTEM"
+  recipientId String?           // customerId or employeeId
+  body        String            @db.Text
+  status      String            @default("PENDING") // PENDING, SENT, FAILED
+  attachments EmailAttachment[]
+  createdAt   DateTime          @default(now())
+}
+
+model EmailAttachment {
+  id        String       @id @default(uuid())
+  messageId String
+  message   EmailMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  fileUrl   String
+  fileName  String
+  mimeType  String
+  size      Int
+  createdAt DateTime     @default(now())
+}
