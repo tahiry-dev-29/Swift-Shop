@@ -28,6 +28,14 @@ export class MessagingService {
     subject: string,
     body: string,
   ) {
+    if (recipientId) {
+      const recipientEmail = await this.messageRepo.getEmailForUser(recipientId);
+      if (!recipientEmail) {
+        throw new NotFoundException(`Recipient with ID ${recipientId} not found`);
+      }
+    }
+
+    const thread = await this.threadRepo.create({ subject });
     if (recipientId && recipientId !== 'SYSTEM') {
       const email = await this.messageRepo.getEmailForUser(recipientId);
       if (!email) {
