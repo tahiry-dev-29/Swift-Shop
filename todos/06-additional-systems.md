@@ -44,14 +44,14 @@
 
 - [ ] Prisma models: `DailySalesSnapshot`, `ProductViewEvent`
 - [ ] `AnalyticsService`: `getDashboardStats`, `getSalesChart`, `getTopProducts`
-- [ ] **Frontend**: `AnalyticsDashboardComponent`, `SalesChartComponent`, `ReportExportComponent`
+- [ ] **Frontend**: `AnalyticsDashboardComponent`, `SalesChartComponent`, `ReportExportComponent
 
 ---
 
 ## 📱 Social Sharing — Facebook & Instagram
 
-- [ ] `SocialPost` model & scheduled publishing
-- [ ] **Facebook Integration**: Graph API, Page Access Tokens, Facebook Pixel
-- [ ] **Facebook Catalog**: Product Feed XML sync
-- [ ] **Instagram Integration**: Product tagging, Stories publishing
+- [x] `SocialPost` model & scheduled publishing
+- [x] **Facebook Integration**: Graph API, Page Access Tokens, Facebook Pixel
+- [x] **Facebook Catalog**: Product Feed XML sync
+- [x] **Instagram Integration**: Product tagging, Stories publishing
 - [ ] **Frontend**: `ShareButtonComponent`, `SocialPublisherComponent` (Admin)

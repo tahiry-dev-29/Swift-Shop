@@ -51,6 +51,9 @@
       "@dima-new/backend/media": ["./libs/backend/core/media/src/index.ts"],
       "@dima-new/backend/settings": [
         "./libs/backend/features/settings/src/index.ts"
+      ],
+      "@dima-new/backend/social-media": [
+        "./libs/backend/features/social-media/src/index.ts"
       ]
     }
   },

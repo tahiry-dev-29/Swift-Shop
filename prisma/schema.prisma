@@ -225,6 +225,7 @@ model Employee {
   orderNotes     OrderNote[]
   orderHistories OrderHistory[]
   priceHistories PriceHistory[]
+  socialPosts    SocialPost[]
 }
 
 model AuditLog {
@@ -1118,4 +1119,26 @@ model Store {
 
   dateAdd DateTime @default(now())
   dateUpd DateTime @updatedAt
+}
+
+// ----------------------------------------------------------------------
+// SOCIAL MEDIA
+// ----------------------------------------------------------------------
+
+model SocialPost {
+  id           String    @id @default(uuid())
+  content      String
+  platform     String    // 'FACEBOOK', 'INSTAGRAM'
+  status       String    @default("DRAFT") // 'DRAFT', 'SCHEDULED', 'PUBLISHED', 'FAILED'
+  scheduledFor DateTime?
+  publishedAt  DateTime?
+  mediaUrls    String[]  @default([])
+  externalId   String?   // ID returned by the platform
+  errorMessage String?
+
+  employeeId   String?
+  employee     Employee? @relation(fields: [employeeId], references: [id])
+
+  dateAdd      DateTime  @default(now())
+  dateUpd      DateTime  @updatedAt
 }
