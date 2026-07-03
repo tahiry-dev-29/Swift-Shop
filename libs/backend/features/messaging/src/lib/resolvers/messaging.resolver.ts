@@ -21,8 +21,11 @@ export class MessagingResolver {
 
   @Query(() => EmailThreadType)
   @UseGuards(CustomerGuard)
-  async emailThread(@Args('id', { type: () => ID }) id: string) {
-    return this.messagingService.getThread(id);
+  async emailThread(
+    @Args('id', { type: () => ID }) id: string,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.messagingService.getThread(id, user.id);
   }
 
   @Mutation(() => EmailThreadType)

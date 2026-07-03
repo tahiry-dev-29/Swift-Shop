@@ -16,10 +16,16 @@ export class EmailThreadRepository {
       where: { id },
       include: {
         messages: {
-          orderBy: { createdAt: 'desc' },
-          take: 1,
+          orderBy: { createdAt: 'asc' },
         },
       },
+    });
+  }
+
+  async touch(id: string) {
+    return this.prisma.emailThread.update({
+      where: { id },
+      data: { updatedAt: new Date() },
     });
   }
 
@@ -28,7 +34,7 @@ export class EmailThreadRepository {
       where: {
         messages: {
           some: {
-            recipientId: userId,
+            OR: [{ recipientId: userId }, { senderId: userId }],
           },
         },
       },

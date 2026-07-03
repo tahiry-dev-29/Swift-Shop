@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { EmailThreadRepository } from '../repositories/email-thread.repository';
@@ -23,6 +28,15 @@ export class MessagingService {
     subject: string,
     body: string,
   ) {
+    if (recipientId && recipientId !== 'SYSTEM') {
+      const email = await this.messageRepo.getEmailForUser(recipientId);
+      if (!email) {
+        throw new BadRequestException(
+          `Recipient #${recipientId} does not exist`,
+        );
+      }
+    }
+
     const thread = await this.threadRepo.create({ subject });
     const message = await this.messageRepo.create({
       threadId: thread.id,
@@ -55,13 +69,25 @@ export class MessagingService {
       throw new NotFoundException(`Thread #${threadId} not found`);
     }
 
-    // Determine recipient from previous messages
-    const lastMessage = thread.messages[0];
+    // Verify sender is a participant of the thread
+    const isParticipant = thread.messages.some(
+      (m) => m.senderId === senderId || m.recipientId === senderId,
+    );
+    if (!isParticipant) {
+      throw new ForbiddenException('You do not have access to this thread');
+    }
+
+    // Determine recipient from previous messages (the last message is at index length - 1)
+    const lastMessage = thread.messages[thread.messages.length - 1];
     const recipientId = lastMessage
       ? lastMessage.senderId === senderId
         ? lastMessage.recipientId
         : lastMessage.senderId
       : undefined;
+
+    if (recipientId === 'SYSTEM') {
+      throw new BadRequestException('Cannot reply to a system message');
+    }
 
     const message = await this.messageRepo.create({
       threadId,
@@ -69,6 +95,9 @@ export class MessagingService {
       recipientId: recipientId ?? undefined,
       body,
     });
+
+    // Update parent thread's updatedAt timestamp
+    await this.threadRepo.touch(threadId);
 
     await this.emailQueue.add(
       JOB_TYPES.SEND_EMAIL,
@@ -87,11 +116,19 @@ export class MessagingService {
     return this.threadRepo.findInbox(userId);
   }
 
-  async getThread(threadId: string) {
+  async getThread(threadId: string, userId: string) {
     const thread = await this.threadRepo.findById(threadId);
     if (!thread) {
       throw new NotFoundException(`Thread #${threadId} not found`);
     }
+
+    const isParticipant = thread.messages.some(
+      (m) => m.senderId === userId || m.recipientId === userId,
+    );
+    if (!isParticipant) {
+      throw new ForbiddenException('You do not have access to this thread');
+    }
+
     return thread;
   }
 }
