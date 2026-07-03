@@ -99,7 +99,12 @@ export class NotificationGateway implements OnModuleInit, OnModuleDestroy {
       throw new WsException('Authentication required');
     }
 
-    const payload = this.jwtService.verify<JwtPayload>(token);
+    let payload: JwtPayload;
+    try {
+      payload = this.jwtService.verify<JwtPayload>(token);
+    } catch {
+      throw new WsException('Invalid or expired token');
+    }
     const expectedRecipient =
       payload.type === 'customer'
         ? { customerId: payload.sub }
