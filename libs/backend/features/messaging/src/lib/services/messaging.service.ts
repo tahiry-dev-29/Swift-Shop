@@ -69,6 +69,14 @@ export class MessagingService {
       throw new NotFoundException(`Thread #${threadId} not found`);
     }
 
+    // Ensure the sender is a participant in the thread
+    const isParticipant = thread.messages.some(
+      (m) => m.senderId === senderId || m.recipientId === senderId
+    );
+    if (!isParticipant) {
+      throw new ForbiddenException('You do not have permission to reply to this thread');
+    }
+
     // Verify sender is a participant of the thread
     const isParticipant = thread.messages.some(
       (m) => m.senderId === senderId || m.recipientId === senderId,
