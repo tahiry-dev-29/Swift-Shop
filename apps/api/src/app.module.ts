@@ -24,6 +24,7 @@ import { AnalyticsModule } from '@dima-new/backend/analytics';
 import { SearchModule } from '@dima-new/backend/search';
 import { MediaModule } from '@dima-new/backend/media';
 import { SettingsModule } from '@dima-new/backend/settings';
+import { SocialMediaModule } from '@dima-new/backend/social-media';
 import { MessagingModule } from '@dima-new/backend/messaging';
 import { SupportModule } from '@backend/features/support';
 import { NotificationModule } from '@dima-new/backend/notifications';
@@ -94,6 +95,7 @@ import { ExpressAdapter } from '@bull-board/express';
     SearchModule,
     MediaModule,
     SettingsModule,
+    SocialMediaModule,
     MessagingModule,
     SupportModule,
     NotificationModule,
