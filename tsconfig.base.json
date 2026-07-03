@@ -54,6 +54,8 @@
       ],
       "@backend/features/support": [
         "./libs/backend/features/support/src/index.ts"
+      "@dima-new/backend/notifications": [
+        "./libs/backend/features/notifications/src/index.ts"
       ]
     }
   },

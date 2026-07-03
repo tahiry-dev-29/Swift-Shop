@@ -177,6 +177,9 @@ model Customer {
 
   supportTickets SupportTicket[]
   chatSessions   LiveChatSession[]
+  notifications  Notification[]
+  notificationPreferences NotificationPreference[]
+  pushSubscriptions PushSubscription[]
 }
 
 model CustomerGroup {
@@ -231,6 +234,9 @@ model Employee {
 
   supportTickets SupportTicket[]
   chatSessions   LiveChatSession[]
+  notifications  Notification[]
+  notificationPreferences NotificationPreference[]
+  pushSubscriptions PushSubscription[]
 }
 
 model AuditLog {
@@ -979,6 +985,76 @@ model AirtelTransaction {
 
   dateAdd DateTime @default(now())
   dateUpd DateTime @updatedAt
+}
+
+// ----------------------------------------------------------------------
+// NOTIFICATIONS
+// ----------------------------------------------------------------------
+
+model Notification {
+  id          String    @id @default(uuid())
+  customerId  String?
+  employeeId  String?
+  type        String
+  channel     String    @default("IN_APP")
+  title       String
+  body        String
+  data        Json?
+  readAt      DateTime?
+  deliveredAt DateTime?
+  failedAt    DateTime?
+  failureReason String?
+
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  employee Employee? @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
+
+  @@index([customerId, readAt, dateAdd])
+  @@index([employeeId, readAt, dateAdd])
+  @@index([type, dateAdd])
+}
+
+model NotificationPreference {
+  id         String  @id @default(uuid())
+  customerId String?
+  employeeId String?
+  type       String
+  channel    String
+  enabled    Boolean @default(true)
+
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  employee Employee? @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
+
+  @@unique([customerId, type, channel])
+  @@unique([employeeId, type, channel])
+  @@index([customerId])
+  @@index([employeeId])
+}
+
+model PushSubscription {
+  id         String  @id @default(uuid())
+  customerId String?
+  employeeId String?
+  endpoint   String  @unique
+  p256dh     String
+  auth       String
+  platform   String?
+  provider   String  @default("WEB_PUSH")
+  active     Boolean @default(true)
+
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  employee Employee? @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
+
+  @@index([customerId, active])
+  @@index([employeeId, active])
 }
 
 // ----------------------------------------------------------------------
