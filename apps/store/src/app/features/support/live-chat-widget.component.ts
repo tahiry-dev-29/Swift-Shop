@@ -101,15 +101,15 @@ export class LiveChatWidgetComponent implements OnInit, OnDestroy {
   private socket!: Socket;
 
   ngOnInit() {
-    this.socket = io('http://localhost:3000/live-chat', {
+    this.socket = io('http://localhost:3000/support', {
       autoConnect: false,
     });
 
-    this.socket.on('messageReceived', (message: ChatMessage) => {
+    this.socket.on('newMessage', (message: ChatMessage) => {
       this.messages.update((msgs) => [...msgs, message]);
     });
 
-    this.socket.on('agentTyping', (isTyping: boolean) => {
+    this.socket.on('typingStatus', ({ isTyping }: { isTyping: boolean }) => {
       this.agentTyping.set(isTyping);
     });
   }
