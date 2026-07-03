@@ -47,7 +47,7 @@ export class SocialMediaService {
   async getPost(id: string): Promise<SocialPostType> {
     const post = await this.repository.getPostById(id);
     if (!post) {
-      throw new Error(`Post not found`);
+      throw new NotFoundException(`Post not found`);
     }
     return this.formatter.formatPost(post);
   }
