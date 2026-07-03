@@ -22,9 +22,6 @@ export class MessagingResolver {
   @Query(() => EmailThreadType)
   @UseGuards(CustomerGuard)
   async emailThread(
-  @Query(() => EmailThreadType)
-  @UseGuards(CustomerGuard)
-  async emailThread(
     @Args('id', { type: () => ID }) id: string,
     @CurrentUser() user: AuthUser,
   ) {

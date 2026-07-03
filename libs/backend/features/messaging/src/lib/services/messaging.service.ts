@@ -29,18 +29,11 @@ export class MessagingService {
     body: string,
   ) {
     if (recipientId) {
-      const recipientEmail = await this.messageRepo.getEmailForUser(recipientId);
+      const recipientEmail =
+        await this.messageRepo.getEmailForUser(recipientId);
       if (!recipientEmail) {
-        throw new NotFoundException(`Recipient with ID ${recipientId} not found`);
-      }
-    }
-
-    const thread = await this.threadRepo.create({ subject });
-    if (recipientId && recipientId !== 'SYSTEM') {
-      const email = await this.messageRepo.getEmailForUser(recipientId);
-      if (!email) {
-        throw new BadRequestException(
-          `Recipient #${recipientId} does not exist`,
+        throw new NotFoundException(
+          `Recipient with ID ${recipientId} not found`,
         );
       }
     }
@@ -79,18 +72,12 @@ export class MessagingService {
 
     // Ensure the sender is a participant in the thread
     const isParticipant = thread.messages.some(
-      (m) => m.senderId === senderId || m.recipientId === senderId
-    );
-    if (!isParticipant) {
-      throw new ForbiddenException('You do not have permission to reply to this thread');
-    }
-
-    // Verify sender is a participant of the thread
-    const isParticipant = thread.messages.some(
       (m) => m.senderId === senderId || m.recipientId === senderId,
     );
     if (!isParticipant) {
-      throw new ForbiddenException('You do not have access to this thread');
+      throw new ForbiddenException(
+        'You do not have permission to reply to this thread',
+      );
     }
 
     // Determine recipient from previous messages (the last message is at index length - 1)

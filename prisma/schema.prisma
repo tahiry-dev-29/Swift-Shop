@@ -1259,9 +1259,10 @@ model SocialPost {
 
   dateAdd      DateTime  @default(now())
   dateUpd      DateTime  @updatedAt
+}
+
 // MESSAGING & EMAILS
 // ----------------------------------------------------------------------
-
 model EmailTemplate {
   id        String   @id @default(uuid())
   name      String   @unique
@@ -1300,8 +1301,7 @@ model EmailAttachment {
   mimeType  String
   size      Int
   createdAt DateTime     @default(now())
-// SUPPORT & LIVE CHAT
-// ----------------------------------------------------------------------
+}
 
 model SupportTicket {
   id         String  @id @default(uuid())

@@ -57,8 +57,13 @@
       ],
       "@dima-new/backend/social-media": [
         "./libs/backend/features/social-media/src/index.ts"
+      ],
       "@dima-new/backend/messaging": [
         "./libs/backend/features/messaging/src/index.ts"
+      ],
+      "@dima-new/backend/notifications": [
+        "./libs/backend/features/notifications/src/index.ts"
+      ],
       "@backend/features/support": [
         "./libs/backend/features/support/src/index.ts"
       ]
