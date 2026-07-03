@@ -175,12 +175,6 @@ model Customer {
   orderNotes     OrderNote[]
   productReviews ProductReview[]
   productViewEvents ProductViewEvent[]
-
-  supportTickets SupportTicket[]
-  chatSessions   LiveChatSession[]
-  notifications  Notification[]
-  notificationPreferences NotificationPreference[]
-  pushSubscriptions PushSubscription[]
 }
 
 model CustomerGroup {
@@ -500,7 +494,7 @@ model ProductViewEvent {
   ipAddress  String?
   dateAdd    DateTime @default(now())
 
-  product  Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product  Product   @relation(fields: [productId], references: [id], onDelete: Restrict)
   customer Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
 
   @@index([productId, dateAdd])
@@ -510,7 +504,7 @@ model ProductViewEvent {
 
 model DailySalesSnapshot {
   id           String   @id @default(uuid())
-  date         DateTime
+  date         DateTime @db.Date
   ordersCount  Int      @default(0)
   itemsSold    Int      @default(0)
   grossSales   Decimal  @default(0)
