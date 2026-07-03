@@ -139,8 +139,8 @@ export class NotificationRepository {
         provider: input.provider ?? 'WEB_PUSH',
       },
       update: {
-        customerId: recipient.customerId,
-        employeeId: recipient.employeeId,
+        customerId: recipient.customerId ?? null,
+        employeeId: recipient.employeeId ?? null,
         p256dh: input.p256dh,
         auth: input.auth,
         platform: input.platform,
@@ -184,7 +184,11 @@ export class NotificationRepository {
     if (recipient.customerId) {
       return { customerId: recipient.customerId };
     }
-
-    return { employeeId: recipient.employeeId };
+    if (recipient.employeeId) {
+      return { employeeId: recipient.employeeId };
+    }
+    throw new Error(
+      'Invalid recipient: customerId or employeeId must be provided',
+    );
   }
 }

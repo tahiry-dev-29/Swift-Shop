@@ -36,7 +36,8 @@ export class NotificationService {
 
   async send(input: SendNotificationInput) {
     const recipient = this.assertRecipient(input.recipient);
-    const channels = input.channels?.length ? input.channels : ['IN_APP'];
+    const rawChannels = input.channels?.length ? input.channels : ['IN_APP'];
+    const channels = Array.from(new Set(rawChannels));
     const data = this.parseJson(input.dataJson);
     const created = [];
 
@@ -84,8 +85,9 @@ export class NotificationService {
     options: { limit?: number; unreadOnly?: boolean },
   ) {
     const recipient = this.recipientFromActor(actorType, actorId);
+    const limit = Math.max(1, Math.min(options.limit ?? 20, 100));
     const notifications = await this.repository.findForRecipient(recipient, {
-      limit: Math.min(options.limit ?? 20, 100),
+      limit,
       unreadOnly: options.unreadOnly,
     });
 
