@@ -45,6 +45,9 @@
       "@dima-new/backend/payment": [
         "libs/backend/features/payment/src/index.ts"
       ],
+      "@dima-new/backend/analytics": [
+        "libs/backend/features/analytics/src/index.ts"
+      ],
       "@dima-new/backend/search": ["libs/backend/core/search/src/index.ts"],
       "meilisearch": ["node_modules/meilisearch/dist/index.d.ts"],
       "@dima-new/prisma-client": ["prisma/generated/client/client.ts"],
@@ -54,6 +57,10 @@
       ],
       "@dima-new/backend/social-media": [
         "./libs/backend/features/social-media/src/index.ts"
+      "@dima-new/backend/messaging": [
+        "./libs/backend/features/messaging/src/index.ts"
+      "@backend/features/support": [
+        "./libs/backend/features/support/src/index.ts"
       ]
     }
   },
