@@ -84,7 +84,7 @@ export class SocialMediaService {
         if (updated) {
           queuedPosts.push(updated);
         }
-      } catch (err) {
+      } catch (_err) {
         // Buffer errors to avoid I/O bottlenecks in the loop
       }
     }
