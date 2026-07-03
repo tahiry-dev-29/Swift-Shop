@@ -8,12 +8,6 @@ export class ProductViewEventType {
   @Field(() => ID)
   productId!: string;
 
-  @Field(() => ID, { nullable: true })
-  customerId?: string;
-
-  @Field({ nullable: true })
-  sessionId?: string;
-
   @Field({ nullable: true })
   source?: string;
 

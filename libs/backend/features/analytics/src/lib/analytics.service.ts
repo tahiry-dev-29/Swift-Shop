@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { AnalyticsFormatter } from './analytics.formatter';
 import { AnalyticsRepository } from './analytics.repository';
 import { AnalyticsDateRange } from './interfaces/analytics-row.interface';
@@ -36,6 +40,11 @@ export class AnalyticsService {
       normalizedRange,
       safeLimit,
     );
+
+    if (salesRows.length === 0) {
+      return [];
+    }
+
     const productIds = salesRows.map((row) => row.productId);
     const [viewRows, products] = await Promise.all([
       this.analyticsRepository.getProductViewsByProduct(
@@ -57,7 +66,40 @@ export class AnalyticsService {
       throw new NotFoundException('Product not found');
     }
 
-    return this.analyticsRepository.createProductViewEvent(input);
+    const ipAddress = this.anonymizeIp(input.ipAddress);
+
+    return this.analyticsRepository.createProductViewEvent({
+      ...input,
+      ipAddress,
+    });
+  }
+
+  private anonymizeIp(ip?: string): string | undefined {
+    if (!ip) {
+      return undefined;
+    }
+
+    const parts = ip.split(',');
+    const primaryIp = parts[0].trim();
+
+    // IPv4
+    if (primaryIp.includes('.')) {
+      const octets = primaryIp.split('.');
+      if (octets.length === 4) {
+        octets[3] = '0';
+        return octets.join('.');
+      }
+    }
+
+    // IPv6
+    if (primaryIp.includes(':')) {
+      const segments = primaryIp.split(':');
+      if (segments.length >= 3) {
+        return segments.slice(0, 3).join(':') + ':0:0:0:0:0';
+      }
+    }
+
+    return primaryIp;
   }
 
   private normalizeRange(
@@ -67,6 +109,12 @@ export class AnalyticsService {
     const from =
       range.from ??
       new Date(to.getTime() - DEFAULT_RANGE_DAYS * 24 * 60 * 60 * 1000);
+
+    if (from.getTime() > to.getTime()) {
+      throw new BadRequestException(
+        'Invalid date range: from date cannot be later than to date',
+      );
+    }
 
     return { from, to };
   }

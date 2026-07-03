@@ -1,6 +1,11 @@
-import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard, SuperAdminGuard } from '@dima-new/backend/auth';
+import {
+  JwtAuthGuard,
+  SuperAdminGuard,
+  OptionalCustomerGuard,
+  CurrentUser,
+} from '@dima-new/backend/auth';
 import { AnalyticsService } from './analytics.service';
 import {
   DashboardStatsType,
@@ -9,6 +14,17 @@ import {
   TopProductType,
   TrackProductViewInput,
 } from './dto';
+
+interface CurrentUserType {
+  id: string;
+}
+
+interface GraphQLContext {
+  req: {
+    ip?: string;
+    headers: Record<string, string | string[] | undefined>;
+  };
+}
 
 @Resolver()
 export class AnalyticsResolver {
@@ -44,7 +60,23 @@ export class AnalyticsResolver {
   }
 
   @Mutation(() => ProductViewEventType)
-  trackProductView(@Args('input') input: TrackProductViewInput) {
-    return this.analyticsService.trackProductView(input);
+  @UseGuards(OptionalCustomerGuard)
+  trackProductView(
+    @Context() context: GraphQLContext,
+    @CurrentUser() user: CurrentUserType | null,
+    @Args('input') input: TrackProductViewInput,
+  ) {
+    const ip =
+      (context.req.headers['x-forwarded-for'] as string) || context.req.ip;
+
+    return this.analyticsService.trackProductView({
+      productId: input.productId,
+      sessionId: input.sessionId,
+      source: input.source,
+      userAgent:
+        input.userAgent || (context.req.headers['user-agent'] as string),
+      customerId: user?.id,
+      ipAddress: ip,
+    });
   }
 }

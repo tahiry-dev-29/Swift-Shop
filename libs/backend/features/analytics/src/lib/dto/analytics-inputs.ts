@@ -5,7 +5,6 @@ export class TrackProductViewInput {
   @Field(() => ID)
   productId!: string;
 
-  @Field(() => ID, { nullable: true })
   customerId?: string;
 
   @Field({ nullable: true })
@@ -17,6 +16,5 @@ export class TrackProductViewInput {
   @Field({ nullable: true })
   userAgent?: string;
 
-  @Field({ nullable: true })
   ipAddress?: string;
 }

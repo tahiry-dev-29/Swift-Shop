@@ -16,19 +16,37 @@ export class AnalyticsRepository {
 
   async getDashboardStats(range: Required<AnalyticsDateRange>) {
     const [salesRow] = await this.prisma.$queryRaw<DashboardStatsRow[]>`
+      WITH order_stats AS (
+        SELECT
+          o.id,
+          o."totalTTC",
+          o."totalHT",
+          o."totalTax",
+          o."discountTotal",
+          o."shippingTotal"
+        FROM "Order" o
+        LEFT JOIN "OrderState" os ON os.id = o."stateId"
+        WHERE o."dateAdd" >= ${range.from}
+          AND o."dateAdd" <= ${range.to}
+          AND os.name NOT IN ('CANCELLED', 'RETURNED')
+      ),
+      item_stats AS (
+        SELECT
+          COALESCE(SUM(oi.quantity), 0)::int AS "itemsSold"
+        FROM "Order" o
+        LEFT JOIN "OrderItem" oi ON oi."orderId" = o.id
+        LEFT JOIN "OrderState" os ON os.id = o."stateId"
+        WHERE o."dateAdd" >= ${range.from}
+          AND o."dateAdd" <= ${range.to}
+          AND os.name NOT IN ('CANCELLED', 'RETURNED')
+      )
       SELECT
-        COUNT(DISTINCT o.id)::int AS "ordersCount",
-        COALESCE(SUM(oi.quantity), 0)::int AS "itemsSold",
-        COALESCE(SUM(oi."totalTTC"), 0) AS "grossSales",
-        COALESCE(SUM(oi."totalHT"), 0) AS "netSales",
-        COALESCE(SUM(oi."totalTTC" - oi."totalHT"), 0) AS "taxTotal",
+        (SELECT COUNT(*)::int FROM order_stats) AS "ordersCount",
+        (SELECT "itemsSold" FROM item_stats) AS "itemsSold",
+        COALESCE((SELECT SUM("totalTTC" + "discountTotal" - "shippingTotal") FROM order_stats), 0) AS "grossSales",
+        COALESCE((SELECT SUM("totalHT") FROM order_stats), 0) AS "netSales",
+        COALESCE((SELECT SUM("totalTax") FROM order_stats), 0) AS "taxTotal",
         0::int AS "productViews"
-      FROM "Order" o
-      LEFT JOIN "OrderItem" oi ON oi."orderId" = o.id
-      LEFT JOIN "OrderState" os ON os.id = o."stateId"
-      WHERE o."dateAdd" >= ${range.from}
-        AND o."dateAdd" <= ${range.to}
-        AND os.name NOT IN ('CANCELLED', 'RETURNED')
     `;
 
     const productViews = await this.countProductViews(range);
@@ -45,20 +63,42 @@ export class AnalyticsRepository {
 
   getSalesChart(range: Required<AnalyticsDateRange>) {
     return this.prisma.$queryRaw<SalesChartRow[]>`
+      WITH order_days AS (
+        SELECT
+          DATE_TRUNC('day', o."dateAdd")::date AS "date",
+          o.id,
+          o."totalTTC",
+          o."totalHT",
+          o."discountTotal",
+          o."shippingTotal"
+        FROM "Order" o
+        LEFT JOIN "OrderState" os ON os.id = o."stateId"
+        WHERE o."dateAdd" >= ${range.from}
+          AND o."dateAdd" <= ${range.to}
+          AND os.name NOT IN ('CANCELLED', 'RETURNED')
+      ),
+      item_days AS (
+        SELECT
+          DATE_TRUNC('day', o."dateAdd")::date AS "date",
+          COALESCE(SUM(oi.quantity), 0)::int AS "itemsSold"
+        FROM "Order" o
+        LEFT JOIN "OrderItem" oi ON oi."orderId" = o.id
+        LEFT JOIN "OrderState" os ON os.id = o."stateId"
+        WHERE o."dateAdd" >= ${range.from}
+          AND o."dateAdd" <= ${range.to}
+          AND os.name NOT IN ('CANCELLED', 'RETURNED')
+        GROUP BY DATE_TRUNC('day', o."dateAdd")::date
+      )
       SELECT
-        DATE_TRUNC('day', o."dateAdd")::date AS "date",
-        COUNT(DISTINCT o.id)::int AS "ordersCount",
-        COALESCE(SUM(oi.quantity), 0)::int AS "itemsSold",
-        COALESCE(SUM(oi."totalTTC"), 0) AS "grossSales",
-        COALESCE(SUM(oi."totalHT"), 0) AS "netSales"
-      FROM "Order" o
-      LEFT JOIN "OrderItem" oi ON oi."orderId" = o.id
-      LEFT JOIN "OrderState" os ON os.id = o."stateId"
-      WHERE o."dateAdd" >= ${range.from}
-        AND o."dateAdd" <= ${range.to}
-        AND os.name NOT IN ('CANCELLED', 'RETURNED')
-      GROUP BY DATE_TRUNC('day', o."dateAdd")::date
-      ORDER BY "date" ASC
+        od."date",
+        COUNT(DISTINCT od.id)::int AS "ordersCount",
+        COALESCE(MAX(id.itemsSold), 0)::int AS "itemsSold",
+        COALESCE(SUM(od."totalTTC" + od."discountTotal" - od."shippingTotal"), 0) AS "grossSales",
+        COALESCE(SUM(od."totalHT"), 0) AS "netSales"
+      FROM order_days od
+      LEFT JOIN item_days id ON id."date" = od."date"
+      GROUP BY od."date"
+      ORDER BY od."date" ASC
     `;
   }
 
