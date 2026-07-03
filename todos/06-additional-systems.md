@@ -42,8 +42,8 @@
 
 ## 📊 Analytics & Reports
 
-- [ ] Prisma models: `DailySalesSnapshot`, `ProductViewEvent`
-- [ ] `AnalyticsService`: `getDashboardStats`, `getSalesChart`, `getTopProducts`
+- [x] Prisma models: `DailySalesSnapshot`, `ProductViewEvent`
+- [x] `AnalyticsService`: `getDashboardStats`, `getSalesChart`, `getTopProducts`
 - [ ] **Frontend**: `AnalyticsDashboardComponent`, `SalesChartComponent`, `ReportExportComponent`
 
 ---
