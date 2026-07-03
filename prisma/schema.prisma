@@ -177,6 +177,10 @@ model Customer {
 
   supportTickets SupportTicket[]
   chatSessions   LiveChatSession[]
+  notifications  Notification[]
+  notificationPreferences NotificationPreference[]
+  pushSubscriptions PushSubscription[]
+  productViewEvents ProductViewEvent[]
 }
 
 model CustomerGroup {
@@ -231,6 +235,9 @@ model Employee {
 
   supportTickets SupportTicket[]
   chatSessions   LiveChatSession[]
+  notifications  Notification[]
+  notificationPreferences NotificationPreference[]
+  pushSubscriptions PushSubscription[]
 }
 
 model AuditLog {
@@ -456,6 +463,7 @@ model Product {
   cartItems      CartItem[]
 
   reviews        ProductReview[]
+  viewEvents     ProductViewEvent[]
   labels         ProductLabel[]
   relatedTo      RelatedProduct[] @relation("ProductToRelated")
   relatedFrom    RelatedProduct[] @relation("RelatedToProduct")
@@ -480,6 +488,40 @@ model ProductReview {
 
   dateAdd DateTime @default(now())
   dateUpd DateTime @updatedAt
+}
+
+model ProductViewEvent {
+  id         String   @id @default(uuid())
+  productId  String
+  customerId String?
+  sessionId  String?
+  source     String?
+  userAgent  String?
+  ipAddress  String?
+  dateAdd    DateTime @default(now())
+
+  product  Product   @relation(fields: [productId], references: [id], onDelete: Restrict)
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@index([productId, dateAdd])
+  @@index([customerId, dateAdd])
+  @@index([dateAdd])
+}
+
+model DailySalesSnapshot {
+  id           String   @id @default(uuid())
+  date         DateTime @db.Date
+  ordersCount  Int      @default(0)
+  itemsSold    Int      @default(0)
+  grossSales   Decimal  @default(0)
+  netSales     Decimal  @default(0)
+  taxTotal     Decimal  @default(0)
+  averageOrder Decimal  @default(0)
+  dateAdd      DateTime @default(now())
+  dateUpd      DateTime @updatedAt
+
+  @@unique([date])
+  @@index([date])
 }
 
 model ProductLabel {
@@ -979,6 +1021,76 @@ model AirtelTransaction {
 
   dateAdd DateTime @default(now())
   dateUpd DateTime @updatedAt
+}
+
+// ----------------------------------------------------------------------
+// NOTIFICATIONS
+// ----------------------------------------------------------------------
+
+model Notification {
+  id          String    @id @default(uuid())
+  customerId  String?
+  employeeId  String?
+  type        String
+  channel     String    @default("IN_APP")
+  title       String
+  body        String
+  data        Json?
+  readAt      DateTime?
+  deliveredAt DateTime?
+  failedAt    DateTime?
+  failureReason String?
+
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  employee Employee? @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
+
+  @@index([customerId, readAt, dateAdd])
+  @@index([employeeId, readAt, dateAdd])
+  @@index([type, dateAdd])
+}
+
+model NotificationPreference {
+  id         String  @id @default(uuid())
+  customerId String?
+  employeeId String?
+  type       String
+  channel    String
+  enabled    Boolean @default(true)
+
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  employee Employee? @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
+
+  @@unique([customerId, type, channel])
+  @@unique([employeeId, type, channel])
+  @@index([customerId])
+  @@index([employeeId])
+}
+
+model PushSubscription {
+  id         String  @id @default(uuid())
+  customerId String?
+  employeeId String?
+  endpoint   String  @unique
+  p256dh     String
+  auth       String
+  platform   String?
+  provider   String  @default("WEB_PUSH")
+  active     Boolean @default(true)
+
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  employee Employee? @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  dateAdd DateTime @default(now())
+  dateUpd DateTime @updatedAt
+
+  @@index([customerId, active])
+  @@index([employeeId, active])
 }
 
 // ----------------------------------------------------------------------

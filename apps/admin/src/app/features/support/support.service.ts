@@ -9,6 +9,7 @@ export interface SupportTicket {
   status: string;
   priority: string;
   dateAdd: string;
+  createdAt: string;
   customer?: { id: string; email: string };
 }
 

@@ -45,6 +45,9 @@
       "@dima-new/backend/payment": [
         "libs/backend/features/payment/src/index.ts"
       ],
+      "@dima-new/backend/analytics": [
+        "libs/backend/features/analytics/src/index.ts"
+      ],
       "@dima-new/backend/search": ["libs/backend/core/search/src/index.ts"],
       "meilisearch": ["node_modules/meilisearch/dist/index.d.ts"],
       "@dima-new/prisma-client": ["prisma/generated/client/client.ts"],

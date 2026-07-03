@@ -22,8 +22,8 @@ export class SupportTicketService {
   ) {}
 
   async createTicket(dto: CreateTicketDto) {
-    const reference = `TKT-${Date.now()}`;
-
+    const randomSuffix = Math.random().toString(36).slice(2, 6).toUpperCase();
+    const reference = `TKT-${Date.now()}-${randomSuffix}`;
     const data = {
       reference,
       customerId: dto.customerId,

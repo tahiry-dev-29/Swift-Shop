@@ -4,12 +4,12 @@
 
 ## 🔔 Notifications System
 
-- [ ] Prisma models: `Notification`, `NotificationPreference`, `PushSubscription`
-- [ ] `NotificationService` (core dispatcher): `send`, `markAsRead`, `getUnreadCount`
-- [ ] `PushNotificationService`: Web Push (VAPID) + FCM
-- [ ] `SmsNotificationService`: Twilio / Africa's Talking
-- [ ] **Real-Time Transport**: WebSocket Gateway + SSE fallback
-- [ ] **Frontend**: `NotificationBellComponent`, `NotificationCenterComponent`, `NotificationToastComponent`
+- [x] Prisma models: `Notification`, `NotificationPreference`, `PushSubscription`
+- [x] `NotificationService` (core dispatcher): `send`, `markAsRead`, `getUnreadCount`
+- [x] `PushNotificationService`: Web Push (VAPID) + FCM
+- [x] `SmsNotificationService`: Twilio / Africa's Talking
+- [x] **Real-Time Transport**: WebSocket Gateway + SSE fallback
+- [x] **Frontend**: `NotificationBellComponent`, `NotificationCenterComponent`, `NotificationToastComponent`
 
 ---
 
@@ -42,8 +42,8 @@
 
 ## 📊 Analytics & Reports
 
-- [ ] Prisma models: `DailySalesSnapshot`, `ProductViewEvent`
-- [ ] `AnalyticsService`: `getDashboardStats`, `getSalesChart`, `getTopProducts`
+- [x] Prisma models: `DailySalesSnapshot`, `ProductViewEvent`
+- [x] `AnalyticsService`: `getDashboardStats`, `getSalesChart`, `getTopProducts`
 - [ ] **Frontend**: `AnalyticsDashboardComponent`, `SalesChartComponent`, `ReportExportComponent`
 
 ---
