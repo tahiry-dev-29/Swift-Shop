@@ -80,7 +80,7 @@ import { SupportService } from './support.service';
                   {{ ticket.priority }}
                 </td>
                 <td class="p-4 border-b text-sm text-gray-500">
-                  {{ ticket.createdAt | date: 'mediumDate' }}
+                  {{ ticket.dateAdd | date: 'mediumDate' }}
                 </td>
               </tr>
             </ng-template>

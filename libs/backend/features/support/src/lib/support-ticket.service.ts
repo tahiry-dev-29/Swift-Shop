@@ -1,4 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { SupportTicketRepository } from './support-ticket.repository';
 import { SupportTicketFormatter } from './support-ticket.formatter';
 import {
@@ -39,6 +44,16 @@ export class SupportTicketService {
   }
 
   async replyToTicket(ticketId: string, dto: ReplyTicketDto) {
+    const ticket = await this.repository.findTicketById(ticketId);
+    if (!ticket) {
+      throw new NotFoundException(`Ticket #${ticketId} not found`);
+    }
+
+    // BOLA protection: customers can only reply to their own tickets
+    if (dto.senderType === 'CUSTOMER' && ticket.customerId !== dto.senderId) {
+      throw new ForbiddenException('You do not have access to this ticket');
+    }
+
     const data = {
       ticketId,
       senderType: dto.senderType,
