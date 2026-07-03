@@ -23,6 +23,7 @@ import { PaymentModule } from '@dima-new/backend/payment';
 import { SearchModule } from '@dima-new/backend/search';
 import { MediaModule } from '@dima-new/backend/media';
 import { SettingsModule } from '@dima-new/backend/settings';
+import { NotificationModule } from '@dima-new/backend/notifications';
 import { validateEnvironment } from './config/env.validation';
 import { HealthModule } from './health/health.module';
 import { BullModule } from '@nestjs/bullmq';
@@ -89,6 +90,7 @@ import { ExpressAdapter } from '@bull-board/express';
     SearchModule,
     MediaModule,
     SettingsModule,
+    NotificationModule,
     HealthModule,
   ],
   controllers: [AppController],
