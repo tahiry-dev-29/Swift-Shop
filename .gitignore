@@ -57,12 +57,12 @@ vitest.config.*.timestamp*
 .env.production
 !.env.example
 
-/libs/data-access-prisma/src/lib/generated/prisma
-
-# tools
+tools/
+.agents/
 
 .claude/worktrees
 .nx/polygraph
 .nx/self-healing
 
-prisma/generated/
+# Prisma generated client
+prisma/generated-client
