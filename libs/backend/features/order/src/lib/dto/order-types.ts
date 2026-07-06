@@ -1,5 +1,5 @@
 import { ObjectType, Field, ID, Float, Int } from '@nestjs/graphql';
-import { CustomerType } from '@dima-new/backend/customer';
+import { CustomerType } from '@swift-shop/backend/customer';
 
 @ObjectType()
 export class OrderStateType {

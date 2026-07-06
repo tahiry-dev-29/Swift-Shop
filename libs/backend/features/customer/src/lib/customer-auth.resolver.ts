@@ -1,7 +1,7 @@
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { UnauthorizedException, UseGuards } from '@nestjs/common';
-import { CartService } from '@dima-new/backend/cart';
-import { AuthRateLimitGuard, AuthService } from '@dima-new/backend/auth';
+import { CartService } from '@swift-shop/backend/cart';
+import { AuthRateLimitGuard, AuthService } from '@swift-shop/backend/auth';
 import { CustomerService } from './customer.service';
 import { CustomerAuthResponse, CustomerRegisterInput } from './dto';
 

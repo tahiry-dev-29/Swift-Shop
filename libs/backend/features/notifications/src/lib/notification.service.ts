@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma } from '@dima-new/prisma-client';
+import { Prisma } from '@swift-shop/prisma-client';
 import {
   NotificationPreferenceInput,
   PushSubscriptionInput,

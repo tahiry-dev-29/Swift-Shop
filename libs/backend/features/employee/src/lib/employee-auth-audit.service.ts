@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AuthService } from '@dima-new/backend/auth';
+import { AuthService } from '@swift-shop/backend/auth';
 
 type RequestMeta = {
   ipAddress?: string;

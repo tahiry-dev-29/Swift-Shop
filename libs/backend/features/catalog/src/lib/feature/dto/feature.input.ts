@@ -12,12 +12,12 @@ export class CreateFeatureInput {
   @Field()
   @IsString()
   @IsNotEmpty()
-  name: string;
+  declare name: string;
 
   @Field()
   @IsString()
   @IsNotEmpty()
-  publicName: string;
+  declare publicName: string;
 
   @Field(() => Int, { nullable: true })
   @IsOptional()
@@ -27,12 +27,12 @@ export class CreateFeatureInput {
 
 @InputType()
 export class UpdateFeatureInput {
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   @IsOptional()
   @IsString()
   name?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   @IsOptional()
   @IsString()
   publicName?: string;
@@ -48,14 +48,14 @@ export class CreateFeatureValueInput {
   @Field()
   @IsString()
   @IsNotEmpty()
-  value: string;
+  declare value: string;
 
   @Field(() => Int, { nullable: true })
   @IsOptional()
   @IsInt()
   position?: number;
 
-  @Field({ nullable: true })
+  @Field(() => Boolean, { nullable: true })
   @IsOptional()
   @IsBoolean()
   custom?: boolean;
@@ -63,7 +63,7 @@ export class CreateFeatureValueInput {
 
 @InputType()
 export class UpdateFeatureValueInput {
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   @IsOptional()
   @IsString()
   value?: string;
@@ -73,7 +73,7 @@ export class UpdateFeatureValueInput {
   @IsInt()
   position?: number;
 
-  @Field({ nullable: true })
+  @Field(() => Boolean, { nullable: true })
   @IsOptional()
   @IsBoolean()
   custom?: boolean;

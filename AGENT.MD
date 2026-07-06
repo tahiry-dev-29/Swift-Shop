@@ -59,11 +59,6 @@
 * For handling GET requests, strictly use the new modern resources: **`httpResource()`**, **`resource()`**, or **`rxResource()`**.
 * Alternatively, use classic RxJS Observables handled via the `async` pipe, utilizing operators like `.map()`, `.filter()`, and `.switchMap()`.
 
-#### ⚛️ React / Next.js
-
-* Stick to modern best practices: **TanStack Query** or **SWR** for data fetching.
-* Use `useMemo` for optimization, **Zod** for validation, native Form Actions, **React Hook Form**, or **TanStack Form**.
-
 #### 🟢 Backend
 
 * Follow the standard **Nest.js Clean Architecture** principles as outlined in the core guidelines.
@@ -92,8 +87,8 @@ No shortcuts. Write highly defensive, strongly-typed code.
 
 ## 🎨 4. Design System (UI/UX Pro Max)
 
-* **Core UI Stack:** **PrimeNG 20** paired with **TailwindCSS 4**.
-* **Icons:** Pure **SVG icons only** via PrimeIcons. Emojis are strictly banned inside the actual user interface.
+* **Core UI Stack:** **TailwindCSS 4**.
+* **Icons:** Pure **SVG icons only**. Emojis are strictly banned inside the actual user interface.
 * **Accessibility & Mobile UX:**
   * Maintain a minimum **44x44px touch target** size for all interactive elements to avoid misclicks.
   * Ensure a strict **4.5:1 color contrast ratio** for text readability.

@@ -8,10 +8,10 @@ export class CreateProductInput {
   @Field()
   name!: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   description?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   descriptionShort?: string;
 
   @Field(() => Float, { nullable: true })
@@ -29,13 +29,13 @@ export class CreateProductInput {
   @Field({ nullable: true })
   showPrice?: boolean;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   metaTitle?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   metaDescription?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   linkRewrite?: string;
 
   @Field(() => Float, { nullable: true })
@@ -56,16 +56,16 @@ export class CreateProductInput {
 
 @InputType()
 export class UpdateProductInput {
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   reference?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   name?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   description?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   descriptionShort?: string;
 
   @Field(() => Float, { nullable: true })
@@ -83,13 +83,13 @@ export class UpdateProductInput {
   @Field({ nullable: true })
   showPrice?: boolean;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   metaTitle?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   metaDescription?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   linkRewrite?: string;
 
   @Field(() => Float, { nullable: true })
@@ -125,7 +125,7 @@ export class CreateProductImageInput {
   @Field(() => Int)
   size!: number;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   alt?: string;
 
   @Field({ nullable: true })
@@ -137,7 +137,7 @@ export class CreateProductImageInput {
 
 @InputType()
 export class CreateProductCombinationInput {
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   reference?: string;
 
   @Field(() => Float, { nullable: true })
@@ -158,7 +158,7 @@ export class CreateProductCombinationInput {
 
 @InputType()
 export class UpdateProductCombinationInput {
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   reference?: string;
 
   @Field(() => Float, { nullable: true })
@@ -188,7 +188,7 @@ export class UpdateStockInput {
   @Field(() => Int, { nullable: true })
   minQuantity?: number;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   outOfStockBehavior?: string;
 }
 
@@ -200,7 +200,7 @@ export class ProductFilterInput {
   @Field({ nullable: true })
   active?: boolean;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   search?: string;
 
   @Field(() => Int, { nullable: true, defaultValue: 0 })

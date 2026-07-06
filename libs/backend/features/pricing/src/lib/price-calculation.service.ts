@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@dima-new/data-access-prisma';
-import { PriceResult, CalculatePriceParams } from '@dima-new/models';
+import { PrismaService } from '@swift-shop/data-access-prisma';
+import { PriceResult, CalculatePriceParams } from '@swift-shop/models';
 import { PriceQueryService } from './price-query.service';
 
 @Injectable()

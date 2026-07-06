@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { AuthService } from '@dima-new/backend/auth';
+import { AuthService } from '@swift-shop/backend/auth';
 import { EmployeeAuthAuditService } from './employee-auth-audit.service';
 import { EmployeeService } from './employee.service';
 import { EmployeeTwoFactorFlowService } from './employee-two-factor-flow.service';

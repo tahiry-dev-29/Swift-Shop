@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { DataAccessPrismaModule } from '@dima-new/data-access-prisma';
+import { DataAccessPrismaModule } from '@swift-shop/data-access-prisma';
 import { AuthMailService } from './services/auth-mail.service';
 import { AuthService } from './services/auth.service';
 import { AuthAuditService } from './services/auth-audit.service';
@@ -24,6 +24,8 @@ import {
 import { RedisThrottlerStorage } from './infrastructure/rate-limiting/redis-throttler-storage';
 import { PermissionGuard } from './guards/permission-guard';
 import { StoreBranchScopeGuard } from './guards/store-branch-scope.guard';
+import { SuperAdminGuard } from './guards/super-admin-guard';
+import { RoleGuard } from './guards/role.guard';
 
 @Module({
   imports: [
@@ -48,7 +50,7 @@ import { StoreBranchScopeGuard } from './guards/store-branch-scope.guard';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.getOrThrow<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '15m' }, // Short lived access token
+        signOptions: { expiresIn: '15m' },
       }),
     }),
   ],
@@ -67,6 +69,8 @@ import { StoreBranchScopeGuard } from './guards/store-branch-scope.guard';
     TwoFactorService,
     PermissionGuard,
     StoreBranchScopeGuard,
+    SuperAdminGuard,
+    RoleGuard,
     SmtpService,
   ],
   exports: [
@@ -75,6 +79,8 @@ import { StoreBranchScopeGuard } from './guards/store-branch-scope.guard';
     RedisService,
     PermissionGuard,
     StoreBranchScopeGuard,
+    SuperAdminGuard,
+    RoleGuard,
     SmtpService,
   ],
 })

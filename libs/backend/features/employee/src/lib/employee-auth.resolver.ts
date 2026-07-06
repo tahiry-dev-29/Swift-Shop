@@ -1,6 +1,6 @@
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
-import { AuthRateLimitGuard, EmployeeGuard } from '@dima-new/backend/auth';
+import { AuthRateLimitGuard, EmployeeGuard } from '@swift-shop/backend/auth';
 import {
   EmployeeAuthResponse,
   EmployeeType,

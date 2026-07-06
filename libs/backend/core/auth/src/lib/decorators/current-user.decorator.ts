@@ -1,6 +1,6 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { AuthUser } from '@dima-new/models';
+import { AuthUser } from '@swift-shop/models';
 
 export { AuthUser };
 

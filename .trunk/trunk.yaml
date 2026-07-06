@@ -75,6 +75,7 @@ lint:
         - '**/*.g.dart'
         - '**/*.freezed.dart'
         - .agents/**
+        - tools/**
 
 actions:
   enabled:

@@ -1,5 +1,5 @@
 import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
-import { SearchService } from '@dima-new/backend/search';
+import { SearchService } from '@swift-shop/backend/search';
 
 @Injectable()
 export class ProductSearchService implements OnModuleInit {

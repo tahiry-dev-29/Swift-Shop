@@ -1,7 +1,7 @@
 import { Resolver, Query, Mutation, Args, Int, ID } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { ProductService } from './product.service';
-import { SuperAdminGuard } from '@dima-new/backend/auth';
+import { SuperAdminGuard } from '@swift-shop/backend/auth';
 import {
   ProductType,
   ProductListType,

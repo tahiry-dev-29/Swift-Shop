@@ -3,7 +3,7 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '@dima-new/data-access-prisma';
+import { PrismaService } from '@swift-shop/data-access-prisma';
 import { CartMergeService } from './cart-merge.service';
 import { CartPricingService } from './cart-pricing.service';
 import { CartCouponService } from './cart-coupon.service';

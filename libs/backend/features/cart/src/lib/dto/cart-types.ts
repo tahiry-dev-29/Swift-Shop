@@ -1,7 +1,7 @@
 import { ObjectType, Field, Int, ID, Float, InputType } from '@nestjs/graphql';
-import { ProductType } from '@dima-new/backend/catalog';
-import { ProductCombinationType } from '@dima-new/backend/catalog';
-import { PriceDetailType } from '@dima-new/backend/pricing';
+import { ProductType } from '@swift-shop/backend/catalog';
+import { ProductCombinationType } from '@swift-shop/backend/catalog';
+import { PriceDetailType } from '@swift-shop/backend/pricing';
 
 @ObjectType()
 export class CartItemType {
@@ -15,7 +15,7 @@ export class CartItemType {
   productId!: string;
 
   @Field(() => ID, { nullable: true })
-  combinationId?: string;
+  combinationId?: string | null;
 
   @Field(() => Int)
   quantity!: number;

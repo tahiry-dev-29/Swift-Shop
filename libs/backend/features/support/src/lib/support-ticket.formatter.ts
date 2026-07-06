@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SupportTicket, TicketMessage } from '@dima-new/prisma-client';
+import { SupportTicket, TicketMessage } from '@swift-shop/prisma-client';
 
 @Injectable()
 export class SupportTicketFormatter {

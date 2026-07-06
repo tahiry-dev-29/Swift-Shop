@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '@dima-new/data-access-prisma';
-import { JwtPayload } from '@dima-new/models';
+import { PrismaService } from '@swift-shop/data-access-prisma';
+import { JwtPayload } from '@swift-shop/models';
 import { AuthMailService } from './auth-mail.service';
 import {
   MAGIC_LINK_TTL,

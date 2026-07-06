@@ -10,7 +10,7 @@ import {
   EmployeeGuard,
   CurrentUser,
   AuthUser,
-} from '@dima-new/backend/auth';
+} from '@swift-shop/backend/auth';
 import { AddressType, CreateAddressInput, UpdateAddressInput } from './dto';
 
 @Resolver()

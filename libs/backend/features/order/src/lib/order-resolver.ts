@@ -7,7 +7,7 @@ import {
   ID,
 } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
-import { CustomerGuard, CurrentUser } from '@dima-new/backend/auth';
+import { CustomerGuard, CurrentUser } from '@swift-shop/backend/auth';
 import { OrderService } from './order-service';
 import { OrderCreationService } from './order-creation.service';
 import { OrderActionService } from './order-action.service';
@@ -23,7 +23,7 @@ import {
   GuestCheckoutInput,
   RequestReturnInput,
 } from './dto/order-inputs';
-import { CartType } from '@dima-new/backend/cart';
+import { CartType } from '@swift-shop/backend/cart';
 
 interface CurrentUserType {
   id: string;

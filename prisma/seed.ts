@@ -1,4 +1,4 @@
-import { PrismaClient } from '@dima-new/prisma-client';
+import { PrismaClient } from '@swift-shop/prisma-client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 import * as argon2 from 'argon2';
@@ -97,6 +97,47 @@ const systemRoles = [
     description: 'Read-only reports and dashboard access',
     permissions: ['reports:read', 'reports:export'],
   },
+  {
+    name: 'Employee',
+    slug: 'employee',
+    description: 'Base employee role — read-only access',
+    permissions: [
+      'customers:read',
+      'orders:read',
+      'products:read',
+      'catalog:read',
+    ],
+  },
+];
+
+const customerSystemRoles = [
+  {
+    name: 'Customer',
+    slug: 'customer',
+    description: 'Standard customer — can browse and purchase',
+    permissions: ['catalog:read', 'products:read'],
+    isSystem: true,
+  },
+  {
+    name: 'VIPCustomer',
+    slug: 'vip_customer',
+    description: 'VIP customer — extended access and special pricing',
+    permissions: ['catalog:read', 'products:read', 'pricing:read'],
+    isSystem: true,
+  },
+  {
+    name: 'PartnerCustomer',
+    slug: 'partner_customer',
+    description: 'Partner customer — B2B access with order management',
+    permissions: [
+      'catalog:read',
+      'products:read',
+      'pricing:read',
+      'orders:create',
+      'orders:read',
+    ],
+    isSystem: true,
+  },
 ];
 
 async function main() {
@@ -173,6 +214,27 @@ async function main() {
     }
   }
   console.log('✅ Roles created');
+
+  // Seed Customer Roles
+  for (const cr of customerSystemRoles) {
+    await prisma.customerRole.upsert({
+      where: { slug: cr.slug },
+      update: {
+        name: cr.name,
+        description: cr.description,
+        isSystem: cr.isSystem,
+        deletedAt: null,
+      },
+      create: {
+        name: cr.name,
+        slug: cr.slug,
+        description: cr.description,
+        permissions: cr.permissions,
+        isSystem: cr.isSystem,
+      },
+    });
+  }
+  console.log('✅ Customer roles created');
 
   const superAdminRole = await prisma.role.findUniqueOrThrow({
     where: { slug: 'super_admin' },
@@ -264,6 +326,24 @@ async function main() {
 
   await seedCustomers(prisma);
   console.log('✅ Customers and groups seeded');
+
+  const defaultCustomerRole = await prisma.customerRole.findUniqueOrThrow({
+    where: { slug: 'customer' },
+  });
+  const allCustomers = await prisma.customer.findMany({ select: { id: true } });
+  for (const cust of allCustomers) {
+    await prisma.customerRoleAssignment.upsert({
+      where: {
+        customerId_customerRoleId: {
+          customerId: cust.id,
+          customerRoleId: defaultCustomerRole.id,
+        },
+      },
+      update: {},
+      create: { customerId: cust.id, customerRoleId: defaultCustomerRole.id },
+    });
+  }
+  console.log('✅ Default customer role assigned to all customers');
 
   await seedPricing(prisma);
   console.log('✅ Pricing data seeded');

@@ -38,6 +38,9 @@
   },
   "generators": {
     "@nx/angular:application": {
+      "inlineStyle": true,
+      "inlineTemplate": true,
+      "flat": true,
       "e2eTestRunner": "none",
       "linter": "eslint",
       "style": "css",
@@ -48,7 +51,19 @@
       "unitTestRunner": "vitest-analog"
     },
     "@nx/angular:component": {
+      "flat": true,
+      "inlineStyle": true,
+      "inlineTemplate": true,
       "style": "css"
+    },
+    "@schematics/angular:component": {
+      "flat": true,
+      "inlineStyle": true,
+      "inlineTemplate": true
+    },
+    "@schematics/angular:application": {
+      "inlineStyle": true,
+      "inlineTemplate": true
     }
   },
   "plugins": [
@@ -68,13 +83,6 @@
       "options": {
         "targetName": "lint"
       }
-    },
-    {
-      "plugin": "@nx/jest/plugin",
-      "options": {
-        "targetName": "test"
-      },
-      "exclude": ["apps/api-e2e/**/*", "apps/api-e2e/**/*"]
     }
   ],
   "analytics": true,

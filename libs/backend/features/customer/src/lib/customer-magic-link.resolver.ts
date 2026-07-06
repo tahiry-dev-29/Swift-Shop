@@ -1,6 +1,6 @@
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { UnauthorizedException, UseGuards } from '@nestjs/common';
-import { AuthRateLimitGuard, AuthService } from '@dima-new/backend/auth';
+import { AuthRateLimitGuard, AuthService } from '@swift-shop/backend/auth';
 import { CustomerService } from './customer.service';
 import { CustomerAuthResponse, MagicLinkResponse } from './dto';
 

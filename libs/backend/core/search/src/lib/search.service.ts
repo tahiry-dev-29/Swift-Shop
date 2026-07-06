@@ -4,7 +4,7 @@ import { Meilisearch, Index } from 'meilisearch';
 
 @Injectable()
 export class SearchService implements OnModuleInit {
-  private client: Meilisearch;
+  private client: Meilisearch | undefined;
   private readonly logger = new Logger(SearchService.name);
 
   constructor(private configService: ConfigService) {}
@@ -36,6 +36,7 @@ export class SearchService implements OnModuleInit {
    * Get an index by name.
    */
   getIndex<T extends Record<string, unknown>>(uid: string): Index<T> {
+    if (!this.client) throw new Error('Meilisearch client not initialized');
     return this.client.index<T>(uid);
   }
 
@@ -77,6 +78,7 @@ export class SearchService implements OnModuleInit {
    * Create index if it does not exist and update settings.
    */
   async setupIndex(indexUid: string, settings: Record<string, unknown>) {
+    if (!this.client) throw new Error('Meilisearch client not initialized');
     try {
       await this.client.createIndex(indexUid);
     } catch (e) {

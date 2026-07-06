@@ -1,6 +1,6 @@
 import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
-import { EmployeeGuard, CurrentUser, AuthUser } from '@dima-new/backend/auth';
+import { EmployeeGuard, CurrentUser, AuthUser } from '@swift-shop/backend/auth';
 import { SocialMediaService } from './social-media.service';
 import { SocialPostType } from './dto/social-post.type';
 import { CreateSocialPostInput } from './dto/social-post.input';

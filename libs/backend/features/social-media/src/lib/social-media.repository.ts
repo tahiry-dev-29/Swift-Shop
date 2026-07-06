@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@dima-new/data-access-prisma';
-import { SocialPost } from '@dima-new/prisma-client';
+import { PrismaService } from '@swift-shop/data-access-prisma';
+import { SocialPost } from '@swift-shop/prisma-client';
 import { CreateSocialPostInput } from './dto/social-post.input';
 
 @Injectable()

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, ProductViewEvent } from '@dima-new/prisma-client';
-import { PrismaService } from '@dima-new/data-access-prisma';
+import { Prisma, ProductViewEvent } from '@swift-shop/prisma-client';
+import { PrismaService } from '@swift-shop/data-access-prisma';
 import {
   AnalyticsDateRange,
   DashboardStatsRow,

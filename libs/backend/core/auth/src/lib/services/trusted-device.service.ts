@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { createHash, randomBytes } from 'crypto';
-import { PrismaService } from '@dima-new/data-access-prisma';
+import { PrismaService } from '@swift-shop/data-access-prisma';
 import { DEVICE_TRUST_DAYS } from '../types/auth-types.internal';
 
 @Injectable()

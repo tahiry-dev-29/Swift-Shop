@@ -12,7 +12,7 @@ import {
   CustomerGuard,
   CurrentUser,
   OptionalCustomerGuard,
-} from '@dima-new/backend/auth';
+} from '@swift-shop/backend/auth';
 import { CartService } from './cart-service';
 import {
   ApplyCouponInput,

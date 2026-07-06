@@ -4,7 +4,7 @@ import {
   NotFoundException,
   ConflictException,
 } from '@nestjs/common';
-import { EmployeeGuard } from '@dima-new/backend/auth';
+import { EmployeeGuard } from '@swift-shop/backend/auth';
 import { CustomerGroupService } from './customer-group.service';
 import {
   CustomerGroupType,

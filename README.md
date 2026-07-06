@@ -1,13 +1,13 @@
-# 🚀 Dima New - Full-Stack E-commerce Monorepo
+# Swift Shop - Full-Stack E-commerce Monorepo
 
-Welcome to **Dima New**! A modern, high-performance monorepo architecture for a full-scale e-commerce platform. 🌟
+Welcome to **Swift Shop**! A modern, high-performance monorepo architecture for a full-scale e-commerce platform.
 
 ## 🏗️ Project Structure
 
 This workspace is managed with **Nx** and uses a modular architecture:
 
 - **apps/store**: Customer-facing Angular 21 application. 🛒
-- **apps/admin**: Internal administration dashboard (Angular 21). ⚙️
+- **apps/dashboard**: Internal administration dashboard (Angular 21).
 - **apps/api**: NestJS 11 backend with GraphQL (Apollo). 🧠
 - **libs/**: Shared features, business logic, and data access.
 - **models/**: Shared TypeScript types and interfaces.
@@ -16,7 +16,7 @@ This workspace is managed with **Nx** and uses a modular architecture:
 
 - **Runtime**: [Bun](https://bun.sh) ⚡
 - **Monorepo**: [Nx](https://nx.dev) 🚀
-- **Frontend**: Angular 21 (Signals, Standalone), TailwindCSS 4, PrimeNG 20 🎨
+- **Frontend**: Angular 21 (Signals, Standalone), TailwindCSS 4 🎨
 - **Backend**: NestJS 11, GraphQL (Apollo), Prisma 7 💾
 - **Database**: PostgreSQL 🐘
 - **Testing**: Vitest & Bun Test 🧪
@@ -40,12 +40,12 @@ bun run prisma:seed
 
 ### 3. Run Applications
 
-| Application        | Command               | URL                             |
-| ------------------ | --------------------- | ------------------------------- |
-| **All (Parallel)** | `bun run start:all`   | -                               |
-| **Store**          | `bun run start:store` | `http://localhost:4200`         |
-| **Admin**          | `bun run start:admin` | `http://localhost:4201`         |
-| **API**            | `bun run start:api`   | `http://localhost:3000/graphql` |
+| Application        | Command                   | URL                             |
+| ------------------ | ------------------------- | ------------------------------- |
+| **All (Parallel)** | `bun run start:all`       | -                               |
+| **Store**          | `bun run start:store`     | `http://localhost:4200`         |
+| **Dashboard**      | `bun run start:dashboard` | `http://localhost:4201`         |
+| **API**            | `bun run start:api`       | `http://localhost:3000/graphql` |
 
 ## 📘 Documentation
 

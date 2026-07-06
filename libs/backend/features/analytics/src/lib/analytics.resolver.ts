@@ -5,7 +5,7 @@ import {
   SuperAdminGuard,
   OptionalCustomerGuard,
   CurrentUser,
-} from '@dima-new/backend/auth';
+} from '@swift-shop/backend/auth';
 import { AnalyticsService } from './analytics.service';
 import {
   DashboardStatsType,

@@ -1,7 +1,7 @@
 import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
 import { UseGuards, NotFoundException } from '@nestjs/common';
 import { AttributeService } from './attribute.service';
-import { SuperAdminGuard } from '@dima-new/backend/auth';
+import { SuperAdminGuard } from '@swift-shop/backend/auth';
 import {
   AttributeGroupType,
   AttributeValueType,

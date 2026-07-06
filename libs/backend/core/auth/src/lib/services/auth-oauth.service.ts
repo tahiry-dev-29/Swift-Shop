@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomBytes } from 'crypto';
-import { PrismaService } from '@dima-new/data-access-prisma';
+import { PrismaService } from '@swift-shop/data-access-prisma';
 import { OAuthProfile, OAuthProvider } from '../types/auth-types.internal';
 import { PasswordSecurityService } from './password-security.service';
 

@@ -1,7 +1,7 @@
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { randomBytes } from 'crypto';
-import { AuthRateLimitGuard, AuthService } from '@dima-new/backend/auth';
+import { AuthRateLimitGuard, AuthService } from '@swift-shop/backend/auth';
 import { CustomerAuthResponse, OAuthAuthorizationResponse } from './dto';
 
 interface GraphQLContext {

@@ -3,8 +3,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '@dima-new/data-access-prisma';
-import { Prisma } from '@dima-new/prisma-client';
+import { PrismaService } from '@swift-shop/data-access-prisma';
+import { Prisma } from '@swift-shop/prisma-client';
 import { CarrierAdapterRegistry } from './carrier-adapter.registry';
 
 @Injectable()

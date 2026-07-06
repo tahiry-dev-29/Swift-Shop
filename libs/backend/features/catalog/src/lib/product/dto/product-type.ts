@@ -29,7 +29,7 @@ export class ProductImageType {
   @Field(() => Int)
   size!: number;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   alt?: string;
 
   @Field()
@@ -42,10 +42,10 @@ export class StockType {
   id!: string;
 
   @Field(() => ID, { nullable: true })
-  productId?: string;
+  productId?: string | null;
 
   @Field(() => ID, { nullable: true })
-  combinationId?: string;
+  combinationId?: string | null;
 
   @Field(() => Int)
   quantity!: number;
@@ -77,8 +77,8 @@ export class ProductCombinationType {
   @Field(() => ID)
   productId!: string;
 
-  @Field({ nullable: true })
-  reference?: string;
+  @Field(() => String, { nullable: true })
+  reference?: string | null;
 
   @Field(() => Float)
   priceImpact!: number;
@@ -96,7 +96,7 @@ export class ProductCombinationType {
   attributes?: ProductCombinationAttributeType[];
 
   @Field(() => StockType, { nullable: true })
-  stock?: StockType;
+  stock?: StockType | null;
 }
 
 @ObjectType()
@@ -110,11 +110,11 @@ export class ProductType {
   @Field()
   name!: string;
 
-  @Field({ nullable: true })
-  description?: string;
+  @Field(() => String, { nullable: true })
+  description?: string | null;
 
-  @Field({ nullable: true })
-  descriptionShort?: string;
+  @Field(() => String, { nullable: true })
+  descriptionShort?: string | null;
 
   @Field(() => Float)
   price!: number;
@@ -131,29 +131,29 @@ export class ProductType {
   @Field()
   showPrice!: boolean;
 
-  @Field({ nullable: true })
-  metaTitle?: string;
+  @Field(() => String, { nullable: true })
+  metaTitle?: string | null;
 
-  @Field({ nullable: true })
-  metaDescription?: string;
+  @Field(() => String, { nullable: true })
+  metaDescription?: string | null;
 
-  @Field({ nullable: true })
-  linkRewrite?: string;
+  @Field(() => String, { nullable: true })
+  linkRewrite?: string | null;
 
   @Field(() => Float)
   weight!: number;
 
   @Field(() => Float, { nullable: true })
-  width?: number;
+  width?: number | null;
 
   @Field(() => Float, { nullable: true })
-  height?: number;
+  height?: number | null;
 
   @Field(() => Float, { nullable: true })
-  depth?: number;
+  depth?: number | null;
 
   @Field(() => ID, { nullable: true })
-  categoryId?: string;
+  categoryId?: string | null;
 
   @Field(() => [ProductImageType], { nullable: true })
   images?: ProductImageType[];
@@ -162,7 +162,7 @@ export class ProductType {
   combinations?: ProductCombinationType[];
 
   @Field(() => StockType, { nullable: true })
-  stock?: StockType;
+  stock?: StockType | null;
 
   @Field()
   dateAdd!: Date;

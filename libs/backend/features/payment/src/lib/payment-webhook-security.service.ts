@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PrismaService } from '@dima-new/data-access-prisma';
+import { PrismaService } from '@swift-shop/data-access-prisma';
 
 @Injectable()
 export class PaymentWebhookSecurityService {

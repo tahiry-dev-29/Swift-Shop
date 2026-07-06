@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { DataAccessPrismaModule } from '@dima-new/data-access-prisma';
+import { DataAccessPrismaModule } from '@swift-shop/data-access-prisma';
 import { AnalyticsFormatter } from './analytics.formatter';
 import { AnalyticsRepository } from './analytics.repository';
 import { AnalyticsResolver } from './analytics.resolver';

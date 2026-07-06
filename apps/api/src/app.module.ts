@@ -8,26 +8,26 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { DataAccessPrismaModule } from '@dima-new/data-access-prisma';
-import { AuthModule } from '@dima-new/backend/auth';
-import { CustomerModule } from '@dima-new/backend/customer';
-import { EmployeeModule } from '@dima-new/backend/employee';
-import { CustomerGroupModule } from '@dima-new/backend/customer-group';
-import { AddressModule } from '@dima-new/backend/address';
-import { CatalogModule } from '@dima-new/backend/catalog';
-import { PricingModule } from '@dima-new/backend/pricing';
-import { CartModule } from '@dima-new/backend/cart';
-import { OrderModule } from '@dima-new/backend/order';
-import { ShippingModule } from '@dima-new/backend/shipping';
-import { PaymentModule } from '@dima-new/backend/payment';
-import { AnalyticsModule } from '@dima-new/backend/analytics';
-import { SearchModule } from '@dima-new/backend/search';
-import { MediaModule } from '@dima-new/backend/media';
-import { SettingsModule } from '@dima-new/backend/settings';
-import { SocialMediaModule } from '@dima-new/backend/social-media';
-import { MessagingModule } from '@dima-new/backend/messaging';
+import { DataAccessPrismaModule } from '@swift-shop/data-access-prisma';
+import { AuthModule } from '@swift-shop/backend/auth';
+import { CustomerModule } from '@swift-shop/backend/customer';
+import { EmployeeModule } from '@swift-shop/backend/employee';
+import { CustomerGroupModule } from '@swift-shop/backend/customer-group';
+import { AddressModule } from '@swift-shop/backend/address';
+import { CatalogModule } from '@swift-shop/backend/catalog';
+import { PricingModule } from '@swift-shop/backend/pricing';
+import { CartModule } from '@swift-shop/backend/cart';
+import { OrderModule } from '@swift-shop/backend/order';
+import { ShippingModule } from '@swift-shop/backend/shipping';
+import { PaymentModule } from '@swift-shop/backend/payment';
+import { AnalyticsModule } from '@swift-shop/backend/analytics';
+import { SearchModule } from '@swift-shop/backend/search';
+import { MediaModule } from '@swift-shop/backend/media';
+import { SettingsModule } from '@swift-shop/backend/settings';
+import { SocialMediaModule } from '@swift-shop/backend/social-media';
+import { MessagingModule } from '@swift-shop/backend/messaging';
 import { SupportModule } from '@backend/features/support';
-import { NotificationModule } from '@dima-new/backend/notifications';
+import { NotificationModule } from '@swift-shop/backend/notifications';
 import { validateEnvironment } from './config/env.validation';
 import { HealthModule } from './health/health.module';
 import { BullModule } from '@nestjs/bullmq';
@@ -56,7 +56,10 @@ import { ExpressAdapter } from '@bull-board/express';
       sortSchema: true,
       playground: true,
       introspection: true,
-      context: ({ req, res }) => ({ req, res }),
+      subscriptions: {
+        'graphql-ws': true,
+      },
+      context: ({ req, res }: { req: unknown; res: unknown }) => ({ req, res }),
     }),
 
     ServeStaticModule.forRoot({

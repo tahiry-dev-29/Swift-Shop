@@ -8,6 +8,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
+    "ignoreDeprecations": "6.0",
     "target": "es2015",
     "module": "esnext",
     "lib": ["es2020", "dom"],
@@ -15,53 +16,56 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@dima-new/models": ["models/src/index.ts"],
-      "@dima-new/ui": ["shared/ui/src/index.ts"],
-      "@dima-new/data-access-prisma": ["libs/data-access-prisma/src/index.ts"],
-      "@dima-new/backend/auth": ["libs/backend/core/auth/src/index.ts"],
-      "@dima-new/backend/customer": [
+      "@swift-shop/models": ["models/src/index.ts"],
+      "@swift-shop/ui": ["shared/ui/src/index.ts"],
+      "@swift-shop/data-access-prisma": [
+        "libs/data-access-prisma/src/index.ts"
+      ],
+      "@swift-shop/backend/auth": ["libs/backend/core/auth/src/index.ts"],
+      "@swift-shop/backend/customer": [
         "libs/backend/features/customer/src/index.ts"
       ],
-      "@dima-new/backend/employee": [
+      "@swift-shop/backend/employee": [
         "libs/backend/features/employee/src/index.ts"
       ],
-      "@dima-new/backend/customer-group": [
+      "@swift-shop/backend/customer-group": [
         "libs/backend/features/customer-group/src/index.ts"
       ],
-      "@dima-new/backend/address": [
+      "@swift-shop/backend/address": [
         "libs/backend/features/address/src/index.ts"
       ],
-      "@dima-new/backend/catalog": [
+      "@swift-shop/backend/catalog": [
         "libs/backend/features/catalog/src/index.ts"
       ],
-      "@dima-new/backend/pricing": [
+      "@swift-shop/backend/pricing": [
         "libs/backend/features/pricing/src/index.ts"
       ],
-      "@dima-new/backend/cart": ["libs/backend/features/cart/src/index.ts"],
-      "@dima-new/backend/order": ["libs/backend/features/order/src/index.ts"],
-      "@dima-new/backend/shipping": [
+      "@swift-shop/backend/cart": ["libs/backend/features/cart/src/index.ts"],
+      "@swift-shop/backend/order": ["libs/backend/features/order/src/index.ts"],
+      "@swift-shop/backend/shipping": [
         "libs/backend/features/shipping/src/index.ts"
       ],
-      "@dima-new/backend/payment": [
+      "@swift-shop/backend/payment": [
         "libs/backend/features/payment/src/index.ts"
       ],
-      "@dima-new/backend/analytics": [
+      "@swift-shop/backend/analytics": [
         "libs/backend/features/analytics/src/index.ts"
       ],
-      "@dima-new/backend/search": ["libs/backend/core/search/src/index.ts"],
+      "@swift-shop/backend/search": ["libs/backend/core/search/src/index.ts"],
       "meilisearch": ["node_modules/meilisearch/dist/index.d.ts"],
-      "@dima-new/prisma-client": ["prisma/generated/client/client.ts"],
-      "@dima-new/backend/media": ["./libs/backend/core/media/src/index.ts"],
-      "@dima-new/backend/settings": [
+      "@swift-shop/prisma-client": ["prisma/generated-client/client.ts"],
+      "@swift-shop/prisma-client/*": ["prisma/generated-client/*"],
+      "@swift-shop/backend/media": ["./libs/backend/core/media/src/index.ts"],
+      "@swift-shop/backend/settings": [
         "./libs/backend/features/settings/src/index.ts"
       ],
-      "@dima-new/backend/social-media": [
+      "@swift-shop/backend/social-media": [
         "./libs/backend/features/social-media/src/index.ts"
       ],
-      "@dima-new/backend/messaging": [
+      "@swift-shop/backend/messaging": [
         "./libs/backend/features/messaging/src/index.ts"
       ],
-      "@dima-new/backend/notifications": [
+      "@swift-shop/backend/notifications": [
         "./libs/backend/features/notifications/src/index.ts"
       ],
       "@backend/features/support": [

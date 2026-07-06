@@ -13,7 +13,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
-import { SuperAdminGuard } from '@dima-new/backend/auth';
+import { SuperAdminGuard } from '@swift-shop/backend/auth';
 import {
   CategoryType,
   CreateCategoryInput,
@@ -95,7 +95,9 @@ export class CategoryResolver {
     try {
       return await this.categoryService.delete(id);
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(
+        error instanceof Error ? error.message : String(error),
+      );
     }
   }
 

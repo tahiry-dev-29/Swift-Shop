@@ -57,4 +57,4 @@
 - [x] **Facebook Integration**: Graph API, Page Access Tokens, Facebook Pixel
 - [x] **Facebook Catalog**: Product Feed XML sync
 - [x] **Instagram Integration**: Product tagging, Stories publishing
-- [ ] **Frontend**: `ShareButtonComponent`, `SocialPublisherComponent` (Admin)
+- [ ] **Frontend**: `ShareButtonComponent`, `SocialPublisherComponent` (Dashboard)

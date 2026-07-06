@@ -3,20 +3,20 @@ import { ObjectType, Field, ID } from '@nestjs/graphql';
 @ObjectType()
 export class EmailTemplateType {
   @Field(() => ID)
-  id: string;
+  declare id: string;
 
   @Field()
-  name: string;
+  declare name: string;
 
   @Field()
-  subject: string;
+  declare subject: string;
 
   @Field()
-  bodyHtml: string;
+  declare bodyHtml: string;
 
   @Field()
-  createdAt: Date;
+  declare createdAt: Date;
 
   @Field()
-  updatedAt: Date;
+  declare updatedAt: Date;
 }

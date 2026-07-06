@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '@dima-new/data-access-prisma';
-import { PriceCalculationService } from '@dima-new/backend/pricing';
-import { PriceResult } from '@dima-new/models';
+import { PrismaService } from '@swift-shop/data-access-prisma';
+import { PriceCalculationService } from '@swift-shop/backend/pricing';
+import { PriceResult } from '@swift-shop/models';
 import { CartType } from './dto/cart-types';
 
 function toNum(val: unknown) {

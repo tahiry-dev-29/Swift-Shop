@@ -3,44 +3,44 @@ import { InputType, Field } from '@nestjs/graphql';
 @InputType()
 export class SendMessageInput {
   @Field({ nullable: true })
-  recipientId?: string;
+  declare recipientId?: string;
 
   @Field()
-  subject: string;
+  declare subject: string;
 
   @Field()
-  body: string;
+  declare body: string;
 }
 
 @InputType()
 export class ReplyToThreadInput {
   @Field()
-  threadId: string;
+  declare threadId: string;
 
   @Field()
-  body: string;
+  declare body: string;
 }
 
 @InputType()
 export class CreateEmailTemplateInput {
   @Field()
-  name: string;
+  declare name: string;
 
   @Field()
-  subject: string;
+  declare subject: string;
 
   @Field()
-  bodyHtml: string;
+  declare bodyHtml: string;
 }
 
 @InputType()
 export class UpdateEmailTemplateInput {
   @Field({ nullable: true })
-  name?: string;
+  declare name?: string;
 
   @Field({ nullable: true })
-  subject?: string;
+  declare subject?: string;
 
   @Field({ nullable: true })
-  bodyHtml?: string;
+  declare bodyHtml?: string;
 }

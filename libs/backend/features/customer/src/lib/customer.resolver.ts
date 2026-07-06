@@ -4,7 +4,7 @@ import {
   AuthService,
   CustomerGuard,
   EmployeeGuard,
-} from '@dima-new/backend/auth';
+} from '@swift-shop/backend/auth';
 import { CustomerService } from './customer.service';
 import { CustomerType, CustomerAuthResponse } from './dto';
 

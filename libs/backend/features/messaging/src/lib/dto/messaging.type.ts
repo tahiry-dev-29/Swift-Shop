@@ -3,68 +3,68 @@ import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
 @ObjectType()
 export class EmailAttachmentType {
   @Field(() => ID)
-  id: string;
+  declare id: string;
 
   @Field()
-  messageId: string;
+  declare messageId: string;
 
   @Field()
-  fileUrl: string;
+  declare fileUrl: string;
 
   @Field()
-  fileName: string;
+  declare fileName: string;
 
   @Field()
-  mimeType: string;
+  declare mimeType: string;
 
   @Field(() => Int)
-  size: number;
+  declare size: number;
 
   @Field()
-  createdAt: Date;
+  declare createdAt: Date;
 }
 
 @ObjectType()
 export class EmailMessageType {
   @Field(() => ID)
-  id: string;
+  declare id: string;
 
   @Field()
-  threadId: string;
+  declare threadId: string;
 
   @Field({ nullable: true })
-  senderId?: string;
+  declare senderId?: string;
 
   @Field({ nullable: true })
-  recipientId?: string;
+  declare recipientId?: string;
 
   @Field()
-  body: string;
+  declare body: string;
 
   @Field()
-  status: string;
+  declare status: string;
 
   @Field(() => [EmailAttachmentType], { nullable: true })
-  attachments?: EmailAttachmentType[];
+  declare attachments?: EmailAttachmentType[];
 
   @Field()
-  createdAt: Date;
+  declare createdAt: Date;
 }
 
 @ObjectType()
 export class EmailThreadType {
   @Field(() => ID)
-  id: string;
+  declare id: string;
 
   @Field()
-  subject: string;
+  declare subject: string;
 
   @Field(() => [EmailMessageType], { nullable: true })
-  messages?: EmailMessageType[];
+  declare messages?: EmailMessageType[];
 
   @Field()
-  createdAt: Date;
+  declare createdAt: Date;
 
   @Field()
-  updatedAt: Date;
+  declare updatedAt: Date;
 }

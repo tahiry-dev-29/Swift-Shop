@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@dima-new/data-access-prisma';
-import { AuthService } from '@dima-new/backend/auth';
+import { PrismaService } from '@swift-shop/data-access-prisma';
+import { AuthService } from '@swift-shop/backend/auth';
 
 @Injectable()
 export class EmployeeService {

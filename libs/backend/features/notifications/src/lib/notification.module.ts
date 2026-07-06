@@ -2,10 +2,9 @@ import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
-import { DataAccessPrismaModule } from '@dima-new/data-access-prisma';
-import { AuthModule } from '@dima-new/backend/auth';
+import { DataAccessPrismaModule } from '@swift-shop/data-access-prisma';
+import { AuthModule } from '@swift-shop/backend/auth';
 import { NotificationFormatter } from './notification.formatter';
-import { NotificationGateway } from './notification.gateway';
 import { NotificationRepository } from './notification.repository';
 import { NotificationResolver } from './notification.resolver';
 import { NotificationService } from './notification.service';
@@ -38,7 +37,6 @@ import { NotificationQueueService } from './queue/notification-queue.service';
   controllers: [NotificationSseController],
   providers: [
     NotificationFormatter,
-    NotificationGateway,
     NotificationRepository,
     NotificationResolver,
     NotificationService,

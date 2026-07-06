@@ -4,7 +4,7 @@ import {
   UnauthorizedException,
   NotFoundException,
 } from '@nestjs/common';
-import { EmployeeGuard, SuperAdminGuard } from '@dima-new/backend/auth';
+import { EmployeeGuard, SuperAdminGuard } from '@swift-shop/backend/auth';
 import { EmployeeService } from './employee.service';
 import { EmployeeType, CreateEmployeeInput, UpdateEmployeeInput } from './dto';
 

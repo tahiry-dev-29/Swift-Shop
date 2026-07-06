@@ -1,6 +1,6 @@
 import { Injectable, Scope } from '@nestjs/common';
 import DataLoader from 'dataloader';
-import { PrismaService } from '@dima-new/data-access-prisma';
+import { PrismaService } from '@swift-shop/data-access-prisma';
 import { CategoryType } from './category/dto';
 import { ProductCombinationAttributeType } from './product/dto';
 

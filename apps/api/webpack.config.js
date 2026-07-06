@@ -10,6 +10,10 @@ module.exports = {
     }),
   },
   ignoreWarnings: [/baseline-browser-mapping/],
+  externals: {
+    '@prisma/client': 'commonjs @prisma/client',
+    '@prisma/adapter-pg': 'commonjs @prisma/adapter-pg',
+  },
   plugins: [
     new NxAppWebpackPlugin({
       target: 'node',

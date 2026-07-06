@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { PrismaService } from '@dima-new/data-access-prisma';
-import { RedisService } from '@dima-new/backend/auth';
+import { PrismaService } from '@swift-shop/data-access-prisma';
+import { RedisService } from '@swift-shop/backend/auth';
 
 const DEFAULT_STOCK_RESERVATION_TTL_SECONDS = 15 * 60;
 

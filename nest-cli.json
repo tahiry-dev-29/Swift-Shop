@@ -1,10 +1,10 @@
 {
   "monorepo": true,
-  "root": "apps/dima-new-source",
-  "sourceRoot": "apps/dima-new-source/src",
+  "root": "apps/swift-shop-source",
+  "sourceRoot": "apps/swift-shop-source/src",
   "compilerOptions": {
     "webpack": true,
-    "tsConfigPath": "apps/dima-new-source/tsconfig.app.json"
+    "tsConfigPath": "apps/swift-shop-source/tsconfig.app.json"
   },
   "projects": {
     "api": {
@@ -16,13 +16,13 @@
         "tsConfigPath": "apps/api/tsconfig.app.json"
       }
     },
-    "dima-new-source": {
+    "swift-shop-source": {
       "type": "application",
-      "root": "apps/dima-new-source",
+      "root": "apps/swift-shop-source",
       "entryFile": "main",
-      "sourceRoot": "apps/dima-new-source/src",
+      "sourceRoot": "apps/swift-shop-source/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/dima-new-source/tsconfig.app.json"
+        "tsConfigPath": "apps/swift-shop-source/tsconfig.app.json"
       }
     }
   }

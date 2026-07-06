@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "./generated/client"
+  output   = "./generated-client"
 }
 
 datasource db {
@@ -181,6 +181,7 @@ model Customer {
   notificationPreferences NotificationPreference[]
   pushSubscriptions PushSubscription[]
   productViewEvents ProductViewEvent[]
+  customerRoles CustomerRoleAssignment[]
 }
 
 model CustomerGroup {
@@ -191,6 +192,36 @@ model CustomerGroup {
 
   customers      Customer[]
   specificPrices SpecificPrice[]
+}
+
+// ----------------------------------------------------------------------
+// CUSTOMER ROLES (Front-Office RBAC)
+// ----------------------------------------------------------------------
+
+model CustomerRole {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  isSystem    Boolean   @default(false)
+  permissions Json      @default("[]")
+  dateAdd     DateTime  @default(now())
+  dateUpd     DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  customers CustomerRoleAssignment[]
+}
+
+model CustomerRoleAssignment {
+  customerId     String
+  customerRoleId String
+  dateAdd        DateTime @default(now())
+
+  customer     Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerRole CustomerRole @relation(fields: [customerRoleId], references: [id], onDelete: Cascade)
+
+  @@id([customerId, customerRoleId])
+  @@index([customerRoleId])
 }
 
 // ----------------------------------------------------------------------

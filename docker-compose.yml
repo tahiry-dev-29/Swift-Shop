@@ -4,8 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: store
-    image: dima-new-store:local
-    container_name: dima-new-store
+    image: swift-shop-store:local
+    container_name: swift-shop-store
     restart: unless-stopped
     environment:
       NODE_ENV: development
@@ -17,15 +17,15 @@ services:
       api:
         condition: service_started
     networks:
-      - dima-new-network
+      - swift-shop-network
 
   admin:
     build:
       context: .
       dockerfile: Dockerfile
       target: admin
-    image: dima-new-admin:local
-    container_name: dima-new-admin
+    image: swift-shop-admin:local
+    container_name: swift-shop-admin
     restart: unless-stopped
     environment:
       NODE_ENV: development
@@ -37,39 +37,39 @@ services:
       api:
         condition: service_started
     networks:
-      - dima-new-network
+      - swift-shop-network
 
   prisma-studio:
     build:
       context: .
       dockerfile: Dockerfile
       target: prisma-studio
-    image: dima-new-prisma-studio:local
-    container_name: dima-new-prisma-studio
+    image: swift-shop-prisma-studio:local
+    container_name: swift-shop-prisma-studio
     restart: unless-stopped
     environment:
       NODE_ENV: development
-      DATABASE_URL: postgresql://${POSTGRES_USER:-tahiry}:${POSTGRES_PASSWORD:-tahiry4534}@postgres:5432/${POSTGRES_DB:-dima_new}?schema=public
+      DATABASE_URL: postgresql://${POSTGRES_USER:-tahiry}:${POSTGRES_PASSWORD:-tahiry4534}@postgres:5432/${POSTGRES_DB:-swift_shop}?schema=public
     ports:
       - '${DOCKER_PORT_PRISMA_STUDIO:-5565}:5555'
     depends_on:
       postgres:
         condition: service_healthy
     networks:
-      - dima-new-network
+      - swift-shop-network
 
   api:
     build:
       context: .
       dockerfile: Dockerfile
       target: api
-    image: dima-new-api:local
-    container_name: dima-new-api
+    image: swift-shop-api:local
+    container_name: swift-shop-api
     restart: unless-stopped
     environment:
       NODE_ENV: production
       PORT: ${PORT_API:-3000}
-      DATABASE_URL: postgresql://${POSTGRES_USER:-tahiry}:${POSTGRES_PASSWORD:-tahiry4534}@postgres:5432/${POSTGRES_DB:-dima_new}?schema=public
+      DATABASE_URL: postgresql://${POSTGRES_USER:-tahiry}:${POSTGRES_PASSWORD:-tahiry4534}@postgres:5432/${POSTGRES_DB:-swift_shop}?schema=public
       JWT_SECRET: ${JWT_SECRET}
       REDIS_URL: redis://redis:6379
       MEILISEARCH_HOST: ${MEILISEARCH_HOST:-http://meilisearch:7700}
@@ -84,11 +84,11 @@ services:
       meilisearch:
         condition: service_healthy
     networks:
-      - dima-new-network
+      - swift-shop-network
 
   redis:
     image: redis:7-alpine
-    container_name: dima-new-redis
+    container_name: swift-shop-redis
     restart: unless-stopped
     ports:
       - '${DOCKER_PORT_REDIS:-6389}:6379'
@@ -98,21 +98,21 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - dima-new-network
+      - swift-shop-network
 
   postgres:
     image: postgres:16-alpine
-    container_name: dima-new-postgres
+    container_name: swift-shop-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-tahiry}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tahiry4534}
-      POSTGRES_DB: ${POSTGRES_DB:-dima_new}
+      POSTGRES_DB: ${POSTGRES_DB:-swift_shop}
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - '${DOCKER_PORT_POSTGRES:-5442}:5432'
     volumes:
-      - dima-new-postgres-data:/var/lib/postgresql/data
+      - swift-shop-postgres-data:/var/lib/postgresql/data
     healthcheck:
       test:
         - CMD-SHELL
@@ -121,11 +121,11 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - dima-new-network
+      - swift-shop-network
 
   meilisearch:
     image: getmeili/meilisearch:v1.7
-    container_name: dima-new-meilisearch
+    container_name: swift-shop-meilisearch
     restart: unless-stopped
     environment:
       MEILI_MASTER_KEY: ${MEILISEARCH_API_KEY:-masterKey}
@@ -134,22 +134,22 @@ services:
     ports:
       - '${DOCKER_PORT_MEILISEARCH:-7710}:7700'
     volumes:
-      - dima-new-meilisearch-data:/meili_data
+      - swift-shop-meilisearch-data:/meili_data
     healthcheck:
       test: [CMD, wget, -q, -O, -, http://localhost:7700/health]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
-      - dima-new-network
+      - swift-shop-network
 
 volumes:
-  dima-new-postgres-data:
-    name: dima-new-postgres-data
-  dima-new-meilisearch-data:
-    name: dima-new-meilisearch-data
+  swift-shop-postgres-data:
+    name: swift-shop-postgres-data
+  swift-shop-meilisearch-data:
+    name: swift-shop-meilisearch-data
 
 networks:
-  dima-new-network:
-    name: dima-new-network
+  swift-shop-network:
+    name: swift-shop-network
     driver: bridge

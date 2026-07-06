@@ -1,4 +1,4 @@
-import { PrismaClient } from '@dima-new/prisma-client';
+import { PrismaClient } from '@swift-shop/prisma-client';
 
 export const seedPricing = async (prisma: PrismaClient) => {
   console.log(

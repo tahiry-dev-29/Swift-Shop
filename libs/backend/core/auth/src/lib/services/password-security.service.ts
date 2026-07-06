@@ -70,7 +70,7 @@ export class PasswordSecurityService {
   private async fetchPwnedPasswordRange(prefix: string): Promise<Response> {
     try {
       return await fetch(`https://api.pwnedpasswords.com/range/${prefix}`, {
-        headers: { 'user-agent': 'dima-new-auth-password-policy' },
+        headers: { 'user-agent': 'swift-shop-auth-password-policy' },
       });
     } catch (error) {
       if (this.configService.get<string>('NODE_ENV') === 'production') {

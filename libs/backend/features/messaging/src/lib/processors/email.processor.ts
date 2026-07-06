@@ -3,7 +3,7 @@ import { Job } from 'bullmq';
 import { Logger } from '@nestjs/common';
 import { EmailMessageRepository } from '../repositories/email-message.repository';
 import { EMAIL_QUEUE_NAME, JOB_TYPES } from '../services/messaging.service';
-import { SmtpService } from '@dima-new/backend/auth';
+import { SmtpService } from '@swift-shop/backend/auth';
 
 @Processor(EMAIL_QUEUE_NAME)
 export class EmailProcessor extends WorkerHost {

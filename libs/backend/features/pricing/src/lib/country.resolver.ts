@@ -1,7 +1,7 @@
 import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard, SuperAdminGuard } from '@dima-new/backend/auth';
-import { PrismaService } from '@dima-new/data-access-prisma';
+import { JwtAuthGuard, SuperAdminGuard } from '@swift-shop/backend/auth';
+import { PrismaService } from '@swift-shop/data-access-prisma';
 import { CountryType, CreateCountryInput, UpdateCountryInput } from './dto';
 
 @Resolver(() => CountryType)

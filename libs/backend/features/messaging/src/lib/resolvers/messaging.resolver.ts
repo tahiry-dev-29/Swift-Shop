@@ -7,7 +7,7 @@ import {
   SendMessageInput,
   ReplyToThreadInput,
 } from '../dto';
-import { CustomerGuard, CurrentUser, AuthUser } from '@dima-new/backend/auth';
+import { CustomerGuard, CurrentUser, AuthUser } from '@swift-shop/backend/auth';
 
 @Resolver()
 export class MessagingResolver {

@@ -4,8 +4,8 @@ import {
   CurrentUser,
   EmployeeGuard,
   SuperAdminGuard,
-} from '@dima-new/backend/auth';
-import { AuthUser } from '@dima-new/models';
+} from '@swift-shop/backend/auth';
+import { AuthUser } from '@swift-shop/models';
 import { EmployeeRoleAssignmentService } from './employee-role-assignment.service';
 import { RolePermissionService } from './role-permission.service';
 import { RoleService } from './role.service';

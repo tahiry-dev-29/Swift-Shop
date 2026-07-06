@@ -5,7 +5,7 @@ export class CreateCategoryInput {
   @Field()
   name!: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   description?: string;
 
   @Field({ defaultValue: true })
@@ -17,31 +17,31 @@ export class CreateCategoryInput {
   @Field(() => ID, { nullable: true })
   parentId?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   slug?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   metaTitle?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   metaDescription?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   metaKeywords?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   banner?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   thumbnail?: string;
 }
 
 @InputType()
 export class UpdateCategoryInput {
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   name?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   description?: string;
 
   @Field({ nullable: true })
@@ -53,22 +53,22 @@ export class UpdateCategoryInput {
   @Field(() => ID, { nullable: true })
   parentId?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   slug?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   metaTitle?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   metaDescription?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   metaKeywords?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   banner?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   thumbnail?: string;
 }
 
@@ -86,7 +86,7 @@ export class CategoryConnectionArgs {
   @Field(() => Int, { nullable: true })
   first?: number;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   after?: string;
 
   @Field(() => ID, { nullable: true })

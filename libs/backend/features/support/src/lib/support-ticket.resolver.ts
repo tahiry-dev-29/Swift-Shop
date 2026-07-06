@@ -13,7 +13,7 @@ import {
   EmployeeGuard,
   CurrentUser,
   AuthUser,
-} from '@dima-new/backend/auth';
+} from '@swift-shop/backend/auth';
 
 @Resolver()
 export class SupportTicketResolver {

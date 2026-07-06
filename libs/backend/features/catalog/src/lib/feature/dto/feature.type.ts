@@ -3,35 +3,35 @@ import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
 @ObjectType()
 export class FeatureValueType {
   @Field(() => ID)
-  id: string;
+  declare id: string;
 
   @Field()
-  featureId: string;
+  declare featureId: string;
 
   @Field()
-  value: string;
+  declare value: string;
 
   @Field(() => Int)
-  position: number;
+  declare position: number;
 
   @Field()
-  custom: boolean;
+  declare custom: boolean;
 }
 
 @ObjectType()
 export class FeatureType {
   @Field(() => ID)
-  id: string;
+  declare id: string;
 
   @Field()
-  name: string;
+  declare name: string;
 
   @Field()
-  publicName: string;
+  declare publicName: string;
 
   @Field(() => Int)
-  position: number;
+  declare position: number;
 
   @Field(() => [FeatureValueType], { nullable: true })
-  values?: FeatureValueType[];
+  declare values?: FeatureValueType[];
 }

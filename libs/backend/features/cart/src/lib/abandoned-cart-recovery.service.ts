@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { PrismaService } from '@dima-new/data-access-prisma';
-import { RedisService } from '@dima-new/backend/auth';
+import { PrismaService } from '@swift-shop/data-access-prisma';
+import { RedisService } from '@swift-shop/backend/auth';
 
 const ABANDONED_CART_MIN_AGE_HOURS = 24;
 const ABANDONED_CART_DEDUP_TTL_SECONDS = 7 * 24 * 60 * 60;

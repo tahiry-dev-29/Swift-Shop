@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
-import { DataAccessPrismaModule } from '@dima-new/data-access-prisma';
-import { AuthModule } from '@dima-new/backend/auth';
+import { DataAccessPrismaModule } from '@swift-shop/data-access-prisma';
+import { AuthModule } from '@swift-shop/backend/auth';
 
 import { SOCIAL_MEDIA_QUEUE } from './social-media.constants';
 import { SocialMediaResolver } from './social-media.resolver';

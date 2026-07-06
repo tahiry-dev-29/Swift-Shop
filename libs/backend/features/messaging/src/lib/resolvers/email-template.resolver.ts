@@ -6,7 +6,7 @@ import {
   CreateEmailTemplateInput,
   UpdateEmailTemplateInput,
 } from '../dto';
-import { EmployeeGuard } from '@dima-new/backend/auth';
+import { EmployeeGuard } from '@swift-shop/backend/auth';
 
 @Resolver()
 @UseGuards(EmployeeGuard)

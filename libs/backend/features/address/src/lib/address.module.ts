@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { DataAccessPrismaModule } from '@dima-new/data-access-prisma';
+import { DataAccessPrismaModule } from '@swift-shop/data-access-prisma';
 import { AddressService } from './address.service';
 import { AddressResolver } from './address.resolver';
 

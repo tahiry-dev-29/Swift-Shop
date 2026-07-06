@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { DataAccessPrismaModule } from '@dima-new/data-access-prisma';
+import { DataAccessPrismaModule } from '@swift-shop/data-access-prisma';
 import { CategoryCacheService } from './category/category-cache.service';
 import { CategoryService } from './category/category.service';
 import { CategoryResolver } from './category/category.resolver';
@@ -22,7 +22,7 @@ import { ProductRepository } from './product/product.repository';
 import { FeatureService } from './feature/feature.service';
 import { FeatureResolver } from './feature/feature.resolver';
 import { CatalogDataLoader } from './catalog.dataloader';
-import { SearchModule } from '@dima-new/backend/search';
+import { SearchModule } from '@swift-shop/backend/search';
 
 @Module({
   imports: [DataAccessPrismaModule, SearchModule],

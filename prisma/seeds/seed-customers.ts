@@ -1,4 +1,4 @@
-import { PrismaClient } from '@dima-new/prisma-client';
+import { PrismaClient } from '@swift-shop/prisma-client';
 import * as argon2 from 'argon2';
 
 export interface CustomerData {

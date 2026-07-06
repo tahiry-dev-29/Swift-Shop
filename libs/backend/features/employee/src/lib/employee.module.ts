@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { DataAccessPrismaModule } from '@dima-new/data-access-prisma';
-import { AuthModule } from '@dima-new/backend/auth';
+import { DataAccessPrismaModule } from '@swift-shop/data-access-prisma';
+import { AuthModule } from '@swift-shop/backend/auth';
 import { EmployeeRoleAssignmentService } from './employee-role-assignment.service';
 import { EmployeeService } from './employee.service';
 import { EmployeeAuthAuditService } from './employee-auth-audit.service';

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { RedisService } from '@dima-new/backend/auth';
-import { PrismaService } from '@dima-new/data-access-prisma';
+import { RedisService } from '@swift-shop/backend/auth';
+import { PrismaService } from '@swift-shop/data-access-prisma';
 import { mapRole } from './role-utils';
 
 @Injectable()

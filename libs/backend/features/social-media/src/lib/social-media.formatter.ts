@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SocialPost } from '@dima-new/prisma-client';
+import { SocialPost } from '@swift-shop/prisma-client';
 import { SocialPostType } from './dto/social-post.type';
 
 @Injectable()

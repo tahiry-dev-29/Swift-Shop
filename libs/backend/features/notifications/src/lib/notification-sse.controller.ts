@@ -1,6 +1,6 @@
 import { Controller, MessageEvent, Sse, UseGuards } from '@nestjs/common';
 import { map, Observable } from 'rxjs';
-import { AuthUser, CurrentUser, JwtAuthGuard } from '@dima-new/backend/auth';
+import { AuthUser, CurrentUser, JwtAuthGuard } from '@swift-shop/backend/auth';
 import { NotificationService } from './notification.service';
 import { NotificationActorType } from './interfaces/notification-recipient.interface';
 

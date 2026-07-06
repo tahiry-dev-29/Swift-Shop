@@ -1,4 +1,4 @@
-import { PrismaClient } from '@dima-new/prisma-client';
+import { PrismaClient } from '@swift-shop/prisma-client';
 
 export const seedCategories = async (prisma: PrismaClient) => {
   console.log('🗂️  Seeding Categories...');
@@ -37,11 +37,18 @@ export const seedCategories = async (prisma: PrismaClient) => {
     const existing = await prisma.category.findFirst({
       where: { name: cat.name },
     });
-
     if (!existing) {
+      const slug = cat.name
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '');
+
       const created = await prisma.category.create({
         data: {
           name: cat.name,
+          slug,
           description: cat.description,
           position: cat.position,
           active: true,
@@ -314,13 +321,20 @@ export const seedProducts = async (
     const existing = await prisma.product.findFirst({
       where: { reference: prod.ref },
     });
-
     if (!existing) {
       const category = categories.find((c) => c.name === prod.category);
+      const slug = prod.name
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '');
+
       const created = await prisma.product.create({
         data: {
           reference: prod.ref,
           name: prod.name,
+          slug,
           description: prod.description,
           price: prod.price,
           wholesalePrice: prod.price * 0.6,

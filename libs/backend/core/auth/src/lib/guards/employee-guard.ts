@@ -11,6 +11,10 @@ interface AuthUser {
   type: 'customer' | 'employee';
 }
 
+function isAuthUser(value: unknown): value is AuthUser {
+  return typeof value === 'object' && value !== null && 'type' in value;
+}
+
 @Injectable()
 export class EmployeeGuard extends JwtAuthGuard {
   canActivate(context: ExecutionContext) {
@@ -20,15 +24,16 @@ export class EmployeeGuard extends JwtAuthGuard {
   handleRequest<TUser = AuthUser>(
     err: unknown,
     user: TUser,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _info: unknown,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _context: ExecutionContext,
   ): TUser {
+    void _info;
+    void _context;
     if (err || !user) {
       throw err || new UnauthorizedException('Authentication required');
     }
-    if ((user as AuthUser).type !== 'employee') {
+
+    if (!isAuthUser(user) || user.type !== 'employee') {
       throw new UnauthorizedException('Employee access only');
     }
     return user;

@@ -84,12 +84,12 @@ export class SocialMediaService {
         if (updated) {
           queuedPosts.push(updated);
         }
-      } catch (_err) {
+      } catch {
         // Buffer errors to avoid I/O bottlenecks in the loop
       }
     }
 
-    const errors = [];
+    const errors: string[] = [];
     // ... logic ...
     // After loop, log all errors
     if (errors.length > 0) {

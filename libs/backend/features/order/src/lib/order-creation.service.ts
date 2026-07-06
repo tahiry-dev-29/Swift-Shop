@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '@dima-new/data-access-prisma';
-import { CartService } from '@dima-new/backend/cart';
+import { PrismaService } from '@swift-shop/data-access-prisma';
+import { CartService } from '@swift-shop/backend/cart';
 import { GuestCheckoutService } from './guest-checkout.service';
 import { OrderAddressSnapshotService } from './order-address-snapshot.service';
 

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@dima-new/prisma-client';
-import { PrismaService } from '@dima-new/data-access-prisma';
+import { Prisma } from '@swift-shop/prisma-client';
+import { PrismaService } from '@swift-shop/data-access-prisma';
 import {
   CreateProductInput,
   UpdateProductInput,

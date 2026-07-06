@@ -8,7 +8,7 @@ export class CategoryType {
   @Field()
   name!: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   description?: string;
 
   @Field()
@@ -26,19 +26,19 @@ export class CategoryType {
   @Field()
   slug!: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   metaTitle?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   metaDescription?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   metaKeywords?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   banner?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   thumbnail?: string;
 
   @Field()
@@ -68,10 +68,10 @@ export class CategoryPageInfo {
   @Field()
   hasPreviousPage!: boolean;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   startCursor?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   endCursor?: string;
 }
 

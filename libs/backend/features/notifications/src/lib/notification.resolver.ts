@@ -1,11 +1,20 @@
-import { Args, ID, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Context,
+  ID,
+  Int,
+  Mutation,
+  Query,
+  Resolver,
+  Subscription,
+} from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import {
   AuthUser,
   CurrentUser,
   EmployeeGuard,
   JwtAuthGuard,
-} from '@dima-new/backend/auth';
+} from '@swift-shop/backend/auth';
 import { NotificationService } from './notification.service';
 import {
   NotificationPreferenceInput,
@@ -17,10 +26,18 @@ import {
   UnreadNotificationCountType,
 } from './dto';
 import { NotificationActorType } from './interfaces/notification-recipient.interface';
+import { NotificationTransportService } from './notification-transport.service';
+
+interface GqlContext {
+  req: { user?: AuthUser };
+}
 
 @Resolver(() => NotificationType)
 export class NotificationResolver {
-  constructor(private readonly notificationService: NotificationService) {}
+  constructor(
+    private readonly notificationService: NotificationService,
+    private readonly transportService: NotificationTransportService,
+  ) {}
 
   @Query(() => [NotificationType])
   @UseGuards(JwtAuthGuard)
@@ -88,6 +105,37 @@ export class NotificationResolver {
       user.type as NotificationActorType,
       user.id,
       input,
+    );
+  }
+
+  /** Real-time stream — graphql-ws handles the WebSocket upgrade */
+  @Subscription(() => NotificationType, {
+    filter(
+      payload: { notificationReceived: NotificationType },
+      _args: unknown,
+      context: GqlContext,
+    ) {
+      const user = context.req?.user;
+      if (!user) return false;
+      const n = payload.notificationReceived;
+      return user.type === 'customer'
+        ? n.customerId === user.id
+        : n.employeeId === user.id;
+    },
+    resolve: (payload: { notificationReceived: NotificationType }) =>
+      payload.notificationReceived,
+  })
+  @UseGuards(JwtAuthGuard)
+  notificationReceived(@Context() ctx: GqlContext) {
+    const user = ctx.req?.user;
+    if (!user) {
+      throw new Error('Unauthenticated subscription');
+    }
+    return this.transportService.streamForRecipient(
+      this.notificationService.recipientFromActor(
+        user.type as NotificationActorType,
+        user.id,
+      ),
     );
   }
 }

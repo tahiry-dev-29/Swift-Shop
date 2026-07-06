@@ -7,9 +7,9 @@ import { OrderAddressSnapshotService } from './order-address-snapshot.service';
 import { OrderExportService } from './order-export.service';
 import { OrderInvoiceService } from './order-invoice.service';
 import { OrderResolver } from './order-resolver';
-import { CartModule } from '@dima-new/backend/cart';
+import { CartModule } from '@swift-shop/backend/cart';
 
-import { DataAccessPrismaModule } from '@dima-new/data-access-prisma';
+import { DataAccessPrismaModule } from '@swift-shop/data-access-prisma';
 
 @Module({
   imports: [DataAccessPrismaModule, forwardRef(() => CartModule)],

@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
-import { PrismaService } from '@dima-new/data-access-prisma';
-import { JwtPayload } from '@dima-new/models';
+import { PrismaService } from '@swift-shop/data-access-prisma';
+import { JwtPayload } from '@swift-shop/models';
 import { RedisService } from '../infrastructure/storage/redis.service';
 import { REFRESH_TOKEN_TTL_SECONDS } from '../types/auth-types.internal';
 

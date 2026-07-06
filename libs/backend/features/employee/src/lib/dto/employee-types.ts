@@ -12,8 +12,8 @@ export class RoleType {
   @Field()
   slug!: string;
 
-  @Field({ nullable: true })
-  description?: string;
+  @Field(() => String, { nullable: true })
+  description?: string | null;
 
   @Field()
   isSystem!: boolean;
@@ -48,8 +48,8 @@ export class EmployeeType {
   @Field(() => [RoleType], { nullable: true })
   roles?: RoleType[];
 
-  @Field({ nullable: true })
-  lastConnectionDate?: Date;
+  @Field(() => Date, { nullable: true })
+  lastConnectionDate?: Date | null;
 
   @Field()
   twoFactorEnabled!: boolean;
@@ -60,19 +60,19 @@ export class EmployeeType {
 
 @ObjectType()
 export class EmployeeAuthResponse {
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   accessToken?: string;
 
   @Field(() => EmployeeType, { nullable: true })
   employee?: EmployeeType;
 
-  @Field({ nullable: true })
+  @Field(() => Boolean, { nullable: true })
   requires2FA?: boolean;
 
-  @Field({ nullable: true })
+  @Field(() => Boolean, { nullable: true })
   requiresPasswordReset?: boolean;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   refreshToken?: string;
 }
 

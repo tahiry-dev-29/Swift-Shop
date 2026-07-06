@@ -28,7 +28,11 @@ export class CustomerGuard extends JwtAuthGuard {
     if (err || !user) {
       throw err || new UnauthorizedException('Authentication required');
     }
-    if ((user as AuthUser).type !== 'customer') {
+    const isAuthUser = (user: unknown): user is AuthUser => {
+      return typeof user === 'object' && user !== null && 'type' in user;
+    };
+
+    if (!isAuthUser(user) || user.type !== 'customer') {
       throw new UnauthorizedException('Customer access only');
     }
     return user;
