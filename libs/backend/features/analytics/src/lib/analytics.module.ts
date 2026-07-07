@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { DataAccessPrismaModule } from '@swift-shop/data-access-prisma';
+import { AuthModule } from '@swift-shop/backend/auth';
 import { AnalyticsFormatter } from './analytics.formatter';
 import { AnalyticsRepository } from './analytics.repository';
 import { AnalyticsResolver } from './analytics.resolver';
 import { AnalyticsService } from './analytics.service';
 
 @Module({
-  imports: [DataAccessPrismaModule],
+  imports: [DataAccessPrismaModule, AuthModule],
   providers: [
     AnalyticsFormatter,
     AnalyticsRepository,

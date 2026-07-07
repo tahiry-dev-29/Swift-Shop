@@ -23,9 +23,10 @@ import { FeatureService } from './feature/feature.service';
 import { FeatureResolver } from './feature/feature.resolver';
 import { CatalogDataLoader } from './catalog.dataloader';
 import { SearchModule } from '@swift-shop/backend/search';
+import { AuthModule } from '@swift-shop/backend/auth';
 
 @Module({
-  imports: [DataAccessPrismaModule, SearchModule],
+  imports: [DataAccessPrismaModule, SearchModule, AuthModule],
   controllers: [ProductBulkController],
   providers: [
     CatalogDataLoader,

@@ -1,5 +1,8 @@
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
-const { join } = require('path');
+const { join, resolve } = require('path');
+
+const projectRoot = join(__dirname, '../..');
+const prismaGeneratedDir = resolve(projectRoot, 'prisma/generated-client');
 
 module.exports = {
   output: {
@@ -13,6 +16,27 @@ module.exports = {
   externals: {
     '@prisma/client': 'commonjs @prisma/client',
     '@prisma/adapter-pg': 'commonjs @prisma/adapter-pg',
+  },
+  module: {
+    rules: [
+      {
+        // Polyfill import.meta.url for Prisma 7 generated client (ESM -> CJS webpack compat)
+        test: /\.ts$/,
+        include: [prismaGeneratedDir],
+        use: [
+          {
+            loader: 'string-replace-loader',
+            options: {
+              search: 'import.meta.url',
+              replace: "'file://' + __filename",
+              flags: 'g',
+            },
+          },
+        ],
+        // Run BEFORE other ts loaders
+        enforce: 'pre',
+      },
+    ],
   },
   plugins: [
     new NxAppWebpackPlugin({
