@@ -33,6 +33,7 @@ import { HealthModule } from './health/health.module';
 import { BullModule } from '@nestjs/bullmq';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { ExpressAdapter } from '@bull-board/express';
+import { UploadsModule } from './uploads/uploads.module';
 
 @Module({
   imports: [
@@ -103,6 +104,7 @@ import { ExpressAdapter } from '@bull-board/express';
     SupportModule,
     NotificationModule,
     HealthModule,
+    UploadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

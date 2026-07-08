@@ -66,3 +66,6 @@ tools/
 
 # Prisma generated client
 prisma/generated-client
+
+# Google service account credentials (use Render Secret Files in production)
+**/google-credentials.json

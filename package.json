@@ -83,6 +83,7 @@
     "@bull-board/api": "^8.0.1",
     "@bull-board/express": "^8.0.1",
     "@bull-board/nestjs": "^8.0.1",
+    "@googleapis/drive": "^20.2.0",
     "@nestjs/apollo": "^13.2.1",
     "@nestjs/axios": "^4.0.1",
     "@nestjs/bullmq": "^11.0.4",
