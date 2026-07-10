@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable @angular-eslint/no-input-rename */
 import type { BooleanInput } from '@angular/cdk/coercion';
 import {
   booleanAttribute,
@@ -67,5 +67,3 @@ export class HlmPaginationNext {
     hlm(!this.iconOnly() && 'pe-2!', this.userClass()),
   );
 }
-
-class HlmPaginationNextDisableUnusedEslintRuleFix {}

@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable @angular-eslint/component-selector */
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronDown } from '@ng-icons/lucide';
@@ -28,5 +28,3 @@ export class HlmNavigationMenuTrigger {
     );
   }
 }
-
-class HlmNavigationMenuTriggerDisableUnusedEslintRuleFix {}
