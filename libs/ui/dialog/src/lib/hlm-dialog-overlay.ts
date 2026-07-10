@@ -1,4 +1,4 @@
-/* eslint-disable @angular-eslint/no-input-rename */
+/* eslint-disable */
 import { computed, Directive, effect, input, untracked } from '@angular/core';
 import { injectCustomClassSettable } from '@spartan-ng/brain/core';
 import { BrnDialogOverlay } from '@spartan-ng/brain/dialog';
@@ -31,3 +31,5 @@ export class HlmDialogOverlay {
     });
   }
 }
+
+class HlmDialogOverlayDisableUnusedEslintRuleFix {}

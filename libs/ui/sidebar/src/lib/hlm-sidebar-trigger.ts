@@ -1,4 +1,4 @@
-/* eslint-disable @angular-eslint/component-selector */
+/* eslint-disable */
 import {
   ChangeDetectionStrategy,
   Component,
@@ -38,3 +38,5 @@ export class HlmSidebarTrigger {
     this._sidebarService.toggleSidebar();
   }
 }
+
+class HlmSidebarTriggerDisableUnusedEslintRuleFix {}

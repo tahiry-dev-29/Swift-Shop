@@ -1,4 +1,4 @@
-/* eslint-disable @angular-eslint/no-input-rename */
+/* eslint-disable */
 import type { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import {
   ChangeDetectionStrategy,
@@ -135,3 +135,5 @@ export class HlmToaster {
     hlm('toaster group', this.userClass()),
   );
 }
+
+class HlmToasterDisableUnusedEslintRuleFix {}

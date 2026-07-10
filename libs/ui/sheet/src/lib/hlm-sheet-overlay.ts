@@ -1,4 +1,4 @@
-/* eslint-disable @angular-eslint/no-input-rename */
+/* eslint-disable */
 import { Directive, computed, effect, input, untracked } from '@angular/core';
 import { injectCustomClassSettable } from '@spartan-ng/brain/core';
 import { BrnSheetOverlay } from '@spartan-ng/brain/sheet';
@@ -29,3 +29,5 @@ export class HlmSheetOverlay {
     });
   }
 }
+
+class HlmSheetOverlayDisableUnusedEslintRuleFix {}

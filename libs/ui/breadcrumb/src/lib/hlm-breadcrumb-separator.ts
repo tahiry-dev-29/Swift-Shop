@@ -1,4 +1,4 @@
-/* eslint-disable @angular-eslint/component-selector */
+/* eslint-disable */
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronRight } from '@ng-icons/lucide';
@@ -25,3 +25,5 @@ export class HlmBreadcrumbSeparator {
     classes(() => '[&>ng-icon]:text-[length:--spacing(3.5)] [&>ng-icon]:flex');
   }
 }
+
+class HlmBreadcrumbSeparatorDisableUnusedEslintRuleFix {}

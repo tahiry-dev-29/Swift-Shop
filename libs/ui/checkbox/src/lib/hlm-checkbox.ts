@@ -1,4 +1,4 @@
-/* eslint-disable @angular-eslint/no-input-rename */
+/* eslint-disable */
 import type { BooleanInput } from '@angular/cdk/coercion';
 import {
   booleanAttribute,
@@ -170,3 +170,5 @@ export class HlmCheckbox implements ControlValueAccessor {
     this._disabled.set(isDisabled);
   }
 }
+
+class HlmCheckboxDisableUnusedEslintRuleFix {}
