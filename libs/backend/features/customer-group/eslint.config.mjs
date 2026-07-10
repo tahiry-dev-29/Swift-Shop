@@ -1,4 +1,4 @@
-import baseConfig from '../../../..//eslint.config.mjs';
+import baseConfig from '../../../../eslint.config.mjs';
 
 /** NestJS backend lib — Angular-only rules must not apply here */
 const nestjsOverride = {
