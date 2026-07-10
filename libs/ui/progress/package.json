@@ -1,0 +1,11 @@
+{
+  "name": "@spartan-ng/helm/progress",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/core": "^22.0.0",
+    "@angular/cdk": "22.0.3",
+    "@spartan-ng/brain": "1.0.4",
+    "@spartan-ng/helm/utils": "0.0.1"
+  },
+  "sideEffects": false
+}

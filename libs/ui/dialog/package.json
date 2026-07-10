@@ -1,0 +1,16 @@
+{
+  "name": "@spartan-ng/helm/dialog",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^22.0.0",
+    "@angular/core": "^22.0.0",
+    "@spartan-ng/brain": "1.0.4",
+    "@angular/cdk": "22.0.3",
+    "@ng-icons/core": "^32.2.0",
+    "@ng-icons/lucide": "^32.2.0",
+    "@spartan-ng/helm/button": "0.0.1",
+    "@spartan-ng/helm/utils": "0.0.1",
+    "clsx": "^2.1.1"
+  },
+  "sideEffects": false
+}
