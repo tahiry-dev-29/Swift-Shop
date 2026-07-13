@@ -35,7 +35,7 @@ This roadmap has been split into multiple files for better readability and modul
 
 ## 🐛 Bugs Audit
 
-- [11-bugs-audit.md](./11-bugs-audit.md) — 115 bugs identified (14 critical, 35 high), top 17 priority fixes.
+- [11-bugs-audit.md](./11-bugs-audit.md) — 120 bugs identified (14 critical, 37 high), top 17 priority fixes.
 
 ---
 

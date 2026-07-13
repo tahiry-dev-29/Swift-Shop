@@ -2,6 +2,7 @@
 
 > Code audit performed across all backend modules. Bugs classified by module and severity.
 > Refresh token bugs are already in [09-backend-gaps.md](./09-backend-gaps.md#-8-refresh-token--security-bugs).
+> Hg bugs discovered by thr-scan-be-bugs automated scanner (H1b, H2b, H2c, H3b, H6b).
 
 ---
 
@@ -13,8 +14,8 @@
 | Catalog (Stock)                     | 0           | 4       | 10        | 8      | 22      |
 | Order / Cart / Payment              | 7           | 9       | 7         | 3      | 26      |
 | Notifications / Messaging / Support | 1           | 7       | 11        | 3      | 22      |
-| **Infrastructure / Config (New)**   | **2**       | **9**   | **6**     | **2**  | **19**  |
-| **Total**                           | **14**      | **35**  | **43**    | **23** | **115** |
+| **Infrastructure / Config**         | **2**       | **11**  | **9**     | **2**  | **24**  |
+| **Total**                           | **14**      | **37**  | **46**    | **23** | **120** |
 
 ---
 
@@ -242,16 +243,21 @@ These bugs were in infrastructure layers (GraphQL setup, upload, health checks, 
 | #   | Bug                                                                                                      | File                  | Lines |
 | --- | -------------------------------------------------------------------------------------------------------- | --------------------- | ----- |
 | H1  | **GraphQL DoS — No depth/complexity limits** — infinite queries possible, stack overflow, billion laughs | `app.module.ts`       | 53-63 |
-| H2  | **File Upload DoS — No size/type limits** — 10GB+ possible, OOM on Sharp, no magic bytes validation      | `media.controller.ts` | 16-24 |
+| H1b | **Introspection/playground exposed in prod** — no env guard, schema leakable                             | `app.module.ts`       | 53-63 |
+| H2  | **File Upload DoS — No size/type limits** — 10GB+ possible, OOM on Sharp                                 | `media.controller.ts` | 16-24 |
+| H2b | **MIME-only validation, no magic bytes** — SVG with JS can execute in browser                            | `media.controller.ts` | 22-28 |
+| H2c | **Sharp processes images without dimension limits** — 50000x50000px → OOM crash                          | `media.service.ts`    | 35-50 |
 
 ### 🟠 High
 
 | #   | Bug                                                                                                            | File                            | Lines   |
 | --- | -------------------------------------------------------------------------------------------------------------- | ------------------------------- | ------- |
 | H3  | **Prisma pool leak on SIGTERM** — only `beforeExit` handled, Docker/K8s sends SIGTERM → connections not closed | `prisma.service.ts`             | 27-32   |
+| H3b | **PostgreSQL pool without SSL** — production DB connections unencrypted                                        | `prisma.service.ts`             | 35-42   |
 | H4  | **BullMQ failed jobs accumulate** — no `removeOnComplete/fail`, no DLQ, no alerting                            | `notification-queue.service.ts` | 28-37   |
 | H5  | **MeiliSearch client unhealthy used** — if down at startup, client defined but invalid, silent errors          | `search.service.ts`             | 12-33   |
 | H6  | **Redis throttler without error handler** — process crash if Redis restarts, lazyConnect delays failure        | `redis-throttler-storage.ts`    | 28-37   |
+| H6b | **Redis lazyConnect without explicit connect()** — first request after restart hangs silently                  | `redis-throttler-storage.ts`    | 35      |
 | H7  | **Rate limit IP spoofing via X-Forwarded-For** — header unvalidated, attacker bypasses throttling              | `auth-rate-limit.guard.ts`      | 72-84   |
 | H8  | **Guest checkout race condition** — 2 requests same email = duplicate customer, no upsert                      | `guest-checkout.service.ts`     | 38-67   |
 | H9  | **Cart merge silent data loss** — 3 steps without transaction, partial failure = lost items                    | `cart-merge.service.ts`         | 29-34   |
