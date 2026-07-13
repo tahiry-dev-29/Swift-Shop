@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PaymentAdapter } from './payment-adapter.interface';
 import { LocalPaymentAdapter } from './local-payment-adapter';
 
@@ -13,11 +13,9 @@ export class PaymentAdapterRegistry {
   get(provider: string): PaymentAdapter {
     const adapter = this.adapters.get(provider.toLowerCase());
     if (!adapter) {
-      const manual = this.adapters.get('manual');
-      if (!manual) {
-        throw new Error('Manual payment adapter not found in registry');
-      }
-      return manual;
+      throw new BadRequestException(
+        `Unsupported payment provider: ${provider}`,
+      );
     }
     return adapter;
   }

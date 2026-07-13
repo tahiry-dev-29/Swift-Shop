@@ -39,10 +39,13 @@ export class PaymentService {
       throw new NotFoundException('Order not found');
     }
 
-    const paymentAmount = amount ?? Number(order.totalTTC);
-    if (paymentAmount <= 0) {
-      throw new BadRequestException('Payment amount must be positive');
+    const expectedAmount = Number(order.totalTTC);
+    if (amount !== undefined && amount !== expectedAmount) {
+      throw new BadRequestException(
+        `Payment amount must match the order total of ${expectedAmount}`,
+      );
     }
+    const paymentAmount = expectedAmount;
 
     const payment = await this.prisma.payment.create({
       data: {

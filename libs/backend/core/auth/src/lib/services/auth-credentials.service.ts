@@ -21,7 +21,13 @@ export class AuthCredentialsService {
       include: { group: true },
     });
 
-    if (!customer || !customer.active || this.isLocked(customer.lockedUntil)) {
+    if (
+      !customer ||
+      !customer.active ||
+      this.isLocked(customer.lockedUntil) ||
+      (customer.lockedUntil === null &&
+        customer.failedLoginAttempts >= LOCKOUT_THRESHOLD)
+    ) {
       return null;
     }
 
@@ -44,7 +50,13 @@ export class AuthCredentialsService {
       include: { role: true },
     });
 
-    if (!employee || !employee.active || this.isLocked(employee.lockedUntil)) {
+    if (
+      !employee ||
+      !employee.active ||
+      this.isLocked(employee.lockedUntil) ||
+      (employee.lockedUntil === null &&
+        employee.failedLoginAttempts >= LOCKOUT_THRESHOLD)
+    ) {
       return null;
     }
 
@@ -80,15 +92,20 @@ export class AuthCredentialsService {
     });
     if (customer.failedLoginAttempts >= LOCKOUT_THRESHOLD) {
       const lockedUntil = this.lockoutDate();
-      await this.prisma.customer.update({
-        where: { id },
+      const updated = await this.prisma.customer.updateMany({
+        where: {
+          id,
+          OR: [{ lockedUntil: null }, { lockedUntil: { lt: new Date() } }],
+        },
         data: { lockedUntil },
       });
-      await this.sendAccountLockoutAlert(
-        customer.email,
-        'customer',
-        lockedUntil,
-      );
+      if (updated.count > 0) {
+        await this.sendAccountLockoutAlert(
+          customer.email,
+          'customer',
+          lockedUntil,
+        );
+      }
     }
   }
 
@@ -99,15 +116,20 @@ export class AuthCredentialsService {
     });
     if (employee.failedLoginAttempts >= LOCKOUT_THRESHOLD) {
       const lockedUntil = this.lockoutDate();
-      await this.prisma.employee.update({
-        where: { id },
+      const updated = await this.prisma.employee.updateMany({
+        where: {
+          id,
+          OR: [{ lockedUntil: null }, { lockedUntil: { lt: new Date() } }],
+        },
         data: { lockedUntil },
       });
-      await this.sendAccountLockoutAlert(
-        employee.email,
-        'employee',
-        lockedUntil,
-      );
+      if (updated.count > 0) {
+        await this.sendAccountLockoutAlert(
+          employee.email,
+          'employee',
+          lockedUntil,
+        );
+      }
     }
   }
 

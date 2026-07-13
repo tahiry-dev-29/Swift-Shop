@@ -9,6 +9,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
   app.useLogger(app.get(PinoLogger));
 
+  // Enable trust proxy for secure client IP detection via request.ip
+  app.getHttpAdapter().getInstance().set('trust proxy', true);
+
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix, {
     exclude: ['/'],

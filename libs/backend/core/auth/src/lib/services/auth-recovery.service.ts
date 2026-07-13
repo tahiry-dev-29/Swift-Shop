@@ -81,7 +81,6 @@ export class AuthRecoveryService {
   }
 
   async completeForcedPasswordReset(token: string, password: string) {
-    await this.passwordSecurity.assertPasswordPolicy(password);
     const payload = this.jwtService.verify<JwtPayload>(token);
     if (
       payload.type !== 'employee' ||
@@ -89,6 +88,7 @@ export class AuthRecoveryService {
     ) {
       return null;
     }
+    await this.passwordSecurity.assertPasswordPolicy(password);
     const hashedPassword =
       await this.passwordSecurity.hashWithoutPolicy(password);
     return this.prisma.employee.update({

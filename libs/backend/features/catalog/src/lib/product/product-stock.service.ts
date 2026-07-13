@@ -12,24 +12,19 @@ export class ProductStockService {
 
   async updateStock(input: UpdateStockInput) {
     const { productId, combinationId, ...stockData } = input;
-    const existingStock = await this.prisma.stock.findFirst({
-      where: {
-        OR: [
-          { productId: productId ?? undefined },
-          { combinationId: combinationId ?? undefined },
-        ],
-      },
-    });
 
-    if (existingStock) {
-      return this.prisma.stock.update({
-        where: { id: existingStock.id },
-        data: stockData,
-      });
+    if (!productId && !combinationId) {
+      throw new BadRequestException(
+        'Either productId or combinationId must be provided',
+      );
     }
 
-    return this.prisma.stock.create({
-      data: {
+    const where = productId ? { productId } : { combinationId };
+
+    return this.prisma.stock.upsert({
+      where,
+      update: stockData,
+      create: {
         productId,
         combinationId,
         ...stockData,
