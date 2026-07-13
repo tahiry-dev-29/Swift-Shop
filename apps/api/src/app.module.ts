@@ -54,8 +54,8 @@ import { ExpressAdapter } from '@bull-board/express';
       driver: ApolloDriver,
       autoSchemaFile: join(__dirname, 'schema.gql'),
       sortSchema: true,
-      playground: true,
-      introspection: true,
+      playground: process.env['NODE_ENV'] !== 'production',
+      introspection: process.env['NODE_ENV'] !== 'production',
       subscriptions: {
         'graphql-ws': true,
       },

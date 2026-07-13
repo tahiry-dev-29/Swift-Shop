@@ -12,7 +12,10 @@ import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { PrismaService } from '@swift-shop/data-access-prisma';
 
-@WebSocketGateway({ namespace: 'support', cors: { origin: '*' } })
+@WebSocketGateway({
+  namespace: 'support',
+  cors: { origin: process.env['FRONTEND_URL'] || 'http://localhost:4200' },
+})
 export class LiveChatGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
@@ -24,6 +27,14 @@ export class LiveChatGateway
   constructor(private readonly prisma: PrismaService) {}
 
   handleConnection(client: Socket) {
+    const token =
+      client.handshake.auth?.['token'] ||
+      client.handshake.headers['authorization'];
+    if (!token) {
+      this.logger.error(`Connection rejected: No auth token for ${client.id}`);
+      client.disconnect();
+      return;
+    }
     this.logger.log(`Client connected to LiveChatGateway: ${client.id}`);
   }
 

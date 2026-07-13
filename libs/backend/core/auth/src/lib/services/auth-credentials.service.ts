@@ -78,7 +78,7 @@ export class AuthCredentialsService {
       where: { id },
       data: { failedLoginAttempts: { increment: 1 } },
     });
-    if (customer.failedLoginAttempts === LOCKOUT_THRESHOLD) {
+    if (customer.failedLoginAttempts >= LOCKOUT_THRESHOLD) {
       const lockedUntil = this.lockoutDate();
       await this.prisma.customer.update({
         where: { id },
@@ -97,7 +97,7 @@ export class AuthCredentialsService {
       where: { id },
       data: { failedLoginAttempts: { increment: 1 } },
     });
-    if (employee.failedLoginAttempts === LOCKOUT_THRESHOLD) {
+    if (employee.failedLoginAttempts >= LOCKOUT_THRESHOLD) {
       const lockedUntil = this.lockoutDate();
       await this.prisma.employee.update({
         where: { id },

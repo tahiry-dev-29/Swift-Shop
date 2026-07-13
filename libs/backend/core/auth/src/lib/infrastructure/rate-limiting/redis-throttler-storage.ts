@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ThrottlerStorage } from '@nestjs/throttler';
 import Redis from 'ioredis';
@@ -24,6 +24,7 @@ function toTtlSeconds(milliseconds: number): number {
 @Injectable()
 export class RedisThrottlerStorage implements ThrottlerStorage {
   private readonly redis: Redis;
+  private readonly logger = new Logger(RedisThrottlerStorage.name);
 
   constructor(configService: ConfigService) {
     const redisUrl =
@@ -31,8 +32,12 @@ export class RedisThrottlerStorage implements ThrottlerStorage {
 
     this.redis = new Redis(redisUrl, {
       enableOfflineQueue: false,
-      lazyConnect: true,
+      lazyConnect: false,
       maxRetriesPerRequest: 1,
+    });
+
+    this.redis.on('error', (err) => {
+      this.logger.error('Redis Throttler error', err);
     });
   }
 

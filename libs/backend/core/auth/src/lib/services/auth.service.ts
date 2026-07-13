@@ -74,8 +74,23 @@ export class AuthService {
     return this.tokenService.verifyToken(token);
   }
 
-  refreshToken(token: string) {
-    return this.tokenService.refreshToken(token);
+  async refreshToken(
+    token: string,
+    expectedType?: 'customer' | 'employee',
+    meta?: { ipAddress?: string; userAgent?: string },
+  ) {
+    const result = await this.tokenService.refreshToken(token, expectedType);
+    const isCustomer = 'customer' in result;
+    const actorId = isCustomer ? result.customer.id : result.employee.id;
+    const actorType = expectedType || (isCustomer ? 'customer' : 'employee');
+    await this.audit({
+      action: `${actorType}.refresh_token`,
+      actorType: actorType as 'customer' | 'employee',
+      actorId,
+      metadata: { oldJti: result.oldJti ?? null, newJti: result.jti },
+      ...meta,
+    });
+    return result;
   }
 
   logout(userId: string, jti?: string, exp?: number) {

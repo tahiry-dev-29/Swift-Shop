@@ -1,10 +1,16 @@
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  OnModuleDestroy,
+  OnModuleInit,
+  Logger,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
 
 @Injectable()
 export class RedisService implements OnModuleInit, OnModuleDestroy {
   private client!: Redis;
+  private readonly logger = new Logger(RedisService.name);
 
   constructor(private readonly configService: ConfigService) {}
 
@@ -14,6 +20,9 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
       'redis://localhost:6379',
     );
     this.client = new Redis(redisUrl);
+    this.client.on('error', (err) => {
+      this.logger.error('Redis error', err);
+    });
   }
 
   onModuleDestroy() {
@@ -22,6 +31,17 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
   async setBlacklistToken(jti: string, expiresIn: number): Promise<void> {
     await this.client.set(`bl_${jti}`, '1', 'EX', expiresIn);
+  }
+
+  async setBlacklistTokenNX(jti: string, expiresIn: number): Promise<boolean> {
+    const result = await this.client.set(
+      `bl_${jti}`,
+      '1',
+      'EX',
+      expiresIn,
+      'NX',
+    );
+    return result === 'OK';
   }
 
   async isTokenBlacklisted(jti: string): Promise<boolean> {

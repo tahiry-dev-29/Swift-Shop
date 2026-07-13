@@ -58,14 +58,18 @@ export class AuthTokenService {
   verifyToken(token: string): JwtPayload | null {
     try {
       const payload = this.jwtService.verify<JwtPayload>(token);
+      if (payload.tokenType === 'refresh') return null;
       return payload.purpose && payload.purpose !== 'access' ? null : payload;
     } catch {
       return null;
     }
   }
 
-  async refreshToken(token: string) {
+  async refreshToken(token: string, expectedType?: 'customer' | 'employee') {
     const payload = this.jwtService.verify<JwtPayload>(token);
+    if (expectedType && payload.type !== expectedType) {
+      throw new UnauthorizedException(`Invalid token type for this endpoint`);
+    }
     await this.assertRefreshTokenActive(payload);
     await this.blacklistCurrentRefreshToken(payload);
 
@@ -78,7 +82,7 @@ export class AuthTokenService {
         throw new UnauthorizedException('User inactive');
       }
       const tokens = await this.generateCustomerToken(customer);
-      return { ...tokens, customer };
+      return { ...tokens, customer, oldJti: payload.jti };
     }
 
     const employee = await this.prisma.employee.findUnique({
@@ -89,7 +93,7 @@ export class AuthTokenService {
       throw new UnauthorizedException('User inactive');
     }
     const tokens = await this.generateEmployeeToken(employee);
-    return { ...tokens, employee };
+    return { ...tokens, employee, oldJti: payload.jti };
   }
 
   async logout(userId: string, jti?: string, exp?: number) {
@@ -110,6 +114,7 @@ export class AuthTokenService {
     const refreshTokenPayload: JwtPayload = {
       ...payload,
       tokenType: 'refresh',
+      purpose: 'refresh',
     };
     const accessToken = this.jwtService.sign(payload);
     const refreshToken = this.jwtService.sign(refreshTokenPayload, {
@@ -121,7 +126,7 @@ export class AuthTokenService {
       jti,
       REFRESH_TOKEN_TTL_SECONDS,
     );
-    return { accessToken, refreshToken };
+    return { accessToken, refreshToken, jti };
   }
 
   private async assertRefreshTokenActive(payload: JwtPayload) {
@@ -133,11 +138,12 @@ export class AuthTokenService {
       this.redisService.isTokenBlacklisted(payload.jti),
       this.redisService.getStoredRefreshTokenJti(payload.sub),
     ]);
-    if (isBlacklisted) {
-      throw new UnauthorizedException('Token has been revoked');
-    }
-    if (storedJti !== payload.jti) {
-      throw new UnauthorizedException('Refresh token is no longer active');
+    if (isBlacklisted || storedJti !== payload.jti) {
+      // Reuse detected, revoke entire family
+      await this.redisService.delete(`rt_${payload.sub}`);
+      throw new UnauthorizedException(
+        'Token reuse detected. All sessions revoked.',
+      );
     }
   }
 
@@ -146,7 +152,17 @@ export class AuthTokenService {
       ? payload.exp - Math.floor(Date.now() / 1000)
       : REFRESH_TOKEN_TTL_SECONDS;
     if (payload.jti && expiresIn > 0) {
-      await this.redisService.setBlacklistToken(payload.jti, expiresIn);
+      const set = await this.redisService.setBlacklistTokenNX(
+        payload.jti,
+        expiresIn,
+      );
+      if (!set) {
+        // Race condition / reuse detected
+        await this.redisService.delete(`rt_${payload.sub}`);
+        throw new UnauthorizedException(
+          'Token reuse detected. All sessions revoked.',
+        );
+      }
     }
   }
 }

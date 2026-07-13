@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '@swift-shop/data-access-prisma';
 import { UpdateStockInput } from './dto';
 
@@ -48,10 +52,16 @@ export class ProductStockService {
       throw new NotFoundException(`Stock #${stockId} not found`);
     }
 
-    return this.prisma.stock.update({
-      where: { id: stockId },
-      data: { quantity: Math.max(0, stock.quantity - quantity) },
+    const result = await this.prisma.stock.updateMany({
+      where: { id: stockId, quantity: { gte: quantity } },
+      data: { quantity: { decrement: quantity } },
     });
+
+    if (result.count === 0) {
+      throw new BadRequestException('Insufficient stock quantity');
+    }
+
+    return this.prisma.stock.findUnique({ where: { id: stockId } });
   }
 
   async checkAvailability(
