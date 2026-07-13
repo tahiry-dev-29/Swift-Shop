@@ -34,6 +34,8 @@ import { BullModule } from '@nestjs/bullmq';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { ExpressAdapter } from '@bull-board/express';
 
+import { depthLimit } from './config/graphql-depth.util';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -56,6 +58,7 @@ import { ExpressAdapter } from '@bull-board/express';
       sortSchema: true,
       playground: process.env['NODE_ENV'] !== 'production',
       introspection: process.env['NODE_ENV'] !== 'production',
+      validationRules: [depthLimit(10)],
       subscriptions: {
         'graphql-ws': true,
       },

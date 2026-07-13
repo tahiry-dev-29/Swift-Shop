@@ -66,30 +66,40 @@ export class AuthOAuthService {
       throw new Error('Default customer group missing');
     }
 
-    const customer = await this.prisma.customer.upsert({
-      where: { email: profile.email },
-      update: {},
-      create: {
-        email: profile.email,
-        password: await this.passwordSecurity.hashWithoutPolicy(
-          randomBytes(32).toString('base64url'),
-        ),
-        firstname: profile.firstname,
-        lastname: profile.lastname,
-        groupId: group.id,
-      },
-      include: { group: true },
-    });
+    return this.prisma.$transaction(async (tx) => {
+      const customer = await tx.customer.upsert({
+        where: { email: profile.email },
+        update: {},
+        create: {
+          email: profile.email,
+          password: await this.passwordSecurity.hashWithoutPolicy(
+            randomBytes(32).toString('base64url'),
+          ),
+          firstname: profile.firstname,
+          lastname: profile.lastname,
+          groupId: group.id,
+        },
+        include: { group: true },
+      });
 
-    await this.prisma.oAuthAccount.create({
-      data: {
-        provider: profile.provider,
-        providerAccountId: profile.providerAccountId,
-        email: profile.email,
-        customerId: customer.id,
-      },
+      await tx.oAuthAccount.upsert({
+        where: {
+          provider_providerAccountId: {
+            provider: profile.provider,
+            providerAccountId: profile.providerAccountId,
+          },
+        },
+        update: {},
+        create: {
+          provider: profile.provider,
+          providerAccountId: profile.providerAccountId,
+          email: profile.email,
+          customerId: customer.id,
+        },
+      });
+
+      return customer;
     });
-    return customer;
   }
 
   private getOAuthConfig(provider: OAuthProvider) {

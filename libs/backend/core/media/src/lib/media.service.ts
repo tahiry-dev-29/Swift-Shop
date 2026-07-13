@@ -35,6 +35,18 @@ export class MediaService implements OnModuleInit {
 
     try {
       const image = sharp(file.buffer);
+      const metadata = await image.metadata();
+
+      if (metadata.width && metadata.width > 4096) {
+        throw new BadRequestException(
+          `Image width of ${metadata.width}px exceeds maximum allowed size of 4096px`,
+        );
+      }
+      if (metadata.height && metadata.height > 4096) {
+        throw new BadRequestException(
+          `Image height of ${metadata.height}px exceeds maximum allowed size of 4096px`,
+        );
+      }
 
       // Save original as WebP
       const originalPath = path.join(

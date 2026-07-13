@@ -40,13 +40,6 @@ export class GuestCheckoutService {
     firstname: string,
     lastname: string,
   ) {
-    const existingCustomer = await this.prisma.customer.findUnique({
-      where: { email },
-    });
-    if (existingCustomer) {
-      return existingCustomer;
-    }
-
     const group = await this.prisma.customerGroup.findFirst({
       orderBy: { name: 'asc' },
     });
@@ -54,16 +47,33 @@ export class GuestCheckoutService {
       throw new BadRequestException('Default customer group is missing');
     }
 
-    return this.prisma.customer.create({
-      data: {
-        email,
-        firstname,
-        lastname,
-        password: `guest:${randomUUID()}`,
-        isGuest: true,
-        groupId: group.id,
-      },
-    });
+    try {
+      return await this.prisma.customer.create({
+        data: {
+          email,
+          firstname,
+          lastname,
+          password: `guest:${randomUUID()}`,
+          isGuest: true,
+          groupId: group.id,
+        },
+      });
+    } catch (e: unknown) {
+      if (
+        typeof e === 'object' &&
+        e !== null &&
+        'code' in e &&
+        (e as { code: string }).code === 'P2002'
+      ) {
+        const existingCustomer = await this.prisma.customer.findUnique({
+          where: { email },
+        });
+        if (existingCustomer) {
+          return existingCustomer;
+        }
+      }
+      throw e;
+    }
   }
 
   private async attachCartToCustomer(cartId: string, customerId: string) {

@@ -70,16 +70,6 @@ export class AuthRateLimitGuard implements CanActivate {
   }
 
   private getIpTracker(request: Request): string {
-    const forwardedFor = request.headers['x-forwarded-for'];
-
-    if (Array.isArray(forwardedFor)) {
-      return forwardedFor[0] ?? this.getRequestIp(request);
-    }
-
-    if (forwardedFor) {
-      return forwardedFor.split(',')[0]?.trim() ?? this.getRequestIp(request);
-    }
-
     return this.getRequestIp(request);
   }
 
