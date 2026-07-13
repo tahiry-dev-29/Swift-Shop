@@ -14,6 +14,9 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
       'redis://localhost:6379',
     );
     this.client = new Redis(redisUrl);
+    this.client.on('error', (err) => {
+      console.error('Redis error', err);
+    });
   }
 
   onModuleDestroy() {
@@ -22,6 +25,17 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
   async setBlacklistToken(jti: string, expiresIn: number): Promise<void> {
     await this.client.set(`bl_${jti}`, '1', 'EX', expiresIn);
+  }
+
+  async setBlacklistTokenNX(jti: string, expiresIn: number): Promise<boolean> {
+    const result = await this.client.set(
+      `bl_${jti}`,
+      '1',
+      'EX',
+      expiresIn,
+      'NX',
+    );
+    return result === 'OK';
   }
 
   async isTokenBlacklisted(jti: string): Promise<boolean> {

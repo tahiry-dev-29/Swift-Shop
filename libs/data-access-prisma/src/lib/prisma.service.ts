@@ -29,5 +29,13 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
       await this.pool.end();
       await app.close();
     });
+    process.on('SIGTERM', async () => {
+      await this.pool.end();
+      process.exit(0);
+    });
+    process.on('SIGINT', async () => {
+      await this.pool.end();
+      process.exit(0);
+    });
   }
 }

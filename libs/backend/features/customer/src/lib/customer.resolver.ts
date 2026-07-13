@@ -4,6 +4,7 @@ import {
   AuthService,
   CustomerGuard,
   EmployeeGuard,
+  AuthRateLimitGuard,
 } from '@swift-shop/backend/auth';
 import { CustomerService } from './customer.service';
 import { CustomerType, CustomerAuthResponse } from './dto';
@@ -32,8 +33,16 @@ export class CustomerResolver {
   }
 
   @Mutation(() => CustomerAuthResponse)
-  async customerRefreshToken(@Args('token') token: string) {
-    return this.authService.refreshToken(token);
+  @UseGuards(AuthRateLimitGuard)
+  async customerRefreshToken(
+    @Args('token') token: string,
+    @Context() ctx: any,
+  ) {
+    const meta = {
+      ipAddress: ctx.req.headers['x-forwarded-for'] || ctx.req.ip,
+      userAgent: ctx.req.headers['user-agent'],
+    };
+    return this.authService.refreshToken(token, 'customer', meta);
   }
 
   @Mutation(() => Boolean)

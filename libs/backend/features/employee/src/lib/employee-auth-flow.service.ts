@@ -79,8 +79,9 @@ export class EmployeeAuthFlowService {
     return { ...authToken, employee };
   }
 
-  refreshToken(token: string) {
-    return this.authService.refreshToken(token);
+  refreshToken(token: string, context?: any) {
+    const meta = context ? requestMeta(context) : undefined;
+    return this.authService.refreshToken(token, 'employee', meta);
   }
 
   async logout(user: { id: string; jti?: string; exp?: number }) {

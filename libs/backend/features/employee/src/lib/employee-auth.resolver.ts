@@ -69,8 +69,12 @@ export class EmployeeAuthResolver {
   }
 
   @Mutation(() => EmployeeAuthResponse)
-  async employeeRefreshToken(@Args('token') token: string) {
-    return this.authFlow.refreshToken(token);
+  @UseGuards(AuthRateLimitGuard)
+  async employeeRefreshToken(
+    @Args('token') token: string,
+    @Context() context: EmployeeGraphQLContext,
+  ) {
+    return this.authFlow.refreshToken(token, context);
   }
 
   @Mutation(() => Boolean)

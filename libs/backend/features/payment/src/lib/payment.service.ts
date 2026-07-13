@@ -106,7 +106,14 @@ export class PaymentService {
     if (!payment) {
       throw new NotFoundException('Payment not found');
     }
-    if (amount > Number(payment.amount)) {
+
+    const refundAggregate = await this.prisma.refund.aggregate({
+      where: { paymentId, status: { not: 'FAILED' } },
+      _sum: { amount: true },
+    });
+    const totalRefunded = Number(refundAggregate._sum.amount || 0);
+
+    if (totalRefunded + amount > Number(payment.amount)) {
       throw new BadRequestException('Refund cannot exceed payment amount');
     }
 
@@ -145,8 +152,14 @@ export class PaymentService {
     );
     const parsedPayload = this.parsePayload(payload);
 
-    await this.prisma.paymentWebhookEvent.create({
-      data: {
+    await this.prisma.paymentWebhookEvent.upsert({
+      where: { provider_eventId: { provider: normalizedProvider, eventId } },
+      update: {
+        payloadHash,
+        payload: parsedPayload as Prisma.InputJsonObject,
+        processedAt: new Date(),
+      },
+      create: {
         provider: normalizedProvider,
         eventId,
         signature,
@@ -166,10 +179,24 @@ export class PaymentService {
         : undefined;
 
     if (paymentId && status) {
-      await this.prisma.payment.updateMany({
+      const payment = await this.prisma.payment.findFirst({
         where: { id: paymentId, provider: normalizedProvider },
-        data: { status },
       });
+      if (payment) {
+        // Validate transitions (prevent going backward)
+        const current = payment.status;
+        const invalid =
+          current === 'REFUNDED' ||
+          current === 'FAILED' ||
+          (current === 'COMPLETED' && status !== 'REFUNDED');
+
+        if (!invalid) {
+          await this.prisma.payment.update({
+            where: { id: payment.id },
+            data: { status },
+          });
+        }
+      }
     }
 
     return true;

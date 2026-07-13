@@ -29,6 +29,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       groupName: payload.groupName,
       groupReduction: payload.groupReduction,
       jti: payload.jti,
+      exp: payload.exp,
     };
   }
 }

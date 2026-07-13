@@ -77,21 +77,44 @@ export class CartService {
       );
     }
 
-    const existingItem = await this.prisma.cartItem.findFirst({
+    const include = { product: true, combination: true };
+    const updateRes = await this.prisma.cartItem.updateMany({
       where: { cartId, productId, combinationId: combinationId || null },
+      data: { quantity: { increment: quantity } },
     });
 
-    const include = { product: true, combination: true };
-    return existingItem
-      ? this.prisma.cartItem.update({
-          where: { id: existingItem.id },
-          data: { quantity: existingItem.quantity + quantity },
-          include,
-        })
-      : this.prisma.cartItem.create({
-          data: { cartId, productId, combinationId, quantity },
+    if (updateRes.count > 0) {
+      const item = await this.prisma.cartItem.findFirst({
+        where: { cartId, productId, combinationId: combinationId || null },
+        include,
+      });
+      if (item) return item;
+    }
+
+    try {
+      return await this.prisma.cartItem.create({
+        data: { cartId, productId, combinationId, quantity },
+        include,
+      });
+    } catch (e: unknown) {
+      if (
+        typeof e === 'object' &&
+        e !== null &&
+        'code' in e &&
+        (e as { code: string }).code === 'P2002'
+      ) {
+        await this.prisma.cartItem.updateMany({
+          where: { cartId, productId, combinationId: combinationId || null },
+          data: { quantity: { increment: quantity } },
+        });
+        const item = await this.prisma.cartItem.findFirst({
+          where: { cartId, productId, combinationId: combinationId || null },
           include,
         });
+        if (item) return item;
+      }
+      throw e;
+    }
   }
 
   async updateCartItemQuantity(cartItemId: string, quantity: number) {

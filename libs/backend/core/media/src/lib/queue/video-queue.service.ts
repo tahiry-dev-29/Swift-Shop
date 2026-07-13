@@ -19,6 +19,8 @@ export class VideoQueueService {
       priority: JOB_PRIORITY.NORMAL,
       attempts: 3,
       backoff: { type: 'exponential', delay: 2000 },
+      removeOnComplete: 100,
+      removeOnFail: 50,
     });
   }
 
@@ -27,6 +29,8 @@ export class VideoQueueService {
       priority: JOB_PRIORITY.HIGH,
       attempts: 2,
       backoff: { type: 'exponential', delay: 5000 },
+      removeOnComplete: 100,
+      removeOnFail: 50,
     });
   }
 }
