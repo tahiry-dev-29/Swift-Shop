@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { PrismaService } from '@swift-shop/data-access-prisma';
 import { CartService } from '@swift-shop/backend/cart';
 import { GuestCheckoutService } from './guest-checkout.service';
@@ -7,6 +7,8 @@ import * as crypto from 'crypto';
 
 @Injectable()
 export class OrderCreationService {
+  private readonly logger = new Logger(OrderCreationService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly cartService: CartService,
@@ -158,7 +160,7 @@ export class OrderCreationService {
         await this.cartService.releaseReservedStock(cartId);
       } catch (err) {
         // Log the error but don't mask the order creation success
-        console.error('Failed to release reserved stock:', err);
+        this.logger.error('Failed to release reserved stock:', err);
       }
     }
   }

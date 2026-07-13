@@ -11,6 +11,10 @@ export class StoreService {
     });
   }
 
+  async findById(id: string) {
+    return this.prisma.store.findUnique({ where: { id } });
+  }
+
   async findActive() {
     return this.prisma.store.findMany({
       where: { active: true },

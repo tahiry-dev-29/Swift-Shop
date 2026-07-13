@@ -1,7 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '@swift-shop/data-access-prisma';
+import { JwtPayload } from '@swift-shop/models';
 import { RedisService } from '../infrastructure/storage/redis.service';
 import { AuthTokenService } from './auth-token.service';
 
@@ -65,14 +65,14 @@ describe('AuthTokenService', () => {
         tokenType: 'refresh',
         jti: 'jti1',
         type: 'customer',
-      } as any);
+      } as unknown as JwtPayload);
       redisService.isTokenBlacklisted.mockResolvedValue(false);
       redisService.getStoredRefreshTokenJti.mockResolvedValue('jti1');
       redisService.setBlacklistTokenNX.mockResolvedValue(true);
       prisma.customer.findUnique.mockResolvedValue({
         id: '1',
         active: true,
-      } as any);
+      } as never);
       jwtService.sign.mockReturnValue('new_token');
 
       const result = await service.refreshToken('valid_token', 'customer');
@@ -87,7 +87,7 @@ describe('AuthTokenService', () => {
         tokenType: 'refresh',
         jti: 'jti1',
         type: 'customer',
-      } as any);
+      } as unknown as JwtPayload);
       redisService.isTokenBlacklisted.mockResolvedValue(true);
       redisService.getStoredRefreshTokenJti.mockResolvedValue('jti1');
 
@@ -104,7 +104,7 @@ describe('AuthTokenService', () => {
         jti: 'jti1',
         type: 'customer',
         exp: Date.now() / 1000 + 3600,
-      } as any);
+      } as unknown as JwtPayload);
       redisService.isTokenBlacklisted.mockResolvedValue(false);
       redisService.getStoredRefreshTokenJti.mockResolvedValue('jti1');
       redisService.setBlacklistTokenNX.mockResolvedValue(false);

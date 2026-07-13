@@ -11,6 +11,10 @@ export class CurrencyService {
     });
   }
 
+  async findById(id: string) {
+    return this.prisma.currency.findUnique({ where: { id } });
+  }
+
   async findActive() {
     return this.prisma.currency.findMany({
       where: { active: true },

@@ -19,15 +19,15 @@ Currently, `LiveChatGateway` only handles customer ↔ support chat. No courier 
 
 ---
 
-## 🟡 2. Missing Settings Resolvers
+## 🟢 2. Missing Settings Resolvers
 
 `LanguageService`, `CurrencyService`, `StoreService` exist but **no GraphQL resolvers** expose them to admin.
 
-- [ ] `LanguageResolver` — `languages`, `language(id)`, `createLanguage`, `updateLanguage`, `setDefaultLanguage`
-- [ ] `CurrencyResolver` — `currencies`, `currency(id)`, `createCurrency`, `updateCurrency`, `syncExchangeRates`
-- [ ] `StoreResolver` — `stores`, `store(id)`, `createStore`, `updateStore` (multi-store management)
-- [ ] Input validation (DTO)
-- [ ] PermissionGuard + Redis cache
+- [x] `LanguageResolver` — `languages`, `language(id)`, `createLanguage`, `updateLanguage`, `setDefaultLanguage`
+- [x] `CurrencyResolver` — `currencies`, `currency(id)`, `createCurrency`, `updateCurrency`, `syncExchangeRates`
+- [x] `StoreResolver` — `stores`, `store(id)`, `createStore`, `updateStore` (multi-store management)
+- [x] Input validation (DTO)
+- [x] PermissionGuard + Redis cache
 
 ---
 
@@ -43,13 +43,13 @@ The `orderStatusChanged` resolver uses a stub (async generator). No real event i
 
 ---
 
-## 🟡 4. Settings — Exposed to Storefront (Public Read)
+## 🟢 4. Settings — Exposed to Storefront (Public Read)
 
 Values like active currency, default language are needed by the Angular storefront.
 
-- [ ] `PublicSettingsResolver` — `publicSettings`, `activeCurrency`, `activeLanguage`
-- [ ] Redis cache with long TTL (5 min)
-- [ ] No authentication required
+- [x] `PublicSettingsResolver` — `publicSettings`, `activeCurrency`, `activeLanguage`
+- [x] Redis cache with long TTL (5 min)
+- [x] No authentication required
 
 ---
 

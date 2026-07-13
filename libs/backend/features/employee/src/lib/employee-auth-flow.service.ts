@@ -4,7 +4,11 @@ import { EmployeeAuthAuditService } from './employee-auth-audit.service';
 import { EmployeeService } from './employee.service';
 import { EmployeeTwoFactorFlowService } from './employee-two-factor-flow.service';
 import { EmployeeAuthResponse } from './dto';
-import { LoginEmployee, LoginInput } from './employee-auth-flow.types';
+import {
+  LoginEmployee,
+  LoginInput,
+  EmployeeGraphQLContext,
+} from './employee-auth-flow.types';
 import {
   TRUSTED_DEVICE_COOKIE_NAME,
   cookieValue,
@@ -79,7 +83,7 @@ export class EmployeeAuthFlowService {
     return { ...authToken, employee };
   }
 
-  refreshToken(token: string, context?: any) {
+  refreshToken(token: string, context?: EmployeeGraphQLContext) {
     const meta = context ? requestMeta(context) : undefined;
     return this.authService.refreshToken(token, 'employee', meta);
   }

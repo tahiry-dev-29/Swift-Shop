@@ -11,6 +11,10 @@ export class LanguageService {
     });
   }
 
+  async findById(id: string) {
+    return this.prisma.language.findUnique({ where: { id } });
+  }
+
   async findActive() {
     return this.prisma.language.findMany({
       where: { active: true },

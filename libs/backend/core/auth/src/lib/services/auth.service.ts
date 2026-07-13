@@ -85,7 +85,7 @@ export class AuthService {
     const actorType = expectedType || (isCustomer ? 'customer' : 'employee');
     await this.audit({
       action: `${actorType}.refresh_token`,
-      actorType: actorType as any,
+      actorType: actorType as 'customer' | 'employee',
       actorId,
       metadata: { oldJti: result.oldJti ?? null, newJti: result.jti },
       ...meta,
