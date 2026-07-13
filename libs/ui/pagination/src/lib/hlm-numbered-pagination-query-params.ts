@@ -14,7 +14,7 @@ import { classes } from '@spartan-ng/helm/utils';
 import {
   createPageArray,
   outOfBoundCorrection,
-} from './hlm-numbered-pagination';
+} from './hlm-numbered-pagination.util';
 import { HlmPagination } from './hlm-pagination';
 import { HlmPaginationContent } from './hlm-pagination-content';
 import { HlmPaginationEllipsis } from './hlm-pagination-ellipsis';

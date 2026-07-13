@@ -106,7 +106,8 @@
         "./libs/ui/navigation-menu/src/index.ts"
       ],
       "@spartan-ng/helm/collapsible": ["./libs/ui/collapsible/src/index.ts"],
-      "@spartan-ng/helm/sidebar": ["./libs/ui/sidebar/src/index.ts"]
+      "@spartan-ng/helm/sidebar": ["./libs/ui/sidebar/src/index.ts"],
+      "@spartan-ng/helm/input-group": ["./libs/ui/input-group/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -59,8 +59,18 @@ lint:
     - cfnlint # CloudFormation
     # Config formats
 
-  # ESLint respects project eslint.config.mjs / .eslintrc
-  definitions: []
+  definitions:
+    - name: eslint
+      files: [javascript, typescript, json, html]
+      commands:
+        - name: lint
+          output: eslint
+          run: eslint --output-file ${tmpfile} --format json --no-warn-ignored ${target}
+          read_output_from: tmp_file
+          error_codes: [2]
+          parser:
+            runtime: node
+            run: node -e "const fs=require('fs'); const data=JSON.parse(fs.readFileSync(0,'utf8')); data.forEach(f=>delete f.usedDeprecatedRules); console.log(JSON.stringify(data))"
 
   # Ignore generated/vendor directories
   # Note: Trunk automatically respects your project's .gitignore files.
