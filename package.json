@@ -116,6 +116,7 @@
     "eventsource": "^4.1.0",
     "exceljs": "^4.4.0",
     "graphql": "^16.11.0",
+    "graphql-subscriptions": "3.0.0",
     "graphql-type-json": "^0.3.2",
     "graphql-ws": "^6.0.8",
     "ioredis": "^5.11.0",

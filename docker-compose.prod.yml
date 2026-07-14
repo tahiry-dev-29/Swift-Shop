@@ -1,0 +1,96 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api
+    image: swift-shop-api:production
+    container_name: swift-shop-api-prod
+    restart: always
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-tahiry}:${POSTGRES_PASSWORD:-tahiry4534}@postgres-prod:5432/${POSTGRES_DB:-swift_shop}?schema=public
+      JWT_SECRET: ${JWT_SECRET:-super-secret-key-prod-12345}
+      REDIS_URL: redis://redis-prod:6379
+      MEILISEARCH_HOST: http://meilisearch-prod:7700
+      MEILISEARCH_API_KEY: ${MEILISEARCH_API_KEY:-prodMasterKey}
+    ports:
+      - 3010:3000
+    depends_on:
+      postgres-prod:
+        condition: service_healthy
+      redis-prod:
+        condition: service_healthy
+      meilisearch-prod:
+        condition: service_healthy
+    networks:
+      - swift-shop-network-prod
+
+  redis-prod:
+    image: redis:7-alpine
+    container_name: swift-shop-redis-prod
+    restart: always
+    ports:
+      - 6389:6379
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - swift-shop-network-prod
+
+  postgres-prod:
+    image: postgres:16-alpine
+    container_name: swift-shop-postgres-prod
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-tahiry}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tahiry4534}
+      POSTGRES_DB: ${POSTGRES_DB:-swift_shop}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - 5442:5432
+    volumes:
+      - swift-shop-postgres-data-prod:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - swift-shop-network-prod
+
+  meilisearch-prod:
+    image: getmeili/meilisearch:v1.7
+    container_name: swift-shop-meilisearch-prod
+    restart: always
+    environment:
+      MEILI_MASTER_KEY: ${MEILISEARCH_API_KEY:-prodMasterKey}
+      MEILI_NO_ANALYTICS: true
+      MEILI_ENV: production
+    ports:
+      - 7710:7700
+    volumes:
+      - swift-shop-meilisearch-data-prod:/meili_data
+    healthcheck:
+      test: [CMD, wget, -q, -O, -, http://localhost:7700/health]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - swift-shop-network-prod
+
+volumes:
+  swift-shop-postgres-data-prod:
+    name: swift-shop-postgres-data-prod
+  swift-shop-meilisearch-data-prod:
+    name: swift-shop-meilisearch-data-prod
+
+networks:
+  swift-shop-network-prod:
+    name: swift-shop-network-prod
+    driver: bridge

@@ -10,12 +10,12 @@ Bridge the gaps between existing todos and what's actually implemented in the co
 
 Currently, `LiveChatGateway` only handles customer ↔ support chat. No courier channel.
 
-- [ ] Prisma model `DeliveryChat` or extend `ChatMessage` with `role: 'courier'`
-- [ ] `CourierChatGateway` — dedicated courier WebSocket
-- [ ] `CourierChatService` — manage courier chat sessions
-- [ ] Push notification to courier when a message arrives
-- [ ] Associate chat ↔ `Shipment` (tracking number)
-- [ ] Tests
+- [x] Prisma model `DeliveryChat` + `DeliveryChatMessage` (associated to `Shipment`)
+- [x] `CourierChatGateway` — dedicated courier WebSocket (namespace: `courier`)
+- [x] `CourierChatService` — manage courier chat sessions
+- [x] Push notification to courier when a message arrives (logger-based, FCM-ready)
+- [x] Associate chat ↔ `Shipment` (tracking number via `shipmentId`)
+- [x] Tests
 
 ---
 
@@ -35,11 +35,11 @@ Currently, `LiveChatGateway` only handles customer ↔ support chat. No courier 
 
 The `orderStatusChanged` resolver uses a stub (async generator). No real event is emitted.
 
-- [ ] Install `@nestjs/graphql` with Redis PubSub
-- [ ] Configure `RedisPubSub` in order module
-- [ ] `publishOrderStatusChanged(orderId, statusId)` in `OrderActionService`
-- [ ] Functional `orderStatusChanged` subscription
-- [ ] Tests
+- [x] Install `graphql-subscriptions@3` in workspace
+- [x] Configure `PubSub` in OrderModule (singleton via `PUB_SUB` token)
+- [x] `publishOrderStatusChanged(orderId, statusId)` in `OrderActionService` + `OrderService`
+- [x] Functional `orderStatusChanged` subscription in `OrderResolver`
+- [x] Tests
 
 ---
 
@@ -57,31 +57,32 @@ Values like active currency, default language are needed by the Angular storefro
 
 Minimum to unblock production:
 
-- [ ] Unit tests `PaymentService` (orchestration with mocks)
-- [ ] Unit tests `OrderCreationService` (idempotency, stock rollback)
-- [ ] Unit tests `PriceCalculationService`
-- [ ] Unit tests `CartService` (add, remove, merge)
-- [ ] Integration tests: `createOrder` via GraphQL (supertest)
-- [ ] Integration tests: `processPaymentWebhook`
-- [ ] Integration tests: `AuthService` (login, refresh, 2FA)
+- [x] Unit tests `PaymentService` (orchestration with mocks)
+- [x] Unit tests `OrderCreationService` (idempotency, stock rollback)
+- [x] Unit tests `PriceCalculationService`
+- [x] Unit tests `CartService` (add, remove, merge)
+- [x] Unit tests `AuthService` (login, refresh, 2FA, logout)
+- [x] Integration tests: `createOrder` via GraphQL (supertest)
+- [x] Integration tests: `processPaymentWebhook`
+- [x] Integration tests: `AuthService` (login, refresh, 2FA)
 
 ---
 
 ## 🟢 6. Enriched Seeds
 
-- [ ] Realistic data: categories (10+), products (50+), combinations
-- [ ] Customers with order history
-- [ ] Active promotions
-- [ ] Store configurations (language MG/FR/EN, currency, taxes)
+- [x] Realistic data: categories (10+), products (50+), combinations
+- [x] Customers with order history (seeded in `seed.ts`)
+- [x] Active promotions (flash sale, VIP discounts, wholesale)
+- [x] Store configurations (language MG/FR/EN, currency EUR/USD/MGA, taxes)
 
 ---
 
 ## 🟢 7. Residual DevOps
 
-- [ ] `docker-compose.prod.yml` with healthchecks, volumes, networks
-- [ ] GitHub Actions: lint → test (vitest) → build → deploy
-- [ ] Migration documentation (rollback, squashing)
-- [ ] Nx affected optimization in pipelines
+- [x] `docker-compose.prod.yml` with healthchecks, volumes, networks
+- [x] GitHub Actions: lint → test (vitest) → build → deploy (`.github/workflows/ci.yml`)
+- [x] Migration documentation (rollback, squashing) in `prisma/MIGRATIONS.md`
+- [x] Nx affected optimization in pipelines
 
 ---
 
@@ -161,4 +162,4 @@ Rotation, blacklist, and reuse detection have zero test coverage.
   - [x] `refreshToken` — Redis-expired token → error
   - [x] `logout` — revokes active refresh token
   - [x] `assertRefreshTokenActive` — 3 cases (active, blacklisted, mismatch)
-- [ ] Integration tests: full flow login → refresh → logout → old token invalid
+- [x] Integration tests: full flow login → refresh → logout → old token invalid
