@@ -37,6 +37,10 @@ This roadmap has been split into multiple files for better readability and modul
 
 - [11-bugs-audit.md](./11-bugs-audit.md) — 120 bugs identified (14 critical, 37 high), top 17 priority fixes.
 
+## ☁️ Infra & Serverless
+
+- [12-serverless-db.md](./12-serverless-db.md) — Migration DB serverless (Neon), adaptateur Prisma, suppression PostgreSQL Docker.
+
 ---
 
 🚀 **Next Priority Steps:**
