@@ -80,7 +80,7 @@ export class OrderActionService {
       return orderAfterUpdate;
     });
 
-    await this.pubSub.publish('orderStatusChanged', {
+    await this.pubSub.publish(`orderStatusChanged:${updatedOrder.id}`, {
       orderStatusChanged: updatedOrder,
     });
     return updatedOrder;

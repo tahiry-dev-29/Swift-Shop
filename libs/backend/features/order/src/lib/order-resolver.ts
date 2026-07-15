@@ -159,12 +159,8 @@ export class OrderResolver {
     );
   }
 
-  @Subscription(() => OrderType, {
-    filter: (payload, variables) =>
-      payload.orderStatusChanged.id === variables.orderId,
-  })
+  @Subscription(() => OrderType)
   orderStatusChanged(@Args('orderId', { type: () => ID }) orderId: string) {
-    void orderId; // Fix unused variable
-    return this.pubSub.asyncIterableIterator('orderStatusChanged');
+    return this.pubSub.asyncIterableIterator(`orderStatusChanged:${orderId}`);
   }
 }

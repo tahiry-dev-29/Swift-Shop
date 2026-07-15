@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '@swift-shop/data-access-prisma';
 import { Logger } from '@nestjs/common';
 
@@ -16,30 +20,44 @@ export class CourierChatService {
       throw new NotFoundException(`Shipment with ID ${shipmentId} not found`);
     }
 
-    let chat = await this.prisma.deliveryChat.findUnique({
+    return this.prisma.deliveryChat.upsert({
       where: { shipmentId },
+      update: {},
+      create: {
+        shipmentId,
+        courierId: shipment.carrierId,
+        customerId: await this.getCustomerIdForShipment(shipment.orderId),
+      },
     });
-
-    if (!chat) {
-      chat = await this.prisma.deliveryChat.create({
-        data: {
-          shipmentId,
-          courierId: shipment.carrierId,
-          customerId: await this.getCustomerIdForShipment(shipment.orderId),
-        },
-      });
-    }
-
-    return chat;
   }
 
-  async getMessages(chatId: string) {
+  async getChatById(chatId: string) {
     const chat = await this.prisma.deliveryChat.findUnique({
       where: { id: chatId },
     });
     if (!chat) {
       throw new NotFoundException(`Chat session ${chatId} not found`);
     }
+    return chat;
+  }
+
+  assertChatMember(
+    chat: { customerId: string | null; courierId: string | null },
+    userId: string,
+    userType: string,
+  ) {
+    const isCustomer = userType === 'customer' && chat.customerId === userId;
+    const isCourier = userType === 'employee' && chat.courierId === userId;
+    if (!isCustomer && !isCourier) {
+      throw new ForbiddenException(
+        'You are not a participant of this chat session',
+      );
+    }
+  }
+
+  async getMessages(chatId: string, userId: string, userType: string) {
+    const chat = await this.getChatById(chatId);
+    this.assertChatMember(chat, userId, userType);
 
     return this.prisma.deliveryChatMessage.findMany({
       where: { chatId },

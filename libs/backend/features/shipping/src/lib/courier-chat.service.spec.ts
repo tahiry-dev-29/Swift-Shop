@@ -10,7 +10,7 @@ describe('CourierChatService', () => {
   beforeEach(() => {
     prisma = {
       shipment: { findUnique: vi.fn() },
-      deliveryChat: { findUnique: vi.fn(), create: vi.fn() },
+      deliveryChat: { findUnique: vi.fn(), create: vi.fn(), upsert: vi.fn() },
       deliveryChatMessage: { findMany: vi.fn(), create: vi.fn() },
       order: { findUnique: vi.fn() },
     } as unknown as Mocked<PrismaService>;
@@ -43,11 +43,18 @@ describe('CourierChatService', () => {
       } as never;
 
       prisma.shipment.findUnique.mockResolvedValue(mockShipment);
-      prisma.deliveryChat.findUnique.mockResolvedValue(mockChat);
+      prisma.deliveryChat.upsert.mockResolvedValue(mockChat);
 
       const result = await service.getOrCreateSession('ship1');
       expect(result).toEqual(mockChat);
-      expect(prisma.deliveryChat.create).not.toHaveBeenCalled();
+      expect(prisma.deliveryChat.upsert).toHaveBeenCalledWith({
+        where: { shipmentId: 'ship1' },
+        update: {},
+        create: expect.objectContaining({
+          shipmentId: 'ship1',
+          courierId: 'c1',
+        }),
+      });
     });
 
     it('should create and return new chat session if none exists', async () => {
@@ -63,35 +70,56 @@ describe('CourierChatService', () => {
       } as never;
 
       prisma.shipment.findUnique.mockResolvedValue(mockShipment);
-      prisma.deliveryChat.findUnique.mockResolvedValue(null);
       prisma.order.findUnique.mockResolvedValue({
         customerId: 'cust1',
       } as never);
-      prisma.deliveryChat.create.mockResolvedValue(mockChat);
+      prisma.deliveryChat.upsert.mockResolvedValue(mockChat);
 
       const result = await service.getOrCreateSession('ship1');
       expect(result).toEqual(mockChat);
-      expect(prisma.deliveryChat.create).toHaveBeenCalled();
+      expect(prisma.deliveryChat.upsert).toHaveBeenCalledWith({
+        where: { shipmentId: 'ship1' },
+        update: {},
+        create: expect.objectContaining({
+          shipmentId: 'ship1',
+          courierId: 'c1',
+          customerId: 'cust1',
+        }),
+      });
     });
   });
 
   describe('getMessages', () => {
     it('should throw NotFoundException if chat does not exist', async () => {
       prisma.deliveryChat.findUnique.mockResolvedValue(null);
-      await expect(service.getMessages('chat1')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.getMessages('chat1', 'cust1', 'customer'),
+      ).rejects.toThrow(NotFoundException);
     });
 
-    it('should return messages if chat exists', async () => {
+    it('should throw ForbiddenException if user is not a participant', async () => {
       prisma.deliveryChat.findUnique.mockResolvedValue({
         id: 'chat1',
+        customerId: 'cust1',
+        courierId: 'c1',
+      } as never);
+
+      await expect(
+        service.getMessages('chat1', 'otherUser', 'customer'),
+      ).rejects.toThrow('You are not a participant');
+    });
+
+    it('should return messages if chat exists and user is participant', async () => {
+      prisma.deliveryChat.findUnique.mockResolvedValue({
+        id: 'chat1',
+        customerId: 'cust1',
+        courierId: 'c1',
       } as never);
       prisma.deliveryChatMessage.findMany.mockResolvedValue([
         { id: 'msg1' },
       ] as never);
 
-      const result = await service.getMessages('chat1');
+      const result = await service.getMessages('chat1', 'cust1', 'customer');
       expect(result).toEqual([{ id: 'msg1' }]);
     });
   });

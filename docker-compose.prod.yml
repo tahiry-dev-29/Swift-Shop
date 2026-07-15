@@ -10,11 +10,11 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://${POSTGRES_USER:-tahiry}:${POSTGRES_PASSWORD:-tahiry4534}@postgres-prod:5432/${POSTGRES_DB:-swift_shop}?schema=public
-      JWT_SECRET: ${JWT_SECRET:-super-secret-key-prod-12345}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres-prod:5432/${POSTGRES_DB}?schema=public
+      JWT_SECRET: ${JWT_SECRET}
       REDIS_URL: redis://redis-prod:6379
       MEILISEARCH_HOST: http://meilisearch-prod:7700
-      MEILISEARCH_API_KEY: ${MEILISEARCH_API_KEY:-prodMasterKey}
+      MEILISEARCH_API_KEY: ${MEILISEARCH_API_KEY}
     ports:
       - 3010:3000
     depends_on:
@@ -46,9 +46,9 @@ services:
     container_name: swift-shop-postgres-prod
     restart: always
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-tahiry}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tahiry4534}
-      POSTGRES_DB: ${POSTGRES_DB:-swift_shop}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - 5442:5432
@@ -69,7 +69,7 @@ services:
     container_name: swift-shop-meilisearch-prod
     restart: always
     environment:
-      MEILI_MASTER_KEY: ${MEILISEARCH_API_KEY:-prodMasterKey}
+      MEILI_MASTER_KEY: ${MEILISEARCH_API_KEY}
       MEILI_NO_ANALYTICS: true
       MEILI_ENV: production
     ports:

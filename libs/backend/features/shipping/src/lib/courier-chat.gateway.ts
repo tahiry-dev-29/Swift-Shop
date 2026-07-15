@@ -8,7 +8,8 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { Logger } from '@nestjs/common';
+import { Logger, ForbiddenException } from '@nestjs/common';
+import { AuthTokenService, JwtPayload } from '@swift-shop/backend/auth';
 import { CourierChatService } from './courier-chat.service';
 
 @WebSocketGateway({
@@ -23,7 +24,10 @@ export class CourierChatGateway
 
   private readonly logger = new Logger(CourierChatGateway.name);
 
-  constructor(private readonly courierChatService: CourierChatService) {}
+  constructor(
+    private readonly courierChatService: CourierChatService,
+    private readonly authTokenService: AuthTokenService,
+  ) {}
 
   handleConnection(client: Socket) {
     const token =
@@ -36,7 +40,20 @@ export class CourierChatGateway
       client.disconnect();
       return;
     }
-    this.logger.log(`Courier client connected: ${client.id}`);
+
+    const payload = this.authTokenService.verifyToken(token);
+    if (!payload) {
+      this.logger.error(
+        `Courier connection rejected: Invalid token for ${client.id}`,
+      );
+      client.disconnect();
+      return;
+    }
+
+    client.data['user'] = payload;
+    this.logger.log(
+      `Courier client connected: ${client.id} (${payload.type}:${payload.sub})`,
+    );
   }
 
   handleDisconnect(client: Socket) {
@@ -48,9 +65,15 @@ export class CourierChatGateway
     @MessageBody() data: { shipmentId: string },
     @ConnectedSocket() client: Socket,
   ) {
+    const user = client.data['user'] as JwtPayload | undefined;
+    if (!user) {
+      throw new ForbiddenException('Not authenticated');
+    }
+
     const session = await this.courierChatService.getOrCreateSession(
       data.shipmentId,
     );
+    this.courierChatService.assertChatMember(session, user.sub, user.type);
     client.join(session.id);
     this.logger.log(`Client ${client.id} joined courier chat ${session.id}`);
 
@@ -68,6 +91,23 @@ export class CourierChatGateway
     },
     @ConnectedSocket() client: Socket,
   ) {
+    const user = client.data['user'] as JwtPayload | undefined;
+    if (!user) {
+      throw new ForbiddenException('Not authenticated');
+    }
+
+    if (data.senderType === 'CUSTOMER' && user.type !== 'customer') {
+      throw new ForbiddenException('Only customers can send as CUSTOMER');
+    }
+    if (data.senderType === 'COURIER' && user.type !== 'employee') {
+      throw new ForbiddenException('Only employees can send as COURIER');
+    }
+    if (user.sub !== data.senderId) {
+      throw new ForbiddenException(
+        'senderId does not match authenticated user',
+      );
+    }
+
     const message = await this.courierChatService.sendMessage(
       data.sessionId,
       data.senderType,
