@@ -87,6 +87,5 @@
       }
     }
   ],
-  "analytics": true,
-  "nxCloudId": "6a16a9f10155f37eec1a9086"
+  "analytics": false
 }
