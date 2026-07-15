@@ -2,7 +2,9 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  Inject,
 } from '@nestjs/common';
+import { PubSub } from 'graphql-subscriptions';
 import { PrismaService } from '@swift-shop/data-access-prisma';
 import { CartService } from '@swift-shop/backend/cart';
 import { OrderExportService } from './order-export.service';
@@ -24,6 +26,7 @@ export class OrderService {
     private readonly cartService: CartService,
     private readonly orderExportService: OrderExportService,
     private readonly orderInvoiceService: OrderInvoiceService,
+    @Inject('PUB_SUB') private readonly pubSub: PubSub,
   ) {}
 
   async getMyOrders(customerId: string) {
@@ -79,8 +82,8 @@ export class OrderService {
 
     this.assertTransitionAllowed(order.state.name, newState.name);
 
-    return this.prisma.$transaction(async (tx) => {
-      const updatedOrder = await tx.order.update({
+    const updatedOrder = await this.prisma.$transaction(async (tx) => {
+      const orderAfterUpdate = await tx.order.update({
         where: { id: orderId },
         data: { stateId },
         include: { state: true },
@@ -95,8 +98,13 @@ export class OrderService {
         },
       });
 
-      return updatedOrder;
+      return orderAfterUpdate;
     });
+
+    await this.pubSub.publish(`orderStatusChanged:${updatedOrder.id}`, {
+      orderStatusChanged: updatedOrder,
+    });
+    return updatedOrder;
   }
 
   private assertTransitionAllowed(currentState: string, nextState: string) {

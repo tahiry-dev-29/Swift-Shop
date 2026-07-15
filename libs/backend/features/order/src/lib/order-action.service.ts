@@ -2,12 +2,17 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Inject,
 } from '@nestjs/common';
+import { PubSub } from 'graphql-subscriptions';
 import { PrismaService } from '@swift-shop/data-access-prisma';
 
 @Injectable()
 export class OrderActionService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject('PUB_SUB') private readonly pubSub: PubSub,
+  ) {}
 
   async cancelOrder(orderId: string, employeeId?: string) {
     const order = await this.prisma.order.findUnique({
@@ -34,8 +39,8 @@ export class OrderActionService {
       });
     }
 
-    return this.prisma.$transaction(async (tx) => {
-      const updatedOrder = await tx.order.update({
+    const updatedOrder = await this.prisma.$transaction(async (tx) => {
+      const orderAfterUpdate = await tx.order.update({
         where: { id: orderId },
         data: { stateId: cancelState.id },
         include: { state: true },
@@ -72,8 +77,13 @@ export class OrderActionService {
         }
       }
 
-      return updatedOrder;
+      return orderAfterUpdate;
     });
+
+    await this.pubSub.publish(`orderStatusChanged:${updatedOrder.id}`, {
+      orderStatusChanged: updatedOrder,
+    });
+    return updatedOrder;
   }
 
   async requestReturn(

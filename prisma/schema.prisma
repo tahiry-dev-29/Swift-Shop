@@ -805,9 +805,10 @@ model Shipment {
   estimatedDeliveryDate DateTime?
   trackingEvents        Json?
 
-  order      Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  carrierRef Carrier?        @relation(fields: [carrierId], references: [id], onDelete: SetNull)
-  events     ShipmentEvent[]
+  order        Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  carrierRef   Carrier?        @relation(fields: [carrierId], references: [id], onDelete: SetNull)
+  events       ShipmentEvent[]
+  deliveryChat DeliveryChat?
 
   dateAdd DateTime @default(now())
   dateUpd DateTime @updatedAt
@@ -1389,4 +1390,25 @@ model ChatMessage {
   dateAdd DateTime @default(now())
 
   session LiveChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model DeliveryChat {
+  id         String                @id @default(uuid())
+  shipmentId String                @unique
+  courierId  String?
+  customerId String?
+  messages   DeliveryChatMessage[]
+  shipment   Shipment              @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  dateAdd    DateTime              @default(now())
+  dateUpd    DateTime              @updatedAt
+}
+
+model DeliveryChatMessage {
+  id         String       @id @default(uuid())
+  chatId     String
+  senderType String       // "CUSTOMER", "COURIER", "SYSTEM"
+  senderId   String?
+  content    String
+  dateAdd    DateTime     @default(now())
+  chat       DeliveryChat @relation(fields: [chatId], references: [id], onDelete: Cascade)
 }
