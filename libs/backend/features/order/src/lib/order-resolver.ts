@@ -160,7 +160,12 @@ export class OrderResolver {
   }
 
   @Subscription(() => OrderType)
-  orderStatusChanged(@Args('orderId', { type: () => ID }) orderId: string) {
+  @UseGuards(CustomerGuard)
+  async orderStatusChanged(
+    @Args('orderId', { type: () => ID }) orderId: string,
+    @CurrentUser() user: CurrentUserType,
+  ) {
+    await this.orderService.getOrder(orderId, user.id);
     return this.pubSub.asyncIterableIterator(`orderStatusChanged:${orderId}`);
   }
 }
