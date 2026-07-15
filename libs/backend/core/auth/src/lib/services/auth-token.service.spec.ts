@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi, type Mocked } from 'vitest';
 import { JwtService } from '@nestjs/jwt';
 import { UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '@swift-shop/data-access-prisma';
@@ -7,29 +8,29 @@ import { AuthTokenService } from './auth-token.service';
 
 describe('AuthTokenService', () => {
   let service: AuthTokenService;
-  let jwtService: jest.Mocked<JwtService>;
-  let redisService: jest.Mocked<RedisService>;
-  let prisma: jest.Mocked<PrismaService>;
+  let jwtService: Mocked<JwtService>;
+  let redisService: Mocked<RedisService>;
+  let prisma: Mocked<PrismaService>;
 
   beforeEach(async () => {
     jwtService = {
-      sign: jest.fn(),
-      verify: jest.fn(),
-    } as unknown as jest.Mocked<JwtService>;
+      sign: vi.fn(),
+      verify: vi.fn(),
+    } as unknown as Mocked<JwtService>;
 
     redisService = {
-      storeRefreshToken: jest.fn(),
-      getStoredRefreshTokenJti: jest.fn(),
-      isTokenBlacklisted: jest.fn(),
-      setBlacklistToken: jest.fn(),
-      setBlacklistTokenNX: jest.fn(),
-      delete: jest.fn(),
-    } as unknown as jest.Mocked<RedisService>;
+      storeRefreshToken: vi.fn(),
+      getStoredRefreshTokenJti: vi.fn(),
+      isTokenBlacklisted: vi.fn(),
+      setBlacklistToken: vi.fn(),
+      setBlacklistTokenNX: vi.fn(),
+      delete: vi.fn(),
+    } as unknown as Mocked<RedisService>;
 
     prisma = {
-      customer: { findUnique: jest.fn() },
-      employee: { findUnique: jest.fn() },
-    } as unknown as jest.Mocked<PrismaService>;
+      customer: { findUnique: vi.fn() },
+      employee: { findUnique: vi.fn() },
+    } as unknown as Mocked<PrismaService>;
 
     service = new AuthTokenService(prisma, jwtService, redisService);
   });

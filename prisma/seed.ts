@@ -353,6 +353,92 @@ async function main() {
   await seedProducts(prisma, categories);
   console.log('✅ Catalog data seeded');
 
+  console.log('📦 Seeding Order History...');
+  const orderCustomers = await prisma.customer.findMany({
+    where: {
+      email: { in: ['marie.dupont@gmail.com', 'lucas.moreau@gmail.com'] },
+    },
+  });
+  const orderProducts = await prisma.product.findMany({
+    where: {
+      ref: { in: ['IPHONE15PRO', 'MBP14', 'SGS24'] },
+    },
+  });
+  const deliveredState = await prisma.orderState.findUnique({
+    where: { name: 'DELIVERED' },
+  });
+
+  if (orderCustomers.length > 0 && orderProducts.length > 0 && deliveredState) {
+    for (const cust of orderCustomers) {
+      const existing = await prisma.order.findFirst({
+        where: { customerId: cust.id },
+      });
+      if (!existing) {
+        const product =
+          orderProducts[Math.floor(Math.random() * orderProducts.length)];
+        const price = Number(product.price);
+        const taxRate = 20.0;
+        const taxAmount = (price * taxRate) / 100;
+        const totalTTC = price + taxAmount;
+
+        const reference = `DO-20260714-${cust.firstname.toUpperCase()}`;
+        await prisma.order.create({
+          data: {
+            reference,
+            customerId: cust.id,
+            stateId: deliveredState.id,
+            totalHT: price,
+            totalTax: taxAmount,
+            totalTTC: totalTTC,
+            items: {
+              create: {
+                productId: product.id,
+                productName: product.name,
+                productRef: product.ref,
+                quantity: 1,
+                unitPriceHT: price,
+                taxRate: taxRate,
+                totalHT: price,
+                totalTTC: totalTTC,
+              },
+            },
+            addresses: {
+              create: [
+                {
+                  type: 'delivery',
+                  firstname: cust.firstname,
+                  lastname: cust.lastname,
+                  address1: '123 Main Street',
+                  postcode: '75001',
+                  city: 'Paris',
+                  country: 'France',
+                  phone: '0102030405',
+                },
+                {
+                  type: 'billing',
+                  firstname: cust.firstname,
+                  lastname: cust.lastname,
+                  address1: '123 Main Street',
+                  postcode: '75001',
+                  city: 'Paris',
+                  country: 'France',
+                  phone: '0102030405',
+                },
+              ],
+            },
+            history: {
+              create: {
+                stateId: deliveredState.id,
+                message: 'Order created and delivered via seeding',
+              },
+            },
+          },
+        });
+        console.log(`  ✅ Seeded order ${reference} for ${cust.email}`);
+      }
+    }
+  }
+
   console.log('\n🎉 Seeding completed!\n');
   console.log('📋 Test credentials:');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');

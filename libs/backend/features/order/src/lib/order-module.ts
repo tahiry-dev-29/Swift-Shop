@@ -1,4 +1,5 @@
 import { Module, forwardRef } from '@nestjs/common';
+import { PubSub } from 'graphql-subscriptions';
 import { OrderService } from './order-service';
 import { OrderCreationService } from './order-creation.service';
 import { OrderActionService } from './order-action.service';
@@ -22,7 +23,11 @@ import { DataAccessPrismaModule } from '@swift-shop/data-access-prisma';
     OrderExportService,
     OrderInvoiceService,
     OrderResolver,
+    {
+      provide: 'PUB_SUB',
+      useValue: new PubSub(),
+    },
   ],
-  exports: [OrderService, OrderCreationService, OrderActionService],
+  exports: [OrderService, OrderCreationService, OrderActionService, 'PUB_SUB'],
 })
 export class OrderModule {}

@@ -75,6 +75,7 @@ import { RoleGuard } from './guards/role.guard';
   ],
   exports: [
     AuthService,
+    AuthTokenService,
     JwtModule,
     RedisService,
     PermissionGuard,

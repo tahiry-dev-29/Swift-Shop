@@ -186,4 +186,74 @@ export const seedPricing = async (prisma: PrismaClient) => {
       }
     }
   }
+
+  console.log('  💱 Seeding Currencies...');
+  const currencies = [
+    {
+      name: 'Euro',
+      code: 'EUR',
+      symbol: '€',
+      exchangeRate: 1.0,
+      isDefault: true,
+    },
+    {
+      name: 'US Dollar',
+      code: 'USD',
+      symbol: '$',
+      exchangeRate: 1.08,
+      isDefault: false,
+    },
+    {
+      name: 'Ariary',
+      code: 'MGA',
+      symbol: 'Ar',
+      exchangeRate: 4900.0,
+      isDefault: false,
+    },
+  ];
+  for (const currency of currencies) {
+    await prisma.currency.upsert({
+      where: { code: currency.code },
+      update: {
+        name: currency.name,
+        symbol: currency.symbol,
+        exchangeRate: currency.exchangeRate,
+        isDefault: currency.isDefault,
+      },
+      create: currency,
+    });
+  }
+
+  console.log('  🌐 Seeding Languages...');
+  const languages = [
+    { name: 'Français', code: 'fr', locale: 'fr-FR', isDefault: true },
+    { name: 'English', code: 'en', locale: 'en-US', isDefault: false },
+    { name: 'Malagasy', code: 'mg', locale: 'mg-MG', isDefault: false },
+  ];
+  for (const language of languages) {
+    await prisma.language.upsert({
+      where: { code: language.code },
+      update: {
+        name: language.name,
+        locale: language.locale,
+        isDefault: language.isDefault,
+      },
+      create: language,
+    });
+  }
+
+  console.log('  🏬 Seeding default Store...');
+  const defaultStore = await prisma.store.findFirst({
+    where: { isDefault: true },
+  });
+  if (!defaultStore) {
+    await prisma.store.create({
+      data: {
+        name: 'Swift Shop Madagascar',
+        url: 'https://swiftshop.mg',
+        active: true,
+        isDefault: true,
+      },
+    });
+  }
 };

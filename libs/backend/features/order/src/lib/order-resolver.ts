@@ -6,7 +6,8 @@ import {
   Args,
   ID,
 } from '@nestjs/graphql';
-import { UseGuards } from '@nestjs/common';
+import { UseGuards, Inject } from '@nestjs/common';
+import { PubSub } from 'graphql-subscriptions';
 import { CustomerGuard, CurrentUser } from '@swift-shop/backend/auth';
 import { OrderService } from './order-service';
 import { OrderCreationService } from './order-creation.service';
@@ -35,6 +36,7 @@ export class OrderResolver {
     private readonly orderService: OrderService,
     private readonly orderCreationService: OrderCreationService,
     private readonly orderActionService: OrderActionService,
+    @Inject('PUB_SUB') private readonly pubSub: PubSub,
   ) {}
 
   @Query(() => [OrderType])
@@ -157,16 +159,13 @@ export class OrderResolver {
     );
   }
 
-  @Subscription(() => OrderType, {
-    filter: (payload, variables) =>
-      payload.orderStatusChanged.id === variables.orderId,
-  })
-  orderStatusChanged(@Args('orderId', { type: () => ID }) orderId: string) {
-    void orderId; // Fix unused variable
-    // In a real app, this would use a PubSub instance.
-    // e.g., return pubSub.asyncIterableIterator('orderStatusChanged');
-    return (async function* () {
-      yield null;
-    })();
+  @Subscription(() => OrderType)
+  @UseGuards(CustomerGuard)
+  async orderStatusChanged(
+    @Args('orderId', { type: () => ID }) orderId: string,
+    @CurrentUser() user: CurrentUserType,
+  ) {
+    await this.orderService.getOrder(orderId, user.id);
+    return this.pubSub.asyncIterableIterator(`orderStatusChanged:${orderId}`);
   }
 }

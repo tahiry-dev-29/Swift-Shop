@@ -1,6 +1,7 @@
 export * from './lib/auth.module';
 export * from './lib/services/auth-mail.service';
 export * from './lib/services/auth.service';
+export * from './lib/services/auth-token.service';
 export * from './lib/strategies/jwt.strategy';
 export * from './lib/guards/jwt-auth-guard';
 export * from './lib/guards/customer-guard';
