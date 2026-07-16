@@ -13,7 +13,8 @@ import { seedCustomers } from './seeds/seed-customers';
 const pool = new Pool({
   connectionString: process.env['DATABASE_URL'],
 });
-const adapter = new PrismaNeon(pool);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const adapter = new PrismaNeon(pool as any);
 const prisma = new PrismaClient({ adapter });
 
 const permissionActions = [

@@ -14,7 +14,8 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     });
 
     super({
-      adapter: new PrismaNeon(pool),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      adapter: new PrismaNeon(pool as any),
     });
 
     this.pool = pool;
