@@ -45,8 +45,8 @@
     "docker:logs:studio": "docker compose --env-file .env.docker logs -f prisma-studio",
     "docker:ps": "docker compose --env-file .env.docker ps",
     "docker:down": "docker compose --env-file .env.docker down",
-    "lint": "pnpm exec nx run-many --target=lint --all --parallel",
-    "test": "pnpm exec nx run-many --target=test --all --parallel",
+    "lint": "bunx nx run-many --target=lint --all --parallel",
+    "test": "bunx nx run-many --target=test --all --parallel",
     "docs:generate": "rm -rf docs && doxygen Doxyfile",
     "docs:view": "xdg-open docs/html/index.html || open docs/html/index.html",
     "prepare": "husky"
