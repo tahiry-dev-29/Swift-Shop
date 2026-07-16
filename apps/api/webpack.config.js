@@ -15,7 +15,8 @@ module.exports = {
   ignoreWarnings: [/baseline-browser-mapping/],
   externals: {
     '@prisma/client': 'commonjs @prisma/client',
-    '@prisma/adapter-pg': 'commonjs @prisma/adapter-pg',
+    '@prisma/adapter-neon': 'commonjs @prisma/adapter-neon',
+    '@neondatabase/serverless': 'commonjs @neondatabase/serverless',
   },
   module: {
     rules: [

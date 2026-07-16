@@ -1,6 +1,6 @@
 import { PrismaClient } from '@swift-shop/prisma-client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
+import { PrismaNeon } from '@prisma/adapter-neon';
+import { Pool } from '@neondatabase/serverless';
 import * as argon2 from 'argon2';
 import { seedPricing } from './seeds/seed-pricing';
 import {
@@ -13,7 +13,7 @@ import { seedCustomers } from './seeds/seed-customers';
 const pool = new Pool({
   connectionString: process.env['DATABASE_URL'],
 });
-const adapter = new PrismaPg(pool);
+const adapter = new PrismaNeon(pool);
 const prisma = new PrismaClient({ adapter });
 
 const permissionActions = [

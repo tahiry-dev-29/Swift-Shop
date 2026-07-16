@@ -1,7 +1,7 @@
 import { INestApplication, Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
+import { PrismaNeon } from '@prisma/adapter-neon';
+import { Pool } from '@neondatabase/serverless';
 import { PrismaClient } from '@swift-shop/prisma-client';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     });
 
     super({
-      adapter: new PrismaPg(pool),
+      adapter: new PrismaNeon(pool),
     });
 
     this.pool = pool;
