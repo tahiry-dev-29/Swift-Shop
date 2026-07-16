@@ -1,5 +1,6 @@
 import { PrismaClient } from '@swift-shop/prisma-client';
 import { PrismaNeon } from '@prisma/adapter-neon';
+import { PrismaPg } from '@prisma/adapter-pg';
 import * as argon2 from 'argon2';
 import { seedPricing } from './seeds/seed-pricing';
 import {
@@ -9,10 +10,18 @@ import {
 } from './seeds/seed-catalog';
 import { seedCustomers } from './seeds/seed-customers';
 
+const databaseUrl = process.env['DATABASE_URL'];
+if (!databaseUrl) {
+  throw new Error('DATABASE_URL environment variable is required');
+}
+const isNeon = databaseUrl.includes('.neon.tech');
+
 const prisma = new PrismaClient({
-  adapter: new PrismaNeon({
-    connectionString: process.env['DATABASE_URL'],
-  }),
+  adapter: isNeon
+    ? new PrismaNeon({
+        connectionString: databaseUrl,
+      })
+    : new PrismaPg(databaseUrl),
 });
 
 const permissionActions = [
@@ -360,7 +369,7 @@ async function main() {
   });
   const orderProducts = await prisma.product.findMany({
     where: {
-      ref: { in: ['IPHONE15PRO', 'MBP14', 'SGS24'] },
+      reference: { in: ['IPHONE15PRO', 'MBP14', 'SGS24'] },
     },
   });
   const deliveredState = await prisma.orderState.findUnique({
@@ -393,7 +402,7 @@ async function main() {
               create: {
                 productId: product.id,
                 productName: product.name,
-                productRef: product.ref,
+                productRef: product.reference,
                 quantity: 1,
                 unitPriceHT: price,
                 taxRate: taxRate,
