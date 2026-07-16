@@ -1,24 +1,16 @@
 import { INestApplication, Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaNeon } from '@prisma/adapter-neon';
-import { Pool } from '@neondatabase/serverless';
 import { PrismaClient } from '@swift-shop/prisma-client';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
-  pool: Pool;
-
   constructor(configService: ConfigService) {
-    const pool = new Pool({
-      connectionString: configService.getOrThrow<string>('DATABASE_URL'),
-    });
-
     super({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      adapter: new PrismaNeon(pool as any),
+      adapter: new PrismaNeon({
+        connectionString: configService.getOrThrow<string>('DATABASE_URL'),
+      }),
     });
-
-    this.pool = pool;
   }
 
   async onModuleInit() {
@@ -27,15 +19,15 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
   enableShutdownHooks(app: INestApplication) {
     process.on('beforeExit', async () => {
-      await this.pool.end();
+      await this.$disconnect();
       await app.close();
     });
     process.on('SIGTERM', async () => {
-      await this.pool.end();
+      await this.$disconnect();
       process.exit(0);
     });
     process.on('SIGINT', async () => {
-      await this.pool.end();
+      await this.$disconnect();
       process.exit(0);
     });
   }
