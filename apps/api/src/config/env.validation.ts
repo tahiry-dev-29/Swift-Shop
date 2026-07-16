@@ -49,10 +49,6 @@ export function validateEnvironment(env: Environment): ValidatedEnvironment {
     'SMTP_USER',
     'SMTP_PASS',
     'SMTP_FROM',
-    'GOOGLE_CLIENT_ID',
-    'GOOGLE_CLIENT_SECRET',
-    'FACEBOOK_CLIENT_ID',
-    'FACEBOOK_CLIENT_SECRET',
   ]);
   return {
     ...rest,
