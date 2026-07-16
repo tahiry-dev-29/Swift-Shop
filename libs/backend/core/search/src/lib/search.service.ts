@@ -5,6 +5,7 @@ import { Meilisearch, Index } from 'meilisearch';
 @Injectable()
 export class SearchService implements OnModuleInit {
   private client: Meilisearch | undefined;
+  private available = false;
   private readonly logger = new Logger(SearchService.name);
 
   constructor(private configService: ConfigService) {}
@@ -26,66 +27,64 @@ export class SearchService implements OnModuleInit {
 
     try {
       const health = await this.client.health();
+      this.available = true;
       this.logger.log(`MeiliSearch is healthy: ${health.status}`);
-    } catch (error) {
-      this.logger.error('MeiliSearch connection failed', error);
+    } catch {
+      this.logger.warn(
+        'MeiliSearch not available — search features are disabled',
+      );
     }
   }
 
-  /**
-   * Get an index by name.
-   */
   getIndex<T extends Record<string, unknown>>(uid: string): Index<T> {
     if (!this.client) throw new Error('Meilisearch client not initialized');
     return this.client.index<T>(uid);
   }
 
-  /**
-   * Add or update documents in an index.
-   */
   async addDocuments<T extends Record<string, unknown>>(
     indexUid: string,
     documents: T[],
     primaryKey?: string,
   ) {
+    if (!this.available) return;
     const index = this.getIndex<T>(indexUid);
     const task = await index.addDocuments(documents, { primaryKey });
     return task;
   }
 
-  /**
-   * Delete documents from an index.
-   */
   async deleteDocuments(indexUid: string, documentIds: string[] | number[]) {
+    if (!this.available) return;
     const index = this.getIndex(indexUid);
     const task = await index.deleteDocuments(documentIds);
     return task;
   }
 
-  /**
-   * Search in an index.
-   */
   async search<T extends Record<string, unknown>>(
     indexUid: string,
     query: string,
     searchParams?: Record<string, unknown>,
   ) {
+    if (!this.available) return null;
     const index = this.getIndex<T>(indexUid);
     return index.search(query, searchParams);
   }
 
-  /**
-   * Create index if it does not exist and update settings.
-   */
   async setupIndex(indexUid: string, settings: Record<string, unknown>) {
+    if (!this.available) return;
     if (!this.client) throw new Error('Meilisearch client not initialized');
     try {
       await this.client.createIndex(indexUid);
-    } catch (e) {
-      this.logger.debug(`Index may already exist: ${String(e)}`);
+    } catch {
+      this.logger.debug(`Index may already exist: ${indexUid}`);
     }
-    const index = this.getIndex(indexUid);
-    await index.updateSettings(settings);
-    this.logger.log(`Updated settings for index: ${indexUid}`);
+    try {
+      const index = this.getIndex(indexUid);
+      await index.updateSettings(settings);
+      this.logger.log(`Updated settings for index: ${indexUid}`);
+    } catch (error) {
+      this.logger.warn(
+        `Failed to update settings for ${indexUid}: ${String(error)}`,
+      );
+    }
   }
 }
