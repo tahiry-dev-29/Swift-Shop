@@ -32,12 +32,17 @@ export class RedisThrottlerStorage implements ThrottlerStorage {
 
     this.redis = new Redis(redisUrl, {
       enableOfflineQueue: false,
-      lazyConnect: false,
+      lazyConnect: true,
       maxRetriesPerRequest: 1,
+      retryStrategy: () => null,
     });
 
     this.redis.on('error', (err) => {
       this.logger.error('Redis Throttler error', err);
+    });
+
+    this.redis.connect().catch(() => {
+      this.logger.warn('Redis not available — throttler fallback to in-memory');
     });
   }
 

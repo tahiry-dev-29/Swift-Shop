@@ -76,6 +76,10 @@ import { depthLimit } from './config/graphql-depth.util';
       connection: {
         host: process.env['REDIS_HOST'] || 'localhost',
         port: parseInt(process.env['REDIS_PORT'] || '6379', 10),
+        maxRetriesPerRequest: null,
+        retryStrategy: () => null,
+        enableOfflineQueue: false,
+        lazyConnect: true,
       },
     }),
 

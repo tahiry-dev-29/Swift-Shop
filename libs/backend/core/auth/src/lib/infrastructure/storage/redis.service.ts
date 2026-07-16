@@ -19,9 +19,16 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
       'REDIS_URL',
       'redis://localhost:6379',
     );
-    this.client = new Redis(redisUrl);
+    this.client = new Redis(redisUrl, {
+      lazyConnect: true,
+      maxRetriesPerRequest: 1,
+      retryStrategy: () => null,
+    });
     this.client.on('error', (err) => {
       this.logger.error('Redis error', err);
+    });
+    this.client.connect().catch((err) => {
+      this.logger.warn('Redis not available — auth cache disabled', err);
     });
   }
 
