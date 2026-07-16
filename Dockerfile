@@ -9,7 +9,6 @@ COPY apps ./apps
 COPY libs ./libs
 COPY models ./models
 COPY prisma ./prisma
-COPY shared ./shared
 COPY tools ./tools
 
 RUN pnpm install --frozen-lockfile
