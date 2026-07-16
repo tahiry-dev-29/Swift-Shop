@@ -2,6 +2,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { SocialPost } from '@swift-shop/prisma-client';
 import {
   SOCIAL_MEDIA_QUEUE,
   SOCIAL_MEDIA_JOBS,
@@ -68,7 +69,18 @@ export class SocialMediaService {
   @Cron(CronExpression.EVERY_MINUTE)
   async processScheduledPosts() {
     this.logger.log('Running Cron: check scheduled posts');
-    const pendingPosts = await this.repository.getPendingPosts();
+    let pendingPosts: SocialPost[] = [];
+    try {
+      pendingPosts = await this.repository.getPendingPosts();
+      this.logger.debug(`Found ${pendingPosts.length} pending posts`);
+    } catch (e) {
+      this.logger.error('Error in getPendingPosts', {
+        error: e,
+        message: e instanceof Error ? e.message : String(e),
+        stack: e instanceof Error ? e.stack : undefined,
+      });
+      throw e;
+    }
 
     if (pendingPosts.length === 0) {
       return;

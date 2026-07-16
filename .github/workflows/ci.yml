@@ -26,7 +26,7 @@ jobs:
           cache: pnpm
 
       - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -51,7 +51,7 @@ jobs:
           cache: pnpm
 
       - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -81,7 +81,7 @@ jobs:
           cache: pnpm
 
       - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -89,7 +89,7 @@ jobs:
       - name: Generate Prisma client
         run: bunx prisma generate
         env:
-          DATABASE_URL: postgresql://placeholder:placeholder@localhost:5432/placeholder
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Run Build (Nx affected)
         run: bunx nx affected --target=build --base=origin/main

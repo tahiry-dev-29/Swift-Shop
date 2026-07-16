@@ -81,6 +81,7 @@ import { depthLimit } from './config/graphql-depth.util';
             enableOfflineQueue: false,
             enableReadyCheck: false,
             lazyConnect: true,
+            keyPrefix: 'swift-shop:',
           }
         : {
             host: 'localhost',
@@ -90,6 +91,7 @@ import { depthLimit } from './config/graphql-depth.util';
             enableOfflineQueue: false,
             enableReadyCheck: false,
             lazyConnect: true,
+            keyPrefix: 'swift-shop:',
           },
     }),
 

@@ -27,7 +27,7 @@ RUN pnpm install --frozen-lockfile
 FROM workspace AS api-build
 
 # Prisma 7 requires DATABASE_URL to load config — dummy value is fine for generate
-ARG DATABASE_URL=postgresql://placeholder:placeholder@localhost:5432/placeholder?schema=public
+ARG DATABASE_URL=postgresql://localhost:5432/placeholder?schema=public
 ENV DATABASE_URL=$DATABASE_URL
 
 RUN pnpm exec prisma generate && pnpm exec nx build api

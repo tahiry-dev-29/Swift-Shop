@@ -17,6 +17,7 @@ export class CategoryCacheService {
           lazyConnect: true,
           maxRetriesPerRequest: 1,
           retryStrategy: () => null,
+          keyPrefix: 'swift-shop:',
         },
       );
       this.redis.on('error', (err) =>

@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '@swift-shop/data-access-prisma';
 import { SocialPost } from '@swift-shop/prisma-client';
 import { CreateSocialPostInput } from './dto/social-post.input';
 
 @Injectable()
 export class SocialMediaRepository {
+  private readonly logger = new Logger(SocialMediaRepository.name);
   constructor(private readonly prisma: PrismaService) {}
 
   async createPost(
@@ -71,6 +72,7 @@ export class SocialMediaRepository {
   }
 
   async getPendingPosts(): Promise<SocialPost[]> {
+    this.logger.log('Fetching pending posts...');
     return this.prisma.socialPost.findMany({
       where: {
         status: 'SCHEDULED',

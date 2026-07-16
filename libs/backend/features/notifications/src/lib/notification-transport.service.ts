@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleInit,
+  OnModuleDestroy,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
 import { filter, Observable, Subject } from 'rxjs';
@@ -27,6 +32,7 @@ export class NotificationTransportService
       lazyConnect: true,
       maxRetriesPerRequest: 1,
       retryStrategy: () => null,
+      keyPrefix: 'swift-shop:',
     };
     this.pubClient = new Redis(redisUrl, opts);
     this.subClient = new Redis(redisUrl, opts);
@@ -41,9 +47,11 @@ export class NotificationTransportService
     this.pubClient.connect().catch(() => undefined);
     this.subClient.connect().catch(() => undefined);
 
-    this.subClient.subscribe('commerce:notifications').catch(() => undefined);
+    this.subClient
+      .subscribe('swift-shop:commerce:notifications')
+      .catch(() => undefined);
     this.subClient.on('message', (channel, message) => {
-      if (channel === 'commerce:notifications') {
+      if (channel === 'swift-shop:commerce:notifications') {
         try {
           const event = JSON.parse(message) as NotificationEvent;
           this.events$.next(event);
@@ -60,7 +68,9 @@ export class NotificationTransportService
   }
 
   publish(event: NotificationEvent) {
-    this.pubClient.publish('commerce:notifications', JSON.stringify(event)).catch(() => undefined);
+    this.pubClient
+      .publish('swift-shop:commerce:notifications', JSON.stringify(event))
+      .catch(() => undefined);
   }
 
   streamForRecipient(

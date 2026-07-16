@@ -23,6 +23,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
       lazyConnect: true,
       maxRetriesPerRequest: 1,
       retryStrategy: () => null,
+      keyPrefix: 'swift-shop:',
     });
     this.client.on('error', (err) => {
       this.logger.error('Redis error', err);

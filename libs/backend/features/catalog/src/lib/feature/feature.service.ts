@@ -47,14 +47,15 @@ export class FeatureService {
 
   async findAllFeatures() {
     const client = this.getClient();
-    if (!client) return this.prisma.feature.findMany({
-      orderBy: { position: 'asc' },
-      include: {
-        values: {
-          orderBy: { position: 'asc' },
+    if (!client)
+      return this.prisma.feature.findMany({
+        orderBy: { position: 'asc' },
+        include: {
+          values: {
+            orderBy: { position: 'asc' },
+          },
         },
-      },
-    });
+      });
     try {
       const cached = await client.get('features:all');
       if (cached) return JSON.parse(cached);
