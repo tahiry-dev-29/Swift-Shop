@@ -35,6 +35,10 @@ jobs:
 
       - name: Generate Prisma client
         run: bunx prisma generate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Apply migrations
         run: bunx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
