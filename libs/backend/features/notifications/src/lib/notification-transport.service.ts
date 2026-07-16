@@ -22,8 +22,16 @@ export class NotificationTransportService
       'REDIS_URL',
       'redis://localhost:6379',
     );
-    this.pubClient = new Redis(redisUrl);
-    this.subClient = new Redis(redisUrl);
+    const opts = {
+      lazyConnect: true,
+      maxRetriesPerRequest: 1,
+      retryStrategy: () => null,
+    };
+    this.pubClient = new Redis(redisUrl, opts);
+    this.subClient = new Redis(redisUrl, opts);
+
+    this.pubClient.connect().catch(() => undefined);
+    this.subClient.connect().catch(() => undefined);
 
     this.subClient.subscribe('commerce:notifications');
     this.subClient.on('message', (channel, message) => {

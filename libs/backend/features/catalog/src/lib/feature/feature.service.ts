@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '@swift-shop/data-access-prisma';
 import {
   CreateFeatureInput,
@@ -10,19 +10,54 @@ import Redis from 'ioredis';
 
 @Injectable()
 export class FeatureService {
-  private redis = new Redis(
-    process.env['REDIS_URL'] || 'redis://localhost:6379',
-  );
+  private readonly logger = new Logger(FeatureService.name);
+  private redis: Redis | null = null;
 
   constructor(private readonly prisma: PrismaService) {}
 
+  private getClient(): Redis | null {
+    if (!this.redis) {
+      this.redis = new Redis(
+        process.env['REDIS_URL'] || 'redis://localhost:6379',
+        {
+          lazyConnect: true,
+          maxRetriesPerRequest: 1,
+          retryStrategy: () => null,
+        },
+      );
+      this.redis.connect().catch(() => {
+        this.logger.warn('Redis not available — feature cache disabled');
+      });
+    }
+    return this.redis;
+  }
+
   private async invalidateCache() {
-    await this.redis.del('features:all');
+    const client = this.getClient();
+    if (!client) return;
+    try {
+      await client.del('features:all');
+    } catch {
+      this.logger.warn('Failed to invalidate feature cache');
+    }
   }
 
   async findAllFeatures() {
-    const cached = await this.redis.get('features:all');
-    if (cached) return JSON.parse(cached);
+    const client = this.getClient();
+    if (!client) return this.prisma.feature.findMany({
+      orderBy: { position: 'asc' },
+      include: {
+        values: {
+          orderBy: { position: 'asc' },
+        },
+      },
+    });
+    try {
+      const cached = await client.get('features:all');
+      if (cached) return JSON.parse(cached);
+    } catch {
+      // ignore cache miss
+    }
 
     const features = await this.prisma.feature.findMany({
       orderBy: { position: 'asc' },
@@ -33,7 +68,12 @@ export class FeatureService {
       },
     });
 
-    await this.redis.set('features:all', JSON.stringify(features), 'EX', 3600);
+    try {
+      await client.set('features:all', JSON.stringify(features), 'EX', 3600);
+    } catch {
+      this.logger.warn('Failed to cache features');
+    }
+
     return features;
   }
 
