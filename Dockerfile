@@ -4,6 +4,17 @@ WORKDIR /app
 
 RUN corepack enable && corepack prepare pnpm@10.33.0 --activate
 
+# Allow required build scripts in Docker
+RUN printf '%s\n' \
+  'onlyBuiltDependencies[]=@prisma/engines' \
+  'onlyBuiltDependencies[]=prisma' \
+  'onlyBuiltDependencies[]=sharp' \
+  'onlyBuiltDependencies[]=esbuild' \
+  'onlyBuiltDependencies[]=@swc/core' \
+  'onlyBuiltDependencies[]=nx' \
+  'onlyBuiltDependencies[]=argon2' \
+  > .npmrc
+
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml nx.json tsconfig.base.json prisma.config.ts ./
 COPY apps ./apps
 COPY libs ./libs
@@ -15,8 +26,9 @@ RUN pnpm install --frozen-lockfile
 
 FROM workspace AS api-build
 
-# Removed hardcoded DATABASE_URL to avoid checkov secret warnings
-# Prisma doesn't strictly need a real DB connection for 'generate', but if it does, pass it as build arg.
+# Prisma 7 requires DATABASE_URL to load config — dummy value is fine for generate
+ARG DATABASE_URL=postgresql://placeholder:placeholder@localhost:5432/placeholder?schema=public
+ENV DATABASE_URL=$DATABASE_URL
 
 RUN pnpm exec prisma generate && pnpm exec nx build api
 
