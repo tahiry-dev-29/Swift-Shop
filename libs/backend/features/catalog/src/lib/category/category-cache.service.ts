@@ -19,6 +19,9 @@ export class CategoryCacheService {
           retryStrategy: () => null,
         },
       );
+      this.redis.on('error', (err) =>
+        this.logger.error('Redis category cache error', err),
+      );
       this.redis.connect().catch(() => {
         this.logger.warn('Redis not available — category cache disabled');
       });

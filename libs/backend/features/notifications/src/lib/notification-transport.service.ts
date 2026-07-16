@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
 import { filter, Observable, Subject } from 'rxjs';
@@ -11,6 +11,7 @@ import {
 export class NotificationTransportService
   implements OnModuleInit, OnModuleDestroy
 {
+  private readonly logger = new Logger(NotificationTransportService.name);
   private readonly events$ = new Subject<NotificationEvent>();
   private pubClient!: Redis;
   private subClient!: Redis;
@@ -30,10 +31,17 @@ export class NotificationTransportService
     this.pubClient = new Redis(redisUrl, opts);
     this.subClient = new Redis(redisUrl, opts);
 
+    this.pubClient.on('error', (err) =>
+      this.logger.error('Redis pub client error', err),
+    );
+    this.subClient.on('error', (err) =>
+      this.logger.error('Redis sub client error', err),
+    );
+
     this.pubClient.connect().catch(() => undefined);
     this.subClient.connect().catch(() => undefined);
 
-    this.subClient.subscribe('commerce:notifications');
+    this.subClient.subscribe('commerce:notifications').catch(() => undefined);
     this.subClient.on('message', (channel, message) => {
       if (channel === 'commerce:notifications') {
         try {
@@ -52,7 +60,7 @@ export class NotificationTransportService
   }
 
   publish(event: NotificationEvent) {
-    this.pubClient.publish('commerce:notifications', JSON.stringify(event));
+    this.pubClient.publish('commerce:notifications', JSON.stringify(event)).catch(() => undefined);
   }
 
   streamForRecipient(

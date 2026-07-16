@@ -73,15 +73,24 @@ import { depthLimit } from './config/graphql-depth.util';
     ScheduleModule.forRoot(),
 
     BullModule.forRoot({
-      connection: {
-        host: process.env['REDIS_HOST'] || 'localhost',
-        port: parseInt(process.env['REDIS_PORT'] || '6379', 10),
-        maxRetriesPerRequest: 0,
-        retryStrategy: () => null,
-        enableOfflineQueue: false,
-        enableReadyCheck: false,
-        lazyConnect: true,
-      },
+      connection: process.env['REDIS_URL']
+        ? {
+            url: process.env['REDIS_URL'],
+            maxRetriesPerRequest: 0,
+            retryStrategy: () => null,
+            enableOfflineQueue: false,
+            enableReadyCheck: false,
+            lazyConnect: true,
+          }
+        : {
+            host: 'localhost',
+            port: 6379,
+            maxRetriesPerRequest: 0,
+            retryStrategy: () => null,
+            enableOfflineQueue: false,
+            enableReadyCheck: false,
+            lazyConnect: true,
+          },
     }),
 
     BullBoardModule.forRoot({
