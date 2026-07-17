@@ -1412,3 +1412,44 @@ model DeliveryChatMessage {
   dateAdd    DateTime     @default(now())
   chat       DeliveryChat @relation(fields: [chatId], references: [id], onDelete: Cascade)
 }
+
+// ----------------------------------------------------------------------
+// CMS (CONTENT MANAGEMENT SYSTEM)
+// ----------------------------------------------------------------------
+
+model CmsPage {
+  id              String   @id @default(uuid())
+  title           String
+  slug            String   @unique
+  content         String   @db.Text
+  active          Boolean  @default(true)
+  metaTitle       String?
+  metaDescription String?
+  dateAdd         DateTime @default(now())
+  dateUpd         DateTime @updatedAt
+}
+
+model Banner {
+  id        String    @id @default(uuid())
+  title     String
+  imageUrl  String
+  linkUrl   String?
+  active    Boolean   @default(true)
+  dateFrom  DateTime?
+  dateTo    DateTime?
+  position  Int       @default(0)
+  dateAdd   DateTime  @default(now())
+  dateUpd   DateTime  @updatedAt
+}
+
+model HomepageBlock {
+  id        String   @id @default(uuid())
+  title     String
+  type      String   // e.g. "PRODUCTS", "BANNER", "HTML"
+  content   Json?
+  position  Int      @default(0)
+  active    Boolean  @default(true)
+  dateAdd   DateTime @default(now())
+  dateUpd   DateTime @updatedAt
+}
+

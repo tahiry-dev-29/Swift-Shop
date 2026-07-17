@@ -67,6 +67,7 @@
       "@swift-shop/backend/notifications": [
         "./libs/backend/features/notifications/src/index.ts"
       ],
+      "@swift-shop/backend/cms": ["./libs/backend/features/cms/src/index.ts"],
       "@backend/features/support": [
         "./libs/backend/features/support/src/index.ts"
       ],

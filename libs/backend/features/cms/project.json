@@ -1,0 +1,8 @@
+{
+  "name": "cms",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/backend/features/cms/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {}
+}
