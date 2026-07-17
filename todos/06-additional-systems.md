@@ -30,10 +30,10 @@
 
 ## 🧩 CMS — Content Management
 
-- [ ] Prisma models: `CmsPage`, `Banner`, `HomepageBlock`
-- [ ] `CmsPageService` — CRUD + slug uniqueness
-- [ ] `BannerService` — scheduling (active between dates)
-- [ ] `HomepageService` — block reordering
+- [x] Prisma models: `CmsPage`, `Banner`, `HomepageBlock`
+- [x] `CmsPageService` — CRUD + slug uniqueness
+- [x] `BannerService` — scheduling (active between dates)
+- [x] `HomepageService` — block reordering
 
 ---
 
@@ -128,14 +128,14 @@
 - [ ] `SocialMediaResolver` — mutations for create, schedule, delete
 - [ ] Facebook catalog XML feed generation
 
-### CMS (quand implémenté) — Unit Tests
+### CMS — Unit Tests
 
-- [ ] `CmsPageService` — CRUD, slug uniqueness
-- [ ] `BannerService` — scheduling (active between dates)
-- [ ] `HomepageService` — block reordering
+- [x] `CmsPageService` — CRUD, slug uniqueness
+- [x] `BannerService` — scheduling (active between dates)
+- [x] `HomepageService` — block reordering
 
-### CMS (quand implémenté) — Integration Tests
+### CMS — Integration Tests
 
-- [ ] `CmsPageResolver` — CRUD mutations + queries
-- [ ] `BannerResolver` — CRUD with date validation
-- [ ] `HomePageResolver` — block order consistency
+- [x] `CmsPageResolver` — CRUD mutations + queries
+- [x] `BannerResolver` — CRUD with date validation
+- [x] `HomePageResolver` — block order consistency

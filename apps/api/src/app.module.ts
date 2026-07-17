@@ -28,6 +28,7 @@ import { SocialMediaModule } from '@swift-shop/backend/social-media';
 import { MessagingModule } from '@swift-shop/backend/messaging';
 import { SupportModule } from '@backend/features/support';
 import { NotificationModule } from '@swift-shop/backend/notifications';
+import { CmsModule } from '@swift-shop/backend/cms';
 import { validateEnvironment } from './config/env.validation';
 import { HealthModule } from './health/health.module';
 import { BullModule } from '@nestjs/bullmq';
@@ -121,6 +122,7 @@ import { depthLimit } from './config/graphql-depth.util';
     MessagingModule,
     SupportModule,
     NotificationModule,
+    CmsModule,
     HealthModule,
   ],
   controllers: [AppController],
