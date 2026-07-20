@@ -1,13 +1,13 @@
 /// <reference types='vitest' />
 import { defineConfig } from 'vite';
-import angular from '@analogjs/vite-plugin-angular';
-import tsconfigPaths from 'vite-tsconfig-paths';
+import { nxAngularPlugin } from '@nx/angular/plugins/vite-plugin.js';
+import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 
 export default defineConfig(() => ({
   root: __dirname,
   cacheDir: '../../node_modules/.vite/apps/dashboard',
-  resolve: { tsconfigPaths: true },
-  plugins: [angular(), tsconfigPaths()],
+  plugins: [nxViteTsPaths(), nxCopyAssetsPlugin(['*.md']), nxAngularPlugin()],
   test: {
     name: 'dashboard',
     watch: false,
