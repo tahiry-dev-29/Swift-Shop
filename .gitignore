@@ -63,6 +63,7 @@ tools/
 .claude/worktrees
 .nx/polygraph
 .nx/self-healing
+.nx/
 
 # Prisma generated client
 prisma/generated-client

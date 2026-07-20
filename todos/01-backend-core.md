@@ -12,11 +12,11 @@
 - [x] Set up ConfigService (environment variables management)
 - [ ] **Vault / Doppler** integration for secrets management in production
 - [ ] **Infrastructure as Code**: optimized multi-stage Dockerfiles + `docker-compose.prod.yml`
-- [ ] **CI/CD Pipeline**: GitHub Actions (lint → test → build → deploy)
-- [ ] **Database Seeding**: realistic seed script for dev/staging environments
+- [x] **CI/CD Pipeline**: GitHub Actions (lint → test → build → deploy)
+- [x] **Database Seeding**: realistic seed script for dev/staging environments
 - [ ] **Nx affected** optimization: only rebuild/retest changed libs on each push
 - [ ] **Database migrations strategy**: versioned migration files, rollback procedure documented
-- [ ] **Connection pooling**: PgBouncer or Prisma Accelerate for production DB connections
+- [x] **Connection pooling**: PgBouncer or Prisma Accelerate for production DB connections
 - [ ] **Backup strategy**: automated daily pg_dump to S3/Backblaze with 30-day retention
 
 ---
