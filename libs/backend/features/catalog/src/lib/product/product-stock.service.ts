@@ -64,14 +64,16 @@ export class ProductStockService {
     combinationId?: string,
     quantity = 1,
   ) {
-    const stock = await this.prisma.stock.findFirst({
-      where: {
-        OR: [
-          { productId: productId ?? undefined },
-          { combinationId: combinationId ?? undefined },
-        ],
-      },
-    });
+    const where: Record<string, unknown> = {};
+    if (combinationId) {
+      where['combinationId'] = combinationId;
+    } else if (productId) {
+      where['productId'] = productId;
+    } else {
+      return false;
+    }
+
+    const stock = await this.prisma.stock.findFirst({ where });
 
     if (!stock) return false;
     if (stock.outOfStockBehavior === 'allow') return true;

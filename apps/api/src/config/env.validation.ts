@@ -49,11 +49,22 @@ export function validateEnvironment(env: Environment): ValidatedEnvironment {
     'SMTP_USER',
     'SMTP_PASS',
     'SMTP_FROM',
+    'REDIS_URL',
+    'MEILISEARCH_HOST',
+    'MEILISEARCH_API_KEY',
   ]);
+
+  const jwtSecret = requireValue(env, 'JWT_SECRET');
+  if (jwtSecret.length < 32) {
+    throw new Error(
+      'JWT_SECRET must be at least 32 characters long',
+    );
+  }
+
   return {
     ...rest,
     DATABASE_URL: requireValue(env, 'DATABASE_URL'),
-    JWT_SECRET: requireValue(env, 'JWT_SECRET'),
+    JWT_SECRET: jwtSecret,
     PORT: parsePort(PORT),
   } as ValidatedEnvironment;
 }
