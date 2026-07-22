@@ -126,4 +126,21 @@ export default [
       '@angular-eslint/use-pipe-transform-interface': 'off',
     },
   },
+  {
+    // 🧪 Test files: relaxed rules for unit & integration test suites, mocks, and setup
+    files: [
+      '**/*.spec.ts',
+      '**/*.spec.tsx',
+      '**/*.spec.js',
+      '**/*.spec.jsx',
+      '**/*.integration.spec.ts',
+      '**/*.e2e-spec.ts',
+      '**/*.test.ts',
+      '**/*.test.js',
+    ],
+    rules: {
+      'max-lines': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
 ];

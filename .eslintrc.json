@@ -20,5 +20,20 @@
     ],
     "@typescript-eslint/no-explicit-any": "error",
     "no-console": "warn"
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "*.spec.ts",
+        "*.spec.tsx",
+        "*.integration.spec.ts",
+        "*.e2e-spec.ts",
+        "*.test.ts"
+      ],
+      "rules": {
+        "max-lines": "off",
+        "@typescript-eslint/no-explicit-any": "off"
+      }
+    }
+  ]
 }
