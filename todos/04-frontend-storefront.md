@@ -4,6 +4,8 @@
 
 ## 🏗️ Core & Architecture
 
+gwt-new ../storefront-core feat/storefront-core
+
 - [ ] Configure the `store` application (`apps/store`)
 - [ ] Configure Router with `TitleStrategy` and lazy-loaded routes
 - [ ] Create Nx UI library (`libs/storefront/ui-kit`) or reuse `libs/ui/` (spartan)
@@ -24,6 +26,8 @@
 
 ## 👤 User Identity & Account
 
+gwt-new ../storefront-auth feat/storefront-auth
+
 - [ ] `LoginComponent` — Signal-based form (`hlmField`, `hlmInput`, `hlmBtn`), remember-me checkbox
 - [ ] `RegisterComponent` — Typed reactive form with email + password strength meter (`hlm-progress`)
 - [ ] `EmailVerificationComponent` — verify email after registration (token from route param)
@@ -43,6 +47,8 @@
 
 ## ❤️ Wishlist & Favorites
 
+gwt-new ../storefront-wishlist feat/storefront-wishlist
+
 - [ ] `WishlistService` — Signal store, add/remove/toggle, persisted to backend
 - [ ] `WishlistButtonComponent` — heart icon toggle on product card + detail (`hlmBtn ghost`, `ng-icon heart`)
 - [ ] `WishlistPageComponent` — grid of saved items with add-to-cart action (`hlmCard`, `hlmBtn`)
@@ -52,6 +58,8 @@
 ---
 
 ## 🔄 Recently Viewed & Product Comparison
+
+gwt-new ../storefront-browsing feat/storefront-browsing
 
 - [ ] `RecentlyViewedService` — local storage signal store (last 20 products)
 - [ ] `RecentlyViewedComponent` — horizontal scroll strip on homepage/sidebar (`hlmCard`, horizontal scroll)
@@ -63,6 +71,8 @@
 
 ## ⭐ Product Reviews & Ratings
 
+gwt-new ../storefront-reviews feat/storefront-reviews
+
 - [ ] `ReviewListComponent` — paginated reviews with sort (newest, highest, lowest) (`hlmCard`, `hlmBadge`)
 - [ ] `ReviewFormComponent` — star rating + textarea + image upload (`hlmInput`, `ng-icon star`)
 - [ ] `ReviewSummaryComponent` — aggregate rating distribution bar chart (`hlm-progress` per star)
@@ -73,6 +83,8 @@
 ---
 
 ## 🛍️ Product Catalog UI
+
+gwt-new ../storefront-catalog feat/storefront-catalog
 
 - [ ] `ProductListComponent` — responsive product grid (2-3-4 columns) (`hlmCard`, `hlmBtn`)
 - [ ] `ProductListToolbarComponent` — sort by (price, name, newest), items per page switcher (`hlmSelect`)
@@ -103,6 +115,8 @@
 
 ## 🛒 Cart & Checkout Experience
 
+gwt-new ../storefront-checkout feat/storefront-checkout
+
 - [ ] `CartService` — Signal store, optimistic updates, localStorage persistence for guest
 - [ ] `CartIconComponent` — header cart icon with quantity badge + subtotal tooltip (`hlmBtn`, `hlmBadge`, `hlmPopover`)
 - [ ] `CartSidebarComponent` — offcanvas cart (`hlm-sheet side="right"`), item list, subtotal, checkout CTA
@@ -128,6 +142,8 @@
 
 ## 🚚 Delivery Tracking UI
 
+gwt-new ../storefront-tracking feat/storefront-tracking
+
 - [ ] `OrderTrackingComponent` — public tracking page (order ref + email form) (`hlm-card`, `hlm-input`)
 - [ ] `ShipmentTimelineComponent` — vertical event timeline with icons (`hlm-separator`, `hlm-badge`, `ng-icon`)
 - [ ] `TrackingMapComponent` — live courier position on map (leaflet + socket.io)
@@ -141,6 +157,8 @@
 ---
 
 ## 💬 Support & Chat UI
+
+gwt-new ../storefront-support feat/storefront-support
 
 - [ ] `HelpCenterComponent` — FAQ categories with expandable answers (`hlm-accordion`)
 - [ ] `ContactFormComponent` — subject, message, attachment (`hlmField`, `hlmTextarea`, file upload)
@@ -156,6 +174,8 @@
 ---
 
 ## 🏠 Homepage & Common Layout
+
+gwt-new ../storefront-homepage feat/storefront-homepage
 
 - [ ] `HeaderComponent` — logo, search bar, nav links, language switcher, currency, cart, auth buttons
 - [ ] `LanguageSwitcherComponent` — dropdown with flag icons, persist choice (`hlm-dropdown-menu`)
@@ -173,6 +193,8 @@
 ---
 
 ## ⚡ Frontend Performance & Quality
+
+gwt-new ../storefront-performance feat/storefront-performance
 
 - [ ] **Core Web Vitals budget** — LCP < 2.5s, CLS < 0.1, FID < 100ms
 - [ ] **Image optimization** — `NgOptimizedImage` with `priority`, lazy loading, responsive sizes

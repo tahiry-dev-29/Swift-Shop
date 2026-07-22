@@ -4,6 +4,8 @@
 
 ## 🏗️ Layout & Navigation
 
+gwt-new ../admin-layout feat/admin-layout
+
 - [ ] `AdminLayoutComponent` — sidebar + header + content shell (`hlm-sidebar`, `hlmSidebarInset`)
 - [ ] `SidebarComponent` — permission-aware nav menu with section groups (`hlmSidebarMenu`, `hlmSidebarMenuButton`)
 - [ ] `SidebarGroupComponent` — collapsible group header with expand/collapse, section badge counter
@@ -21,6 +23,8 @@
 ---
 
 ## 📊 Dashboard — KPI & Analytics
+
+gwt-new ../admin-dashboard feat/admin-dashboard
 
 - [ ] `DashboardComponent` — responsive KPI widget grid (2-3-4 columns) (`hlmCard`, `hlmBadge`)
 - [ ] KPI cards: Total Revenue (MTD), Orders, Active Products, New Customers, Conversion Rate
@@ -46,6 +50,8 @@
 
 ## 📦 Orders Management
 
+gwt-new ../admin-orders feat/admin-orders
+
 - [ ] `OrderListComponent` — sortable, filterable, paginated table (`hlmTable`, `hlmInput`, `hlmSelect`, `hlmPagination`)
 - [ ] `OrderListFiltersComponent` — status, date range, customer, payment method, carrier (`hlmSheet` advanced filters)
 - [ ] `OrderDetailComponent` — order info card, items table, status timeline, customer info, payment log
@@ -65,6 +71,8 @@
 
 ## 🔄 Returns & Refunds (RMA)
 
+gwt-new ../admin-returns feat/admin-returns
+
 - [ ] `ReturnListComponent` — table of RMA requests with status, reason, date (`hlmTable`, `hlmBadge`)
 - [ ] `ReturnDetailComponent` — return items, reason, condition photos, timeline (`hlmCard`, `hlm-dialog`)
 - [ ] `ReturnApprovalComponent` — approve/reject, select refund method, add notes (`hlm-alert-dialog`)
@@ -75,6 +83,8 @@
 ---
 
 ## 📦 Products Management
+
+gwt-new ../admin-products feat/admin-products
 
 - [ ] `ProductListComponent` — product grid/table with search + advanced filters (`hlmTable`, `hlmInput`)
 - [ ] `ProductListFiltersComponent` — category, brand, price range, stock status, active/inactive
@@ -102,6 +112,8 @@
 
 ## 👥 Customers Management
 
+gwt-new ../admin-customers feat/admin-customers
+
 - [ ] `CustomerListComponent` — searchable, paginated table with filters (`hlmTable`, `hlmInput`)
 - [ ] `CustomerListFiltersComponent` — registration date, order count, total spent, group, active/inactive
 - [ ] `CustomerDetailComponent` — profile card, order history, addresses map, notes, login activity
@@ -121,6 +133,8 @@
 
 ## 📂 Catalog & Categories
 
+gwt-new ../admin-catalog feat/admin-catalog
+
 - [ ] `CategoryTreeComponent` — expandable tree with drag-drop reorder, right-click context menu (`hlm-tree`, sortablejs)
 - [ ] `CategoryFormComponent` — name, slug, parent, description, image/icon, cover, SEO fields (`hlm-dialog` or `hlm-sheet`)
 - [ ] `CategorySeoSettingsComponent` — meta title, description, focus keyword, social preview
@@ -137,6 +151,8 @@
 ---
 
 ## 🏷️ Promotions & Discounts
+
+gwt-new ../admin-promotions feat/admin-promotions
 
 - [ ] `SpecificPricesComponent` — list of product-specific discount rules (`hlmTable`)
 - [ ] `SpecificPriceFormComponent` — rule editor (customer group, quantity, date range, discount type: fixed/percentage)
@@ -156,6 +172,8 @@
 
 ## 🚚 Shipping & Carriers
 
+gwt-new ../admin-shipping feat/admin-shipping
+
 - [ ] `CarrierListComponent` — carriers list with toggle active/inactive (`hlmTable`, `hlmSwitch`)
 - [ ] `CarrierFormComponent` — carrier config (name, logo, shipping rates, zones, tracking URL template) — `hlm-dialog`
 - [ ] `ShippingZoneEditorComponent` — zone + rate matrix by weight/price (`hlmCard`, `hlmTable`)
@@ -172,6 +190,8 @@
 ---
 
 ## ⚙️ Settings
+
+gwt-new ../admin-settings feat/admin-settings
 
 - [ ] `GeneralSettingsComponent` — store name, logo, favicon, contact info, locale, timezone (`hlmField`, `hlmInput`, image upload)
 - [ ] `StoreContactComponent` — address, phone, email, social media links (`hlmField`, `hlmInput`)
@@ -195,6 +215,8 @@
 
 ## 🔐 RBAC — Roles & Permissions
 
+gwt-new ../admin-rbac feat/admin-rbac
+
 - [ ] `RoleListComponent` — roles table with member count, description, clone action (`hlmTable`, `hlmBadge`)
 - [ ] `RoleFormComponent` — create/edit role (name, description, clone permissions from existing) — `hlm-dialog`
 - [ ] `PermissionsMatrixComponent` — permission grid (resource × action checkboxes, check/uncheck all per row) — `hlmTable` + `hlmCheckbox`
@@ -207,6 +229,8 @@
 ---
 
 ## 📄 CMS — Content Management
+
+gwt-new ../admin-cms feat/admin-cms
 
 - [ ] `CmsPagesComponent` — static pages list with status, updated date (`hlmTable`, `hlmBadge`)
 - [ ] `CmsPageFormComponent` — page editor (title, slug, content, meta, publish date, status) — `hlmField` + rich text editor (TipTap / Quill)
@@ -222,6 +246,8 @@
 
 ## 🧩 Modules & Addons
 
+gwt-new ../admin-modules feat/admin-modules
+
 - [ ] `ModuleManagerComponent` — list of installed modules with enable/disable toggle (`hlmTable`, `hlmSwitch`)
 - [ ] `ModuleUploadComponent` — upload module zip, validate signature, install (`hlm-dialog`, file upload)
 - [ ] `ModuleMarketplaceComponent` — browse available modules in the marketplace (`hlmCard`, `hlmBtn`)
@@ -229,6 +255,8 @@
 ---
 
 ## 🧠 SEO & System Tools
+
+gwt-new ../admin-seo feat/admin-seo
 
 - [ ] `SeoDashboardComponent` — sitemap status, robots.txt preview, canonical URLs health check (`hlmCard`)
 - [ ] `SitemapGeneratorComponent` — regenerate sitemap, configure frequency/priority per content type (`hlmBtn`, `hlmCard`)
@@ -246,6 +274,8 @@
 
 ## 📱 Social Publisher
 
+gwt-new ../admin-social feat/admin-social
+
 - [ ] `SocialPublisherComponent` — Facebook & Instagram post composer, schedule publishing (`hlmCard`, `hlm-dialog`, `hlmTextarea`)
 - [ ] `SocialPostListComponent` — history of published posts with engagement stats (`hlmTable`, `hlmBadge`)
 - [ ] `SocialMediaConnectComponent` — OAuth connect/disconnect Facebook, Instagram, X/Twitter (`hlmCard`, `hlmBtn`)
@@ -255,6 +285,8 @@
 ---
 
 ## 💬 Notifications & Messaging
+
+gwt-new ../admin-notifications feat/admin-notifications
 
 - [ ] `NotificationBellComponent` — header bell icon with unread count badge + popover list (`hlmBtn`, `hlmBadge`, `hlmPopover`)
 - [ ] `NotificationCenterComponent` — full notification list with read/unread filter, mark-all-read (`hlmCard`, `hlmBtn`)
@@ -269,6 +301,8 @@
 
 ## 📦 Stock & Inventory Management
 
+gwt-new ../admin-stock feat/admin-stock
+
 - [ ] `StockListComponent` — all products stock view, search, low stock filter (`hlmTable`, `hlmBadge`)
 - [ ] `StockMovementLogComponent` — transaction log (in/out, adjustment, reason) (`hlmTable`, `hlmBadge`)
 - [ ] `StockAdjustmentFormComponent` — manual stock adjustment ± with reason (`hlm-dialog`, `hlmInput`)
@@ -282,6 +316,8 @@
 ---
 
 ## 🎨 UI Kit — Design System (spartan/ui + Helm)
+
+gwt-new ../admin-ui-kit feat/admin-ui-kit
 
 - [ ] **Buttons** — `hlmBtn` with all variants: `default | destructive | outline | secondary | ghost | link` + loading state (`hlm-spinner`)
 - [ ] **Forms** — `hlmField` composition (label, control, description, error) with consistent spacing
@@ -314,6 +350,8 @@
 ---
 
 ## 🧪 Testing & Quality
+
+gwt-new ../admin-testing feat/admin-testing
 
 - [ ] Unit tests for each component (`vitest` + `@angular/core/testing`)
 - [ ] Component smoke tests (renders without error for each state: loading, empty, error, populated)
