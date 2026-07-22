@@ -343,3 +343,4 @@ Remplacer PostgreSQL local (Docker) par **Neon** (serverless PostgreSQL) pour to
 
 - [ ] Ajouter section Neon dans README
 - [ ] Procédure rollback (point-in-time restore Neon)
+```

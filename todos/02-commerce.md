@@ -157,136 +157,136 @@ gwt-new ../commerce-tests feat/commerce-tests
 
 ### Category — Unit Tests
 
-- [ ] `CategoryService` — create (materialized path), find tree, soft delete, reorder
-- [ ] `CategoryCacheService` — cache hit/miss/invalidation on write
-- [ ] Slug generation — auto-slug, uniqueness enforcement, manual override
-- [ ] Cursor pagination — Relay-style, forward, backward
+- [x] `CategoryService` — create (materialized path), find tree, soft delete, reorder
+- [x] `CategoryCacheService` — cache hit/miss/invalidation on write
+- [x] Slug generation — auto-slug, manual override, uniqueness enforcement
+- [x] Cursor pagination — Relay-style, forward, backward
 
 ### Feature & Attribute — Unit Tests
 
-- [ ] `FeatureService` — CRUD, Redis cache invalidation
-- [ ] `AttributeService` — CRUD groups + values
+- [x] `FeatureService` — CRUD, Redis cache invalidation
+- [x] `AttributeService` — CRUD groups + values
 
 ### Product — Unit Tests
 
-- [ ] `ProductService` — create (slug gen), update (price audit), find with filters
-- [ ] `ProductCombinationService` — add, update, delete, default handling
-- [ ] `ProductStockService` — update, increment, decrement, availability check
-- [ ] `ProductImageService` — add, remove, set cover
-- [ ] `ProductDuplicateService` — full duplication with images + combinations
-- [ ] `ProductBulkService` — CSV import validation, error reporting
-- [ ] `StockAlertService` — threshold check, alert creation
-- [ ] `ProductSearchService` — MeiliSearch sync on create/update/delete
+- [x] `ProductService` — create (slug gen), update (price audit), find with filters
+- [x] `ProductCombinationService` — add, update, delete, default handling
+- [x] `ProductStockService` — update, increment, decrement, availability check
+- [x] `ProductImageService` — add, remove, set cover
+- [x] `ProductDuplicateService` — full duplication with images + combinations
+- [x] `ProductBulkService` — CSV import validation, error reporting
+- [x] `StockAlertService` — threshold check, alert creation
+- [x] `ProductSearchService` — MeiliSearch sync on create/update/delete
 
 ### Pricing Engine — Unit Tests
 
-- [ ] `PriceCalculationService` — base + combination impact
-- [ ] `PriceCalculationService` — customer group discount
-- [ ] `PriceCalculationService` — specific price lookup (date, qty, country)
-- [ ] `PriceCalculationService` — tax-inclusive calculation
-- [ ] `PriceCalculationService` — tiered pricing (quantity breaks)
-- [ ] `PriceCalculationService` — coupon/voucher reduction
-- [ ] `PriceCalculationService` — flash sale time-limited deals
-- [ ] `PriceCalculationService` — multi-currency exchange rate
-- [ ] `PriceCalculationService` — B2B hidden prices for guests
-- [ ] `PriceCalculationService` — loyalty points deduction
+- [x] `PriceCalculationService` — base + combination impact
+- [x] `PriceCalculationService` — customer group discount
+- [x] `PriceCalculationService` — specific price lookup (date, qty, country)
+- [x] `PriceCalculationService` — tax-inclusive calculation
+- [x] `PriceCalculationService` — tiered pricing (quantity breaks)
+- [x] `PriceCalculationService` — coupon/voucher reduction
+- [x] `PriceCalculationService` — flash sale time-limited deals
+- [x] `PriceCalculationService` — multi-currency exchange rate
+- [x] `PriceCalculationService` — B2B hidden prices for guests
+- [x] `PriceCalculationService` — loyalty points deduction
 
 ### Pricing Engine — Integration Tests
 
-- [ ] `calculatePrice` GraphQL query — various inputs, correct priceTTC
-- [ ] `specificPrices` CRUD — create, update, delete
+- [x] `calculatePrice` GraphQL query — various inputs, correct priceTTC
+- [x] `specificPrices` CRUD — create, update, delete
 
 ### Category — Integration Tests
 
-- [ ] `categories` query — tree, paginated
-- [ ] `createCategory`, `updateCategory`, `deleteCategory`
-- [ ] `reorderCategories` — drag-drop positions
+- [x] `categories` query — tree, paginated
+- [x] `createCategory`, `updateCategory`, `deleteCategory`
+- [x] `reorderCategories` — drag-drop positions
 
 ### Product — Integration Tests
 
-- [ ] `products` query — filters + pagination
-- [ ] `product(id)` — single product with combinations
-- [ ] `createProduct` — full input, slug auto-gen
-- [ ] `addProductImage`, `removeProductImage`, `setProductCoverImage`
-- [ ] `addProductCombination`, `updateProductCombination`, `deleteProductCombination`
-- [ ] `updateStock`, `incrementStock`, `decrementStock`
-- [ ] `duplicateProduct` — verifies all relations copied
-- [ ] `checkProductAvailability` — in stock, out of stock
+- [x] `products` query — filters + pagination
+- [x] `product(id)` — single product with combinations
+- [x] `createProduct` — full input, slug auto-gen
+- [x] `addProductImage`, `removeProductImage`, `setProductCoverImage`
+- [x] `addProductCombination`, `updateProductCombination`, `deleteProductCombination`
+- [x] `updateStock`, `incrementStock`, `decrementStock`
+- [x] `duplicateProduct` — verifies all relations copied
+- [x] `checkProductAvailability` — in stock, out of stock
 
 ### Cart — Unit Tests
 
-- [ ] `CartService.getOrCreateCart` — new guest, existing customer
-- [ ] `CartService.addToCart` — new item, existing item (qty increment), stock validation
-- [ ] `CartService.updateCartItemQuantity` — valid, zero (removes), over stock
-- [ ] `CartService.removeFromCart` — item exists, item not in cart
-- [ ] `CartService.clearCart` — empty cart, items present
-- [ ] `CartPricingService.getCartWithTotals` — item prices, subtotal, tax, total
-- [ ] `CartCouponService.applyCoupon` — valid code, invalid code, expired, max usage
-- [ ] `CartCouponService.removeCoupon` — coupon applied, no coupon
-- [ ] `CartMergeService.mergeGuestCart` — guest has items, guest is empty
-- [ ] `CartStockReservationService` — reserve, release, TTL expiry
+- [x] `CartService.getOrCreateCart` — new guest, existing customer
+- [x] `CartService.addToCart` — new item, existing item (qty increment), stock validation
+- [x] `CartService.updateCartItemQuantity` — valid, zero (removes), over stock
+- [x] `CartService.removeFromCart` — item exists, item not in cart
+- [x] `CartService.clearCart` — empty cart, items present
+- [x] `CartPricingService.getCartWithTotals` — item prices, subtotal, tax, total
+- [x] `CartCouponService.applyCoupon` — valid code, invalid code, expired, max usage
+- [x] `CartCouponService.removeCoupon` — coupon applied, no coupon
+- [x] `CartMergeService.mergeGuestCart` — guest has items, guest is empty
+- [x] `CartStockReservationService` — reserve, release, TTL expiry
 
 ### Cart — Integration Tests
 
-- [ ] `myCart` query — authenticated, unauthenticated (error)
-- [ ] `addToCart` mutation — success, out of stock, combination required
+- [x] `myCart` query — authenticated, unauthenticated (error)
+- [x] `addToCart` mutation — success, out of stock, combination required
 - [ ] `updateCartItem`, `removeCartItem`, `clearCart`
 - [ ] `applyCoupon`, `removeCoupon`
 - [ ] `reserveCartStock` — stock reserved, released after order
 
 ### Order — Unit Tests
 
-- [ ] `OrderCreationService.createOrderFromCart` — success, idempotency key
-- [ ] `OrderCreationService.createGuestOrderFromCart` — guest checkout
-- [ ] `OrderActionService.cancelOrder` — stock rollback verification
-- [ ] `OrderActionService.requestReturn` — valid state, invalid state
-- [ ] `OrderService.updateOrderStatus` — valid transition, invalid transition
-- [ ] `OrderService.generateInvoicePDF` — PDF content, reference number
-- [ ] `OrderService.reorderToCart` — all items re-added
-- [ ] `OrderService.addOrderNote` — internal, customer-visible
-- [ ] `OrderExportService` — CSV format, XLSX format, column mapping
-- [ ] `OrderAddressSnapshotService` — snapshot content, address update
+- [x] `OrderCreationService.createOrderFromCart` — success, idempotency key
+- [x] `OrderCreationService.createGuestOrderFromCart` — guest checkout
+- [x] `OrderActionService.cancelOrder` — stock rollback verification
+- [x] `OrderActionService.requestReturn` — valid state, invalid state
+- [x] `OrderService.updateOrderStatus` — valid transition, invalid transition
+- [x] `OrderService.generateInvoicePDF` — PDF content, reference number
+- [x] `OrderService.reorderToCart` — all items re-added
+- [x] `OrderService.addOrderNote` — internal, customer-visible
+- [x] `OrderExportService` — CSV format, XLSX format, column mapping
+- [x] `OrderAddressSnapshotService` — snapshot content, address update
 
 ### Order — Integration Tests
 
-- [ ] `createOrder` — cart → order, stock decremented
-- [ ] `createGuestOrder` — guest identity, address creation
-- [ ] `myOrders` — customer's orders only
-- [ ] `cancelOrder` — status change, stock restored
-- [ ] `generateInvoice` — PDF header, items, totals
-- [ ] `reorder` — new cart populated from order items
-- [ ] `exportMyOrders` — CSV download
+- [x] `createOrder` — cart → order, stock decremented
+- [x] `createGuestOrder` — guest identity, address creation
+- [x] `myOrders` — customer's orders only
+- [x] `cancelOrder` — status change, stock restored
+- [x] `generateInvoice` — PDF header, items, totals
+- [x] `reorder` — new cart populated from order items
+- [x] `exportMyOrders` — CSV download
 - [ ] Order state machine — illegal transition rejected (e.g. shipped → pending)
 
 ### Shipping — Unit Tests
 
-- [ ] `ShippingCalculationService.getAvailableCarriers` — by country + weight
-- [ ] `ShippingCalculationService.calculateShippingCost` — rate selection
-- [ ] `ShipmentService.createShipment` — carrier, tracking number
-- [ ] `ShipmentService.updateShipmentStatus` — valid events
-- [ ] `CarrierAdapterRegistry` — register, get, adapter not found error
+- [x] `ShippingCalculationService.getAvailableCarriers` — by country + weight
+- [x] `ShippingCalculationService.calculateShippingCost` — rate selection
+- [x] `ShipmentService.createShipment` — carrier, tracking number
+- [x] `ShipmentService.updateShipmentStatus` — valid events
+- [x] `CarrierAdapterRegistry` — register, get, adapter not found error
 
 ### Shipping — Integration Tests
 
-- [ ] `availableCarriers` query — returns carriers for given address
-- [ ] `createShipment` mutation — creates shipment + shipment event
-- [ ] `updateShipmentStatus` — status update with event log
-- [ ] `syncShipmentTracking` — external carrier sync
+- [x] `availableCarriers` query — returns carriers for given address
+- [x] `createShipment` mutation — creates shipment + shipment event
+- [x] `updateShipmentStatus` — status update with event log
+- [x] `syncShipmentTracking` — external carrier sync
 
 ### Payment — Unit Tests
 
-- [ ] `PaymentService.initiatePayment` — MVola, Airtel, Stripe, COD, Manual
-- [ ] `PaymentService.verifyPayment` — success, pending, failed
-- [ ] `PaymentService.processRefund` — full, partial, invalid amount
-- [ ] `PaymentWebhookSecurityService` — HMAC validation, replay detection
-- [ ] `PaymentAdapterRegistry` — register, get, fallback to manual
-- [ ] Stripe adapter — create intent, confirm, webhook handling
-- [ ] MVola adapter — initiate, status polls, callback HMAC
-- [ ] Airtel adapter — initiate, status, callback
+- [x] `PaymentService.initiatePayment` — MVola, Airtel, Stripe, COD, Manual
+- [x] `PaymentService.verifyPayment` — success, pending, failed
+- [x] `PaymentService.processRefund` — full, partial, invalid amount
+- [x] `PaymentWebhookSecurityService` — HMAC validation, replay detection
+- [x] `PaymentAdapterRegistry` — register, get, fallback to manual
+- [x] Stripe adapter — create intent, confirm, webhook handling
+- [x] MVola adapter — initiate, status polls, callback HMAC
+- [x] Airtel adapter — initiate, status, callback
 
 ### Payment — Integration Tests
 
-- [ ] `initiatePayment` mutation — COD (instant success), Manual (pending)
-- [ ] `verifyPayment` mutation — status check
-- [ ] `processRefund` mutation — refund recorded, linked to payment
-- [ ] `processPaymentWebhook` — Stripe event, MVola event, replay rejected
+- [x] `initiatePayment` mutation — COD (instant success), Manual (pending)
+- [x] `verifyPayment` mutation — status check
+- [x] `processRefund` mutation — refund recorded, linked to payment
+- [x] `processPaymentWebhook` — Stripe event, MVola event, replay rejected
