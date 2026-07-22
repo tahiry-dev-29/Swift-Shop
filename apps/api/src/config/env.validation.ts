@@ -56,9 +56,7 @@ export function validateEnvironment(env: Environment): ValidatedEnvironment {
 
   const jwtSecret = requireValue(env, 'JWT_SECRET');
   if (jwtSecret.length < 32) {
-    throw new Error(
-      'JWT_SECRET must be at least 32 characters long',
-    );
+    throw new Error('JWT_SECRET must be at least 32 characters long');
   }
 
   return {

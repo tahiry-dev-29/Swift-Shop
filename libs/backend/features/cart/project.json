@@ -4,6 +4,15 @@
   "sourceRoot": "libs/backend/features/cart/src",
   "projectType": "library",
   "tags": [],
-  "// targets": "to see all targets run: nx show project cart --web",
-  "targets": {}
+  "targets": {
+    "test": {
+      "outputs": [
+        "{projectRoot}/{options.coverage.reportsDirectory}",
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
+      "options": {
+        "coverage.reportsDirectory": "../../../../coverage/libs/backend/features/cart"
+      }
+    }
+  }
 }

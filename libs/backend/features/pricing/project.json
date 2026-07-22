@@ -1,7 +1,7 @@
 {
-  "name": "payment",
+  "name": "pricing",
   "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/backend/features/payment/src",
+  "sourceRoot": "libs/backend/features/pricing/src",
   "projectType": "library",
   "tags": [],
   "targets": {
@@ -11,7 +11,7 @@
         "{workspaceRoot}/coverage/{projectRoot}"
       ],
       "options": {
-        "coverage.reportsDirectory": "../../../../coverage/libs/backend/features/payment"
+        "coverage.reportsDirectory": "../../../../coverage/libs/backend/features/pricing"
       }
     }
   }

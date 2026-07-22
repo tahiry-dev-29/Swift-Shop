@@ -4,6 +4,15 @@
   "sourceRoot": "libs/backend/features/order/src",
   "projectType": "library",
   "tags": [],
-  "// targets": "to see all targets run: nx show project order --web",
-  "targets": {}
+  "targets": {
+    "test": {
+      "outputs": [
+        "{projectRoot}/{options.coverage.reportsDirectory}",
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
+      "options": {
+        "coverage.reportsDirectory": "../../../../coverage/libs/backend/features/order"
+      }
+    }
+  }
 }

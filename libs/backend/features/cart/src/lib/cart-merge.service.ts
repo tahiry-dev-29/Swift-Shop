@@ -8,7 +8,14 @@ export class CartMergeService {
   async mergeGuestCart(sessionId: string, customerId: string) {
     const guestCart = await this.prisma.cart.findUnique({
       where: { sessionId },
-      include: { items: { include: { product: { include: { stock: true } }, combination: { include: { stock: true } } } } },
+      include: {
+        items: {
+          include: {
+            product: { include: { stock: true } },
+            combination: { include: { stock: true } },
+          },
+        },
+      },
     });
 
     if (!guestCart || guestCart.items.length === 0) {
@@ -17,7 +24,11 @@ export class CartMergeService {
 
     for (const item of guestCart.items) {
       const stock = item.combination?.stock || item.product.stock;
-      if (stock && stock.outOfStockBehavior === 'deny' && stock.quantity < item.quantity) {
+      if (
+        stock &&
+        stock.outOfStockBehavior === 'deny' &&
+        stock.quantity < item.quantity
+      ) {
         throw new BadRequestException(
           `Insufficient stock for ${item.product.name}: only ${stock.quantity} available`,
         );
@@ -38,7 +49,11 @@ export class CartMergeService {
     await this.prisma.$transaction(async (tx) => {
       for (const item of guestCart.items) {
         const existing = await tx.cartItem.findFirst({
-          where: { cartId: customerCart.id, productId: item.productId, combinationId: item.combinationId },
+          where: {
+            cartId: customerCart.id,
+            productId: item.productId,
+            combinationId: item.combinationId,
+          },
         });
         if (existing) {
           await tx.cartItem.update({
@@ -47,7 +62,12 @@ export class CartMergeService {
           });
         } else {
           await tx.cartItem.create({
-            data: { cartId: customerCart.id, productId: item.productId, combinationId: item.combinationId, quantity: item.quantity },
+            data: {
+              cartId: customerCart.id,
+              productId: item.productId,
+              combinationId: item.combinationId,
+              quantity: item.quantity,
+            },
           });
         }
       }

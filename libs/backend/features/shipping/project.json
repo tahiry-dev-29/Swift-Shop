@@ -4,5 +4,15 @@
   "sourceRoot": "libs/backend/features/shipping/src",
   "projectType": "library",
   "tags": [],
-  "targets": {}
+  "targets": {
+    "test": {
+      "outputs": [
+        "{projectRoot}/{options.coverage.reportsDirectory}",
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
+      "options": {
+        "coverage.reportsDirectory": "../../../../coverage/libs/backend/features/shipping"
+      }
+    }
+  }
 }

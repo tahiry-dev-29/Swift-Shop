@@ -7,10 +7,12 @@
   "tags": [],
   "targets": {
     "test": {
-      "executor": "@nx/vitest:test",
-      "outputs": ["{options.reportsDirectory}"],
+      "outputs": [
+        "{projectRoot}/{options.coverage.reportsDirectory}",
+        "{workspaceRoot}/coverage/models"
+      ],
       "options": {
-        "reportsDirectory": "../coverage/models"
+        "coverage.reportsDirectory": "../coverage/models"
       }
     },
     "lint": {

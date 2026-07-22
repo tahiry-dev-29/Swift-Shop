@@ -90,8 +90,19 @@
       "plugin": "@nx/vitest",
       "options": {
         "testTargetName": "test",
-        "testMode": "standard"
-      }
+        "testMode": "run"
+      },
+      "include": [
+        "apps/dashboard/**/*",
+        "apps/store/**/*",
+        "libs/backend/features/cart/**/*",
+        "libs/backend/features/cms/**/*",
+        "libs/backend/features/order/**/*",
+        "libs/backend/features/payment/**/*",
+        "libs/backend/features/pricing/**/*",
+        "libs/backend/features/shipping/**/*",
+        "models/**/*"
+      ]
     }
   ],
   "analytics": false
