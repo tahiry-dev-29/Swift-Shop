@@ -18,4 +18,4 @@ export * from './lib/decorators/require-store-branch-scope.decorator';
 export * from './lib/guards/auth-rate-limit.guard';
 export * from './lib/infrastructure/storage/redis.service';
 export * from './lib/infrastructure/smtp/smtp.service';
-export { JwtPayload } from '@swift-shop/models';
+export type { JwtPayload } from '@swift-shop/models';

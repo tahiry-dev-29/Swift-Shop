@@ -144,144 +144,144 @@ gwt-new ../backend-tests feat/backend-tests
 
 ### Auth — Unit Tests
 
-- [ ] `AuthService` — login, register, refresh token, magic link, OAuth2 flow
-- [ ] `AuthTokenService` — access + refresh token generation, rotation, blacklisting
-- [ ] `AuthCredentialsService` — validation, account lockout (5 failed → 15min lock)
-- [ ] `AuthOAuthService` — Google/Facebook PKCE flow, profile fetch, account linking
-- [ ] `AuthRecoveryService` — magic link generation, TTL expiry, forced reset
-- [ ] `TwoFactorService` — TOTP secret, QR code, token verification
-- [ ] `PasswordSecurityService` — Argon2 hash/verify, HIBP check, policy enforcement
-- [ ] `TrustedDeviceService` — device token hash, 30-day trust, rotation
-- [ ] `AuthAuditService` — audit log recording, session anomaly detection
-- [ ] `AuthMailService` — email sending for magic link, lockout, reset, welcome
+- [x] `AuthService` — login, register, refresh token, magic link, OAuth2 flow
+- [x] `AuthTokenService` — access + refresh token generation, rotation, blacklisting
+- [x] `AuthCredentialsService` — validation, account lockout (5 failed → 15min lock)
+- [x] `AuthOAuthService` — Google/Facebook PKCE flow, profile fetch, account linking
+- [x] `AuthRecoveryService` — magic link generation, TTL expiry, forced reset
+- [x] `TwoFactorService` — TOTP secret, QR code, token verification
+- [x] `PasswordSecurityService` — Argon2 hash/verify, HIBP check, policy enforcement
+- [x] `TrustedDeviceService` — device token hash, 30-day trust, rotation
+- [x] `AuthAuditService` — audit log recording, session anomaly detection
+- [x] `AuthMailService` — email sending for magic link, lockout, reset, welcome
 
 ### Auth — Token Security Tests
 
-- [ ] Refresh token rotation — old blacklisted, new pair valid
-- [ ] Refresh token reuse — already used token → rejected
-- [ ] Refresh token reuse detection — family-wide revocation
-- [ ] Cross-type swap — employee token → customerRefreshToken → rejected
-- [ ] Logout — access token JTI blacklisted, refresh token revoked
-- [ ] Race condition — 2 concurrent refreshes → 1 fails
-- [ ] `verifyToken()` — reject refresh tokens (tokenType check)
-- [ ] Audit logging — each refresh generates an AuditLog entry
+- [x] Refresh token rotation — old blacklisted, new pair valid
+- [x] Refresh token reuse — already used token → rejected
+- [x] Refresh token reuse detection — family-wide revocation
+- [x] Cross-type swap — employee token → customerRefreshToken → rejected
+- [x] Logout — access token JTI blacklisted, refresh token revoked
+- [x] Race condition — 2 concurrent refreshes → 1 fails
+- [x] `verifyToken()` — reject refresh tokens (tokenType check)
+- [x] Audit logging — each refresh generates an AuditLog entry
 
 ### Auth — Integration Tests
 
-- [ ] `auth/employee/login` — success, wrong password, locked account, 2FA required
-- [ ] `auth/customer/register` — success, duplicate email, invalid password
-- [ ] `auth/customer/login` — success, magic link, OAuth2 callback
-- [ ] Refresh token flow — rotation, blacklist after use
-- [ ] Rate limiting — N requests in window → blocked
+- [x] `auth/employee/login` — success, wrong password, locked account, 2FA required
+- [x] `auth/customer/register` — success, duplicate email, invalid password
+- [x] `auth/customer/login` — success, magic link, OAuth2 callback
+- [x] Refresh token flow — rotation, blacklist after use
+- [x] Rate limiting — N requests in window → blocked
 
 ### Auth — Guards & Decorators
 
-- [ ] `JwtAuthGuard` — valid token, expired token, malformed token
-- [ ] `CustomerGuard` — customer token, employee token rejected
-- [ ] `EmployeeGuard` — employee token, customer token rejected
-- [ ] `SuperAdminGuard` — super admin, non-super admin rejected
-- [ ] `OptionalCustomerGuard` — authenticated, unauthenticated both allowed
-- [ ] `PermissionGuard` — user with permission, user without, @RequirePermission()
+- [x] `JwtAuthGuard` — valid token, expired token, malformed token
+- [x] `CustomerGuard` — customer token, employee token rejected
+- [x] `EmployeeGuard` — employee token, customer token rejected
+- [x] `SuperAdminGuard` — super admin, non-super admin rejected
+- [x] `OptionalCustomerGuard` — authenticated, unauthenticated both allowed
+- [x] `PermissionGuard` — user with permission, user without, @RequirePermission()
 
 ### RBAC — Unit Tests
 
-- [ ] `RoleService` — create, update, delete (soft), clone, system role protection
-- [ ] `RolePermissionService` — assign/revoke permissions, matrix, effective permissions
-- [ ] `EmployeeRoleAssignmentService` — multi-role assignment, cache invalidation
-- [ ] `Permission caching` — Redis get/set/invalidate on permission change
-- [ ] `StoreBranchScopeGuard` — employee with branch, employee without
-- [ ] `TemporaryRoleElevationService` — grant, expiry, revoke
+- [x] `RoleService` — create, update, delete (soft), clone, system role protection
+- [x] `RolePermissionService` — assign/revoke permissions, matrix, effective permissions
+- [x] `EmployeeRoleAssignmentService` — multi-role assignment, cache invalidation
+- [x] `Permission caching` — Redis get/set/invalidate on permission change
+- [x] `StoreBranchScopeGuard` — employee with branch, employee without
+- [x] `TemporaryRoleElevationService` — grant, expiry, revoke
 
 ### Settings — Unit Tests
 
-- [ ] `SettingService` — get, set, getGroup, getPublicSettings, type parsing
-- [ ] `LanguageService` — CRUD, set default, uniqueness
-- [ ] `CurrencyService` — CRUD, exchange rate sync
+- [x] `SettingService` — get, set, getGroup, getPublicSettings, type parsing
+- [x] `LanguageService` — CRUD, set default, uniqueness
+- [x] `CurrencyService` — CRUD, exchange rate sync
 
 ### Settings — Integration Tests
 
-- [ ] `LanguageResolver` — queries + mutations
-- [ ] `CurrencyResolver` — queries + mutations
-- [ ] `StoreResolver` — queries + mutations
-- [ ] `PublicSettingsResolver` — unauthenticated access
+- [x] `LanguageResolver` — queries + mutations
+- [x] `CurrencyResolver` — queries + mutations
+- [x] `StoreResolver` — queries + mutations
+- [x] `PublicSettingsResolver` — unauthenticated access
 
 ### Health — Integration Tests
 
-- [ ] `GET /api/health` — returns UP when DB + Redis + memory OK
-- [ ] `GET /api/health` — returns DOWN when DB unavailable
+- [x] `GET /api/health` — returns UP when DB + Redis + memory OK
+- [x] `GET /api/health` — returns DOWN when DB unavailable
 
 ### Notifications — Unit Tests
 
-- [ ] `NotificationService.send` — multi-channel dispatch (in-app, push, SMS)
-- [ ] `NotificationService.markAsRead` — single, bulk
-- [ ] `NotificationService.getUnreadCount` — count accuracy
-- [ ] `NotificationService.registerPushSubscription` — VAPID, FCM
-- [ ] `NotificationTransportService` — SSE events, connection management
-- [ ] `PushNotificationService` — Web Push payload, FCM message
-- [ ] `SmsNotificationService` — Twilio/Africa's Talking (mocked)
-- [ ] `NotificationQueueService` — BullMQ job creation
-- [ ] `NotificationProcessor` — queue processing
+- [x] `NotificationService.send` — multi-channel dispatch (in-app, push, SMS)
+- [x] `NotificationService.markAsRead` — single, bulk
+- [x] `NotificationService.getUnreadCount` — count accuracy
+- [x] `NotificationService.registerPushSubscription` — VAPID, FCM
+- [x] `NotificationTransportService` — SSE events, connection management
+- [x] `PushNotificationService` — Web Push payload, FCM message
+- [x] `SmsNotificationService` — Twilio/Africa's Talking (mocked)
+- [x] `NotificationQueueService` — BullMQ job creation
+- [x] `NotificationProcessor` — queue processing
 
 ### Notifications — Integration Tests
 
-- [ ] `myNotifications` query — paginated, ordered by date
-- [ ] `notificationUnreadCount` — accurate count
-- [ ] `sendNotification` mutation — notification created
-- [ ] `markNotificationAsRead` — field updated
-- [ ] SSE endpoint — real-time event stream
+- [x] `myNotifications` query — paginated, ordered by date
+- [x] `notificationUnreadCount` — accurate count
+- [x] `sendNotification` mutation — notification created
+- [x] `markNotificationAsRead` — field updated
+- [x] SSE endpoint — real-time event stream
 
 ### Support — Unit Tests
 
-- [ ] `SupportTicketService.createTicket` — new ticket, auto-assign
-- [ ] `SupportTicketService.replyToTicket` — customer reply, agent reply
-- [ ] `SupportTicketService.assignTicket` — assign, reassign, unassign
+- [x] `SupportTicketService.createTicket` — new ticket, auto-assign
+- [x] `SupportTicketService.replyToTicket` — customer reply, agent reply
+- [x] `SupportTicketService.assignTicket` — assign, reassign, unassign
 
 ### Support — Integration Tests
 
-- [ ] Live Chat WebSocket — `joinChat`, `sendMessage`, `agentTyping`
-- [ ] `SupportTicketResolver` — create, reply, assign mutations
+- [x] Live Chat WebSocket — `joinChat`, `sendMessage`, `agentTyping`
+- [x] `SupportTicketResolver` — create, reply, assign mutations
 
 ### Messaging — Unit Tests
 
-- [ ] `MessagingService.sendMessage` — new thread, existing thread
-- [ ] `MessagingService.replyToThread` — append to thread
-- [ ] `MessagingService.getInbox` — paginated, ordered
-- [ ] `EmailTemplateService` — CRUD, render with variables
-- [ ] `EmailProcessor` — queue processing, SMTP send
+- [x] `MessagingService.sendMessage` — new thread, existing thread
+- [x] `MessagingService.replyToThread` — append to thread
+- [x] `MessagingService.getInbox` — paginated, ordered
+- [x] `EmailTemplateService` — CRUD, render with variables
+- [x] `EmailProcessor` — queue processing, SMTP send
 
 ### Messaging — Integration Tests
 
-- [ ] `MessagingResolver` — inbox, thread detail, send, reply
-- [ ] `EmailTemplateResolver` — template CRUD
+- [x] `MessagingResolver` — inbox, thread detail, send, reply
+- [x] `EmailTemplateResolver` — template CRUD
 
 ### Analytics — Unit Tests
 
-- [ ] `AnalyticsService.getDashboardStats` — totals, counts, averages
-- [ ] `AnalyticsService.getSalesChart` — daily/weekly/monthly aggregation
-- [ ] `AnalyticsService.getTopProducts` — by revenue, by qty
-- [ ] `AnalyticsService.trackProductView` — IP anonymization, dedup
-- [ ] `AnalyticsRepository` — raw SQL queries correctness
+- [x] `AnalyticsService.getDashboardStats` — totals, counts, averages
+- [x] `AnalyticsService.getSalesChart` — daily/weekly/monthly aggregation
+- [x] `AnalyticsService.getTopProducts` — by revenue, by qty
+- [x] `AnalyticsService.trackProductView` — IP anonymization, dedup
+- [x] `AnalyticsRepository` — raw SQL queries correctness
 
 ### Analytics — Integration Tests
 
-- [ ] `dashboardStats` query — correct KPI values
-- [ ] `salesChart` query — date range filtering
-- [ ] `topProducts` query — correct ranking
-- [ ] `trackProductView` mutation — event recorded
+- [x] `dashboardStats` query — correct KPI values
+- [x] `salesChart` query — date range filtering
+- [x] `topProducts` query — correct ranking
+- [x] `trackProductView` mutation — event recorded
 
 ### Social Media — Unit Tests
 
-- [ ] `SocialMediaService.createPost` — draft, scheduled, published
-- [ ] `SocialMediaService.schedulePost` — future date scheduling
-- [ ] `SocialMediaService.publishNow` — immediate publishing
-- [ ] `FacebookService` — Graph API call, page token refresh
-- [ ] `InstagramService` — media upload, story publish
-- [ ] `SocialMediaProcessor` — queue-based publishing
+- [x] `SocialMediaService.createPost` — draft, scheduled, published
+- [x] `SocialMediaService.schedulePost` — future date scheduling
+- [x] `SocialMediaService.publishNow` — immediate publishing
+- [x] `FacebookService` — Graph API call, page token refresh
+- [x] `InstagramService` — media upload, story publish
+- [x] `SocialMediaProcessor` — queue-based publishing
 
 ### Social Media — Integration Tests
 
-- [ ] `SocialMediaResolver` — mutations for create, schedule, delete
-- [ ] Facebook catalog XML feed generation
+- [x] `SocialMediaResolver` — mutations for create, schedule, delete
+- [x] Facebook catalog XML feed generation
 
 ### CMS — Unit Tests
 

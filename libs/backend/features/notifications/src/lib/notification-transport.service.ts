@@ -68,6 +68,7 @@ export class NotificationTransportService
   }
 
   publish(event: NotificationEvent) {
+    this.events$.next(event);
     this.pubClient
       .publish('swift-shop:commerce:notifications', JSON.stringify(event))
       .catch(() => undefined);
