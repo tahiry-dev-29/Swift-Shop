@@ -8,6 +8,8 @@ export class SupportTicketFormatter {
     return {
       id: ticket.id,
       reference: ticket.reference,
+      customerId: ticket.customerId ?? undefined,
+      employeeId: ticket.employeeId ?? undefined,
       subject: ticket.subject,
       status: ticket.status,
       priority: ticket.priority,
