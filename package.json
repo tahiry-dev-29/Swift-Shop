@@ -56,6 +56,8 @@
     "test:shipping": "bunx nx run shipping:test",
     "test:pricing": "bunx nx run pricing:test",
     "test:backend": "bunx nx run-many --target=test --projects=cart,cms,order,payment,shipping,pricing",
+    "test:frontend": "bunx nx run-many --target=test --projects=store,dashboard",
+    "test:all": "bunx nx run-many --target=test --projects=cart,cms,order,payment,shipping,pricing,store,dashboard",
     "docs:generate": "rm -rf docs && doxygen Doxyfile",
     "docs:view": "xdg-open docs/html/index.html || open docs/html/index.html",
     "prepare": "husky",
