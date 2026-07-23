@@ -151,6 +151,7 @@ FEDEX_API_KEY=
 FEDEX_ACCOUNT_NUMBER=
 SODIAT_API_KEY=
 ESPACE_LOGISTIQUE_API_KEY=
+```
 
 ---
 
@@ -343,4 +344,7 @@ Remplacer PostgreSQL local (Docker) par **Neon** (serverless PostgreSQL) pour to
 
 - [ ] Ajouter section Neon dans README
 - [ ] Procédure rollback (point-in-time restore Neon)
+
+```
+
 ```
